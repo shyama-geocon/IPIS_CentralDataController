@@ -1,0 +1,94 @@
+﻿<Window x:Class="IpisCentralDisplayController.views.StationInfoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IpisCentralDisplayController.views"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d" WindowStyle="SingleBorderWindow"
+        Title="Station Information" Height="450" Width="800" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="5" Grid.Row="0">
+            <TextBlock Text="Station Information" FontWeight="Bold" FontSize="16" Margin="5"/>
+        </StackPanel>
+
+        <!-- Station Info Form -->
+        <Grid Margin="5" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Station Code -->
+            <TextBlock Text="Station Code:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="0" Grid.Column="0"/>
+            <TextBox Name="StationCodeTextBox" Height="30" Margin="5" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center"/>
+
+            <!-- Regional Language -->
+            <TextBlock Text="Regional Language:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="0" Grid.Column="2"/>
+            <ComboBox Name="RegLanguageComboBox" Height="30" Margin="5" Grid.Row="0" Grid.Column="3" VerticalContentAlignment="Center"/>
+
+            <!-- Station Name in English -->
+            <TextBlock Text="Station Name (English):" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="0"/>
+            <TextBox Name="StationNameEnTextBox" Height="30" Margin="5" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
+
+            <!-- Station Name in Hindi -->
+            <TextBlock Text="Station Name (Hindi):" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="2"/>
+            <TextBox Name="StationNameHiTextBox" Height="30" Margin="5" Grid.Row="1" Grid.Column="3" VerticalContentAlignment="Center"/>
+
+            <!-- Station Name in Regional Language -->
+            <TextBlock Text="Station Name (Regional Language):" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="2" Grid.Column="0"/>
+            <TextBox Name="StationNameRLTextBox" Height="30" Margin="5" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
+
+            <!-- Station Latitude -->
+            <TextBlock Text="Station Latitude:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="2" Grid.Column="2"/>
+            <xctk:DecimalUpDown Name="StationLatTextBox" Height="30" Margin="5" Grid.Row="2" Grid.Column="3" VerticalAlignment="Center"/>
+
+            <!-- Station Longitude -->
+            <TextBlock Text="Station Longitude:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="3" Grid.Column="0"/>
+            <xctk:DecimalUpDown Name="StationLongTextBox" Height="30" Margin="5" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center"/>
+
+            <!-- Station Altitude -->
+            <TextBlock Text="Station Altitude:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="3" Grid.Column="2"/>
+            <xctk:DecimalUpDown Name="StationAltTextBox" Height="30" Margin="5" Grid.Row="3" Grid.Column="3" VerticalAlignment="Center"/>
+
+            <!-- Number of Platforms -->
+            <TextBlock Text="Number of Platforms:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="4" Grid.Column="0"/>
+            <xctk:IntegerUpDown Name="StationPlatformsTextBox" Height="30" Margin="5" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center"/>
+
+            <!-- Number of Spl Platforms -->
+            <TextBlock Text="Number of Spl Platforms:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="4" Grid.Column="2"/>
+            <xctk:IntegerUpDown Name="NumberOfSplPlatformsTextBox" Height="30" Margin="5" Grid.Row="4" Grid.Column="3" VerticalAlignment="Center"/>
+
+            <!-- Number of Station Entrances -->
+            <TextBlock Text="Number of Station Entrances:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="5" Grid.Column="0"/>
+            <xctk:IntegerUpDown Name="NumberOfStationEntrancesTextBox" Height="30" Margin="5" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center"/>
+
+            <!-- Number of Platform Bridges -->
+            <TextBlock Text="Number of Platform Bridges:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="5" Grid.Column="2"/>
+            <xctk:IntegerUpDown Name="NumberOfPlatformBridgesTextBox" Height="30" Margin="5" Grid.Row="5" Grid.Column="3" VerticalAlignment="Center"/>
+
+            <!-- Submit Button -->
+            <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="6" Grid.ColumnSpan="4" HorizontalAlignment="Center">
+                <Button Content="Save" Width="100" Height="30" Margin="5" Click="SaveStationInfoButton_Click"/>
+                <Button Content="Cancel" Width="100" Height="30" Margin="5" Click="CancelStationInfoButton_Click"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

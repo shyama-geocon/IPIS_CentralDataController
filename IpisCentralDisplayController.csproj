@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="helpers\FileJsonHelper.cs" />
+    <Compile Remove="helpers\FileJsonHelperAdapter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="icons\icon-backup.png" />
+    <None Remove="icons\icon-cap.png" />
+    <None Remove="icons\icon-help.png" />
+    <None Remove="icons\icon-lcd.png" />
+    <None Remove="icons\icon-media.png" />
+    <None Remove="icons\icon-reports.png" />
+    <None Remove="icons\icon-settings.png" />
+    <None Remove="icons\icon-speaker.png" />
+    <None Remove="icons\icon-train.png" />
+    <None Remove="images\inrLogo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.1" />
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
+    <PackageReference Include="MongoDB.Driver" Version="2.27.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="icons\icon-backup.png" />
+    <Resource Include="icons\icon-cap.png" />
+    <Resource Include="icons\icon-help.png" />
+    <Resource Include="icons\icon-lcd.png" />
+    <Resource Include="icons\icon-media.png" />
+    <Resource Include="icons\icon-reports.png" />
+    <Resource Include="icons\icon-settings.png" />
+    <Resource Include="icons\icon-speaker.png" />
+    <Resource Include="icons\icon-train.png" />
+    <Resource Include="images\inrLogo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+</Project>

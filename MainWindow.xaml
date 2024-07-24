@@ -15,7 +15,12 @@
         <views:MainViewModel/>
     </Window.DataContext>
     <Window.Resources>
+        <conv:IntToFontWeightConverter x:Key="IntToFontWeightConverter"/>
+        <conv:IntToFontStyleConverter x:Key="IntToFontStyleConverter"/>
+        <conv:IntToHorizontalAlignmentConverter x:Key="IntToHorizontalAlignmentConverter"/>
+        <conv:IntToVerticalAlignmentConverter x:Key="IntToVerticalAlignmentConverter"/>
         <conv:LanguageToFontFamilyConverter x:Key="languageToFontFamilyConverter"/>
+        <conv:UserRightsConverter x:Key="UserRightsConverter"/>
         <validation:PlatformNumberValidationRule x:Key="platformNumberValidationRule"/>
         <conv:ColorToBrushConverter x:Key="colorConverter"/>
         <conv:MacAddressConverter x:Key="MacAddressConverter"/>
@@ -70,6 +75,13 @@
                     <MenuItem Header="Refresh" Click="RefreshWorkspace_Click"/>
                 </MenuItem>
             </Menu>
+            <MenuItem Header="Platform-Devices">
+                <MenuItem Header="Export Mapping" Click="ExportMapping_Click"/>
+                <MenuItem Header="Import Mapping" Click="ImportMapping_Click"/>
+            </MenuItem>
+            <MenuItem Header="User">
+                <MenuItem Header="Logout" Click="Logout_Click"/>
+            </MenuItem>
 
             <MenuItem Header="Help">
                 <MenuItem Header="About"/>
@@ -120,7 +132,7 @@
             <TextBlock HorizontalAlignment="Center" Name="NtesStatus" Grid.Row="1" Grid.Column="5" Margin="5"/>
             <TextBlock HorizontalAlignment="Center" Name="DateTimeStatus" Grid.Row="1" Grid.Column="6" Margin="5"/>
         </Grid>
-        <TabControl Grid.Row="3">
+        <TabControl x:Name="tc_main" Grid.Row="3">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
                     <Setter Property="Width" Value="100"/>
@@ -947,154 +959,67 @@
                 </TabItem.Header>
                 <Grid Margin="10">
                     <TabControl TabStripPlacement="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        <!--<TabItem Header="Workspace Settings" Name="LocalSettingsTab" Width="160" Height="30">
+                        <TabItem Header="User Categories" Name="UserCategoriesTab" Width="160" Height="30">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="Workspace Management" FontWeight="Bold" FontSize="18" Margin="10"/>
-                            </Grid>
-                        </TabItem>-->
-                        <TabItem Header="Workspace Settings" Name="LocalSettingsTab" Width="160" Height="30">
-                            <Grid>
-                                <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="Workspace Management" FontWeight="Bold" FontSize="18" Margin="10"/>
+                                <TextBlock Text="User Categories" FontWeight="Bold" FontSize="18" Margin="10"/>
 
-                                <!--<StackPanel Grid.Row="1" Margin="10">
-                                    <TextBlock Text="Current Workspace Path:" FontWeight="Bold"/>
-                                    <TextBox Name="WorkspacePathTextBox" IsReadOnly="True" Text="{Binding WorkspacePath}" Margin="0,5,0,10"/>
-
-                                    <Button Content="Create New Workspace" Width="200" Height="30" Margin="0,5" Click="CreateNewWorkspace_Click"/>
-                                    <Button Content="Change Workspace" Width="200" Height="30" Margin="0,5" Click="ChangeWorkspace_Click"/>
-                                    <Button Content="Browse Workspace" Width="200" Height="30" Margin="0,5" Click="BrowseWorkspace_Click"/>
-                                </StackPanel>-->
-
-                                <GroupBox Grid.Row="2" Header="Workspace Files" Margin="10">
-                                    <Grid>
-                                        <ListView Name="WorkspaceFilesListView" ItemsSource="{Binding WorkspaceFiles}" Margin="5">
-                                            <ListView.View>
-                                                <GridView>
-                                                    <GridViewColumn Header="File Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
-                                                    <GridViewColumn Header="File Path" DisplayMemberBinding="{Binding FullName}" Width="400"/>
-                                                </GridView>
-                                            </ListView.View>
-                                        </ListView>
-                                    </Grid>
-                                </GroupBox>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="2">
+                                    <Button Content="Add" Width="100" Height="30" Margin="10" Click="AddCategory_Click"/>
+                                    <Button Content="Edit" Width="100" Height="30" Margin="10" Click="EditCategory_Click"/>
+                                    <Button Content="Delete" Width="100" Height="30" Margin="10" Click="DeleteCategory_Click"/>
+                                </StackPanel>
+                                <DataGrid Name="UserCategoriesDataGrid" AutoGenerateColumns="False" Grid.Row="1" Margin="10" ItemsSource="{Binding UserCategories}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="Auto" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="Rights" Binding="{Binding Rights, Converter={StaticResource UserRightsConverter}}" Width="*" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
                             </Grid>
                         </TabItem>
 
                         <TabItem Header="User Management" Name="UserManagementTab" Width="160" Height="30">
-                            <Grid Margin="10">
+                            <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
+                                <TextBlock Text="User Management" FontWeight="Bold" FontSize="18" Margin="10"/>
 
-                                <!-- Add User Button -->
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5" Grid.Row="0">
-                                    <Button Content="Add User" Width="100" Height="30" Margin="5" Click="AddUserButton_Click"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="2">
+                                    <Button Content="Add" Width="100" Height="30" Margin="10" Click="AddUser_Click"/>
+                                    <Button Content="Edit" Width="100" Height="30" Margin="10" Click="EditUser_Click"/>
+                                    <Button Content="Delete" Width="100" Height="30" Margin="10" Click="DeleteUser_Click"/>
                                 </StackPanel>
 
-                                <!-- User Table and Form -->
-                                <Grid Grid.Row="1" Margin="5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="3*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <!-- User Table -->
-                                    <DataGrid Name="UsersDataGrid" AutoGenerateColumns="False" Margin="5" Grid.Column="0">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                                            <DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="*"/>
-                                            <DataGridTextColumn Header="Designation" Binding="{Binding Designation}" Width="*"/>
-                                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="*"/>
-                                            <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedDate}" Width="*"/>
-                                            <DataGridTextColumn Header="Last Login" Binding="{Binding LastLogin}" Width="*"/>
-                                            <DataGridTemplateColumn Header="Active" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <CheckBox IsChecked="{Binding IsActive}" Click="ToggleActiveCheckBox_Click"/>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                            <DataGridTemplateColumn Header="Actions" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Button Content="Edit" Width="50" Height="25" Margin="2" Click="EditUserButton_Click"/>
-                                                            <Button Content="Delete" Width="50" Height="25" Margin="2" Click="DeleteUserButton_Click"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-
-                                    <!-- User Form -->
-                                    <Grid Margin="5" Grid.Column="1" Name="UserFormGrid" Visibility="Collapsed">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <TextBlock Text="User Form" FontWeight="Bold" FontSize="16" Margin="5" Grid.Row="0" Grid.ColumnSpan="2"/>
-                                        <TextBlock Text="Email:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="0"/>
-                                        <TextBox Name="EmailTextBox" Height="30" Margin="5" Grid.Row="1" Grid.Column="1"/>
-                                        <TextBlock Text="Name:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="2" Grid.Column="0"/>
-                                        <TextBox Name="NameTextBox" Height="30" Margin="5" Grid.Row="2" Grid.Column="1"/>
-                                        <TextBlock Text="Phone:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="3" Grid.Column="0"/>
-                                        <TextBox Name="PhoneTextBox" Height="30" Margin="5" Grid.Row="3" Grid.Column="1"/>
-                                        <TextBlock Text="Designation:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="4" Grid.Column="0"/>
-                                        <TextBox Name="DesignationTextBox" Height="30" Margin="5" Grid.Row="4" Grid.Column="1"/>
-                                        <TextBlock Text="Type:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="5" Grid.Column="0"/>
-                                        <ComboBox Name="TypeComboBox" Height="30" Margin="5" Grid.Row="5" Grid.Column="1">
-                                            <ComboBoxItem Content="Super Admin"/>
-                                            <ComboBoxItem Content="Admin"/>
-                                            <ComboBoxItem Content="Guest"/>
-                                        </ComboBox>
-                                        <TextBlock Text="Password:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="6" Grid.Column="0"/>
-                                        <TextBox Name="PasswordTextBox" Height="30" Margin="5" Grid.Row="6" Grid.Column="1"/>
-                                        <TextBlock Text="Active:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="7" Grid.Column="0"/>
-                                        <CheckBox Name="IsActiveCheckBox" Height="30" Margin="5" Grid.Row="7" Grid.Column="1"/>
-                                        <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="8" Grid.ColumnSpan="2">
-                                            <Button Content="Save" Width="100" Height="30" Margin="5" Click="SaveUserButton_Click"/>
-                                            <Button Content="Cancel" Width="100" Height="30" Margin="5" Click="CancelUserButton_Click"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Grid>
+                                <DataGrid Name="UsersDataGrid" AutoGenerateColumns="False" Grid.Row="1" Margin="10" ItemsSource="{Binding Users}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="*" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="Designation" Binding="{Binding Designation}" Width="*" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="Category" Binding="{Binding Category.Name}" Width="*" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="IsActive" Binding="{Binding IsActive}" Width="*" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedDate}" Width="*" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="Last Login" Binding="{Binding LastLogin}" Width="*" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
                             </Grid>
                         </TabItem>
 
                         <TabItem Header="Station Info" Name="StationInfoTab" Width="160" Height="30">
-                            <Grid Margin="10">
+                            <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-
-                                <StackPanel Margin="5" Grid.Row="0">
-                                    <TextBlock Text="Station Information" FontWeight="Bold" FontSize="16" Margin="5"/>
-                                </StackPanel>
+                                <TextBlock Text="Station Information" Grid.Row="0" FontWeight="Bold" FontSize="18" Margin="10"/>
 
                                 <!-- Station Info Form -->
                                 <Grid Margin="5" Grid.Row="1">
@@ -1183,176 +1108,317 @@
                         </TabItem>
 
                         <TabItem Header="Platforms-Devices" Name="PlatformDevicesTab" Width="160" Height="30">
-                            <Grid Margin="10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- ListView for Platforms -->
-                                <GroupBox Header="Platforms" Grid.Column="0" Margin="5">
-                                    <ListView Name="PlatformListView" Margin="5" SelectionChanged="PlatformListView_SelectionChanged">
-                                        <ListView.View>
-                                            <GridView>
-                                                <GridViewColumn Header="Number" DisplayMemberBinding="{Binding PlatformNumber}" Width="80"/>
-                                                <GridViewColumn Header="Type" DisplayMemberBinding="{Binding PlatformType}" Width="80"/>
-                                                <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}" Width="240"/>
-                                                <GridViewColumn Header="Subnet" DisplayMemberBinding="{Binding Subnet}" Width="120"/>
-                                            </GridView>
-                                        </ListView.View>
-                                    </ListView>
-                                </GroupBox>
-
-                                <!-- ListView for Devices -->
-                                <!--<GroupBox Header="Platform-Devices" Grid.Column="1" Margin="5">
-                                    <ListView Name="DeviceListView" Grid.Column="1" Margin="5" SelectionChanged="DeviceListView_SelectionChanged">
-                                        <ListView.View>
-                                            <GridView>
-                                                <GridViewColumn Header="Device Type" DisplayMemberBinding="{Binding DeviceType}" Width="120"/>
-                                                <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}" Width="240"/>
-                                                <GridViewColumn Header="IP Address" DisplayMemberBinding="{Binding IpAddress}" Width="120"/>
-                                                <GridViewColumn Header="Enabled" DisplayMemberBinding="{Binding IsEnabled}" Width="60"/>
-                                            </GridView>
-                                        </ListView.View>
-                                    </ListView>
-                                </GroupBox>-->
-                                <GroupBox Header="Platform-Devices" Grid.Column="1" Margin="5">
-                                    <ListView Name="DeviceListView" Grid.Column="1" Margin="5" SelectionChanged="DeviceListView_SelectionChanged">
-                                        <ListView.View>
-                                            <GridView>
-                                                <GridViewColumn Header="Device Type" DisplayMemberBinding="{Binding DeviceType}" Width="120"/>
-                                                <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}" Width="240"/>
-                                                <GridViewColumn Header="IP Address" DisplayMemberBinding="{Binding IpAddress}" Width="120"/>
-                                                <GridViewColumn Header="Enabled" DisplayMemberBinding="{Binding IsEnabled}" Width="60"/>
-                                            </GridView>
-                                        </ListView.View>
-                                        <ListView.Resources>
-                                            <Style TargetType="ListViewItem">
-                                                <Setter Property="ContextMenu">
-                                                    <Setter.Value>
-                                                        <ContextMenu>
-                                                            <MenuItem Header="Delete" Click="DeleteDeviceMenuItem_Click"/>
-                                                            <MenuItem Header="Option 1" Click="Option1MenuItem_Click"/>
-                                                            <MenuItem Header="Option 2" Click="Option2MenuItem_Click"/>
-                                                        </ContextMenu>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </ListView.Resources>
-                                        <ListView.ItemContainerStyle>
-                                            <Style TargetType="ListViewItem">
-                                                <Setter Property="BorderBrush" Value="Black"/>
-                                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                                            </Style>
-                                        </ListView.ItemContainerStyle>
-                                    </ListView>
-                                </GroupBox>
-
-                                <!-- StackPanel for Platform and Device Details -->
-                                <GroupBox Header="Add/Edit Platform-Device Details" Grid.Column="2" Margin="5">
-                                    <StackPanel Margin="5">
-                                        <!-- Platform Details -->
-                                        <GroupBox Header="Platform Details" Margin="5">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock Text="Platform Number:" VerticalAlignment="Center" Margin="5" Grid.Row="0" Grid.Column="0"/>
-                                                <TextBox Name="PlatformNumberTextBox" Height="24" Margin="5" VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="1" TextChanged="PlatformNumberTextBox_TextChanged">
-                                                    <!--<TextBox.Text>
-                                                        <Binding Path="PlatformNumber" UpdateSourceTrigger="PropertyChanged">
-                                                            <Binding.validationRules>
-                                                                <validation:PlatformNumberValidationRule/>
-                                                            </Binding.validationRules>
-                                                        </Binding>
-                                                    </TextBox.Text>-->
-                                                </TextBox>
-
-                                                <TextBlock Text="Platform Type:" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="0"/>
-                                                <ComboBox Name="PlatformTypeComboBox" Height="24" Margin="5" VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="1">
-                                                    <ComboBoxItem Content="Platform"/>
-                                                    <ComboBoxItem Content="Bridge"/>
-                                                    <ComboBoxItem Content="SpecialPlatform1A"/>
-                                                    <ComboBoxItem Content="SpecialPlatform10A"/>
-                                                    <ComboBoxItem Content="Concourse"/>
-                                                </ComboBox>
-
-                                                <TextBlock Text="Description:" VerticalAlignment="Center" Margin="5" Grid.Row="2" Grid.Column="0"/>
-                                                <TextBox Name="PlatformDescriptionTextBox" Height="24" Margin="5" VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1"/>
-
-                                                <TextBlock Text="Subnet:" VerticalAlignment="Center" Margin="5" Grid.Row="3" Grid.Column="0"/>
-                                                <TextBox Name="PlatformSubnetTextBox" Height="24" Margin="5" VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="1"/>
-
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Grid.Row="4" Grid.ColumnSpan="2">
-                                                    <Button Name="AddPlatformButton" Content="Add Platform" Height="30" Width="100" Margin="5" Click="AddPlatformButton_Click"/>
-                                                    <Button Name="UpdatePlatformButton" Content="Update Platform" Height="30" Width="100" Margin="5" Click="UpdatePlatformButton_Click"/>
-                                                    <Button Name="DeletePlatformButton" Content="Delete Platform" Height="30" Width="100" Margin="5" Click="DeletePlatformButton_Click"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </GroupBox>
-
-                                        <!-- Device Details -->
-                                        <GroupBox Header="Device Details" Margin="5">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock Text="Device Type:" VerticalAlignment="Center" Margin="5" Grid.Row="0" Grid.Column="0"/>
-                                                <ComboBox Name="DeviceTypeComboBox" Height="24" Margin="5" VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="1" SelectionChanged="DeviceTypeComboBox_SelectionChanged">
-                                                    <ComboBox.ItemsSource>
-                                                        <x:Array Type="{x:Type models:DeviceType}">
-                                                            <models:DeviceType>CDS</models:DeviceType>
-                                                            <models:DeviceType>PrimaryServer</models:DeviceType>
-                                                            <models:DeviceType>SecondaryServer</models:DeviceType>
-                                                            <models:DeviceType>PDC</models:DeviceType>
-                                                            <models:DeviceType>CGDB</models:DeviceType>
-                                                            <models:DeviceType>AGDB</models:DeviceType>
-                                                            <models:DeviceType>PFDB</models:DeviceType>
-                                                            <models:DeviceType>OVD</models:DeviceType>
-                                                            <models:DeviceType>IVD</models:DeviceType>
-                                                            <models:DeviceType>SLDB</models:DeviceType>
-                                                            <models:DeviceType>MLDB</models:DeviceType>
-                                                            <models:DeviceType>LED_TV</models:DeviceType>
-                                                            <models:DeviceType>NW_SW</models:DeviceType>
-                                                        </x:Array>
-                                                    </ComboBox.ItemsSource>
-                                                </ComboBox>
-
-                                                <TextBlock Text="IP Address:" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="0"/>
-                                                <TextBox Name="DeviceIpAddressTextBox" Height="24" Margin="5" VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="1"/>
-
-                                                <CheckBox Name="DeviceEnabledCheckBox" Content="Enabled" Margin="5" Grid.Row="2" Grid.ColumnSpan="2" IsChecked="True"/>
-
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Grid.Row="3" Grid.ColumnSpan="2">
-                                                    <Button Name="AddDeviceButton" Content="Add Device" Height="30" Width="100" Margin="5" Click="AddDeviceButton_Click"/>
-                                                    <Button Name="UpdateDeviceButton" Content="Update Device" Height="30" Width="100" Margin="5" Click="UpdateDeviceButton_Click"/>
-                                                    <Button Name="DeleteDeviceButton" Content="Delete Device" Height="30" Width="100" Margin="5" Click="DeleteDeviceButton_Click"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </GroupBox>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Platform and Device Management" FontWeight="Bold" FontSize="18" Margin="10" Grid.Row="0"/>
+                                <Grid Grid.Row="1" Margin="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <GroupBox Header="Platforms" Grid.Column="0" Margin="5">
+                                        <DataGrid Name="PlatformDataGrid" AutoGenerateColumns="False" Margin="5"
+                                              ItemsSource="{Binding Platforms}"
+                                              SelectedItem="{Binding SelectedPlatform}">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Number" Binding="{Binding PlatformNumber}" Width="80"/>
+                                                <DataGridTextColumn Header="Type" Binding="{Binding PlatformType}" Width="120"/>
+                                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="240"/>
+                                                <DataGridTextColumn Header="Subnet" Binding="{Binding Subnet}" Width="120"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                    <GroupBox Header="Platform-Devices" Grid.Column="1" Margin="5">
+                                        <DataGrid Name="DeviceDataGrid" AutoGenerateColumns="False" Margin="5"
+                                              ItemsSource="{Binding Devices}"
+                                              SelectedItem="{Binding SelectedDevice}">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Device Type" Binding="{Binding DeviceType}" Width="120"/>
+                                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="240"/>
+                                                <DataGridTextColumn Header="IP Address" Binding="{Binding IpAddress}" Width="120"/>
+                                                <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" Width="60"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                </Grid>
+                                <Grid Grid.Row="2" Margin="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                        <Button Name="AddPlatformButton" Content="Add Platform" Height="30" Width="100" Margin="5" Click="AddPlatformButton_Click"/>
+                                        <Button Name="EditPlatformButton" Content="Edit Platform" Height="30" Width="100" Margin="5" Click="EditPlatformButton_Click"/>
+                                        <Button Name="DeletePlatformButton" Content="Delete Platform" Height="30" Width="100" Margin="5" Click="DeletePlatformButton_Click"/>
                                     </StackPanel>
-                                </GroupBox>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                        <Button Name="AddDeviceButton" Content="Add Device" Height="30" Width="100" Margin="5" Click="AddDeviceButton_Click"/>
+                                        <Button Name="EditDeviceButton" Content="Edit Device" Height="30" Width="100" Margin="5" Click="EditDeviceButton_Click"/>
+                                        <Button Name="DeleteDeviceButton" Content="Delete Device" Height="30" Width="100" Margin="5" Click="DeleteDeviceButton_Click"/>
+                                    </StackPanel>
+                                </Grid>
                             </Grid>
                         </TabItem>
+                        
+                        <TabItem Header="Display Styles" Name="FontsTab" Width="160" Height="30">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Display Styles Management" FontWeight="Bold" FontSize="18" Margin="10"/>
+                                <GroupBox Grid.Row="1" Margin="2" Header="Display Styles">
+                                    <DataGrid Name="DisplayStylesDataGrid" AutoGenerateColumns="False" Margin="5" ItemsSource="{Binding DisplayStyles}" SelectedItem="{Binding SelectedStyle}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="S.No" Binding="{Binding Sno}" Width="50"/>
+                                            <DataGridTextColumn Header="Style Name" Binding="{Binding StyleName}" Width="100"/>
+                                            <DataGridComboBoxColumn Header="Language" SelectedItemBinding="{Binding Language}" 
+                                                ItemsSource="{x:Static models:RegionalLanguageEnum.Values}" Width="100"/>
+                                            <DataGridTextColumn Header="Font Size" Binding="{Binding FontSize}" Width="75"/>
+                                            <DataGridTextColumn Header="Font Weight" Binding="{Binding FontWeight}" Width="100"/>
+                                            <DataGridTextColumn Header="Font Style" Binding="{Binding FontStyle}" Width="100"/>
+                                            <DataGridTextColumn Header="Margin Top" Binding="{Binding MarginTop}" Width="75"/>
+                                            <DataGridTextColumn Header="Margin Left" Binding="{Binding MarginLeft}" Width="75"/>
+                                            <DataGridTextColumn Header="Alignment H" Binding="{Binding AlignmentH}" Width="100"/>
+                                            <DataGridTextColumn Header="Alignment V" Binding="{Binding AlignmentV}" Width="100"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                                <Grid Grid.Row="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <!--<GroupBox Grid.Column="0" Margin="2" Header="Settings-Trial">
+                                        <Grid Margin="2">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                            </Grid.ColumnDefinitions>
 
+                                            <TextBlock Text="Style Name" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Height="24" Text="{Binding SelectedStyle.StyleName, Mode=TwoWay}"/>
+
+                                            <TextBlock Text="Language" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <ComboBox Grid.Row="1" Grid.Column="1" Margin="2" Height="24"
+                              ItemsSource="{x:Static models:RegionalLanguageEnum.Values}"
+                              SelectedItem="{Binding SelectedStyle.Language, Mode=TwoWay}"/>
+
+                                            <TextBlock Text="Font Size" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <xctk:IntegerUpDown Grid.Row="2" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.FontSize, Mode=TwoWay}"/>
+
+                                            <TextBlock Text="Font Weight" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <ComboBox Grid.Row="3" Grid.Column="1" Margin="2" Height="24"
+                              SelectedItem="{Binding SelectedStyle.FontWeight, Mode=TwoWay}">
+                                                <ComboBoxItem Content="Normal" />
+                                                <ComboBoxItem Content="Bold" />
+                                                <ComboBoxItem Content="Thin" />
+                                                <ComboBoxItem Content="ExtraLight" />
+                                                <ComboBoxItem Content="Light" />
+                                                <ComboBoxItem Content="Medium" />
+                                                <ComboBoxItem Content="SemiBold" />
+                                                <ComboBoxItem Content="ExtraBold" />
+                                                <ComboBoxItem Content="Black" />
+                                            </ComboBox>
+
+                                            <TextBlock Text="Font Style" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <ComboBox Grid.Row="4" Grid.Column="1" Margin="2" Height="24"
+                              SelectedItem="{Binding SelectedStyle.FontStyle, Mode=TwoWay}">
+                                                <ComboBoxItem Content="Normal" />
+                                                <ComboBoxItem Content="Italic" />
+                                                <ComboBoxItem Content="Oblique" />
+                                            </ComboBox>
+
+                                            <TextBlock Text="Margin Top" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <xctk:IntegerUpDown Grid.Row="5" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.MarginTop, Mode=TwoWay}"/>
+
+                                            <TextBlock Text="Margin Left" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <xctk:IntegerUpDown Grid.Row="6" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.MarginLeft, Mode=TwoWay}"/>
+
+                                            <TextBlock Text="Alignment Horizontal" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <ComboBox Grid.Row="7" Grid.Column="1" Margin="2" Height="24"
+                              SelectedItem="{Binding SelectedStyle.AlignmentH, Mode=TwoWay}">
+                                                <ComboBoxItem Content="Left" />
+                                                <ComboBoxItem Content="Center" />
+                                                <ComboBoxItem Content="Right" />
+                                            </ComboBox>
+
+                                            <TextBlock Text="Alignment Vertical" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <ComboBox Grid.Row="8" Grid.Column="1" Margin="2" Height="24"
+                              SelectedItem="{Binding SelectedStyle.AlignmentV, Mode=TwoWay}">
+                                                <ComboBoxItem Content="Top" />
+                                                <ComboBoxItem Content="Center" />
+                                                <ComboBoxItem Content="Bottom" />
+                                            </ComboBox>
+
+                                            <Button Grid.Row="9" Grid.ColumnSpan="2" Content="Save" Margin="2" Height="30" Width="100" Command="{Binding SaveCommand}"/>
+                                        </Grid>
+                                    </GroupBox>-->
+                                    <GroupBox Grid.Column="0" Margin="2" Header="Settings-Trial">
+                                        <Grid Margin="2">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Style Name -->
+                                            <TextBlock Text="Style Name" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Height="24" Text="{Binding SelectedStyle.StyleName, Mode=TwoWay}"/>
+
+                                            <!-- Language -->
+                                            <TextBlock Text="Language" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <ComboBox Grid.Row="1" Grid.Column="1" Margin="2" Height="24"
+                  ItemsSource="{x:Static models:RegionalLanguageEnum.Values}"
+                  SelectedItem="{Binding SelectedStyle.Language, Mode=TwoWay}"/>
+
+                                            <!-- Font Size -->
+                                            <TextBlock Text="Font Size" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <xctk:IntegerUpDown Grid.Row="2" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.FontSize, Mode=TwoWay}"/>
+
+                                            <!-- Font Weight -->
+                                            <TextBlock Text="Font Weight" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <ComboBox Grid.Row="3" Grid.Column="1" Margin="2" Height="24"
+                  SelectedIndex="{Binding SelectedStyle.FontWeight, Mode=TwoWay}">
+                                                <ComboBoxItem Content="Normal" />
+                                                <ComboBoxItem Content="Bold" />
+                                                <ComboBoxItem Content="Thin" />
+                                                <ComboBoxItem Content="ExtraLight" />
+                                                <ComboBoxItem Content="Light" />
+                                                <ComboBoxItem Content="Medium" />
+                                                <ComboBoxItem Content="SemiBold" />
+                                                <ComboBoxItem Content="ExtraBold" />
+                                                <ComboBoxItem Content="Black" />
+                                            </ComboBox>
+
+                                            <!-- Font Style -->
+                                            <TextBlock Text="Font Style" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <ComboBox Grid.Row="4" Grid.Column="1" Margin="2" Height="24"
+                  SelectedIndex="{Binding SelectedStyle.FontStyle, Mode=TwoWay}">
+                                                <ComboBoxItem Content="Normal" />
+                                                <ComboBoxItem Content="Italic" />
+                                                <ComboBoxItem Content="Oblique" />
+                                            </ComboBox>
+
+                                            <!-- Margin Top -->
+                                            <TextBlock Text="Margin Top" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <xctk:IntegerUpDown Grid.Row="5" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.MarginTop, Mode=TwoWay}"/>
+
+                                            <!-- Margin Left -->
+                                            <TextBlock Text="Margin Left" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <xctk:IntegerUpDown Grid.Row="6" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.MarginLeft, Mode=TwoWay}"/>
+
+                                            <!-- Alignment Horizontal -->
+                                            <TextBlock Text="Alignment Horizontal" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <ComboBox Grid.Row="7" Grid.Column="1" Margin="2" Height="24"
+                  SelectedIndex="{Binding SelectedStyle.AlignmentH, Mode=TwoWay}">
+                                                <ComboBoxItem Content="Left" />
+                                                <ComboBoxItem Content="Center" />
+                                                <ComboBoxItem Content="Right" />
+                                            </ComboBox>
+
+                                            <!-- Alignment Vertical -->
+                                            <TextBlock Text="Alignment Vertical" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                            <ComboBox Grid.Row="8" Grid.Column="1" Margin="2" Height="24"
+                  SelectedIndex="{Binding SelectedStyle.AlignmentV, Mode=TwoWay}">
+                                                <ComboBoxItem Content="Top" />
+                                                <ComboBoxItem Content="Center" />
+                                                <ComboBoxItem Content="Bottom" />
+                                            </ComboBox>
+
+                                            <!-- Save Button -->
+                                            <Button Grid.Row="9" Grid.ColumnSpan="2" Content="Save" Margin="2" Height="30" Width="100" Command="{Binding SaveCommand}"/>
+                                        </Grid>
+                                    </GroupBox>
+
+                                    <GroupBox Grid.Column="1" Margin="2" Header="Simulated Display">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid Grid.Row="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="2*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Test Text" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Height="24" x:Name="tb_text_bmp" Text="{Binding SelectedStyle.TestString, Mode=TwoWay}" VerticalContentAlignment="Center"/>
+                                            </Grid>
+                                            <Canvas Grid.Row="1" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"  RenderOptions.EdgeMode="Aliased" x:Name="lb_canvas_bmp" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#000000" Width="128" Height="16">
+                                                <Canvas.RenderTransform>
+                                                    <ScaleTransform ScaleX="4" ScaleY="4"/>
+                                                </Canvas.RenderTransform>
+                                                <Canvas.RenderTransformOrigin>
+                                                    <Point X="0.5" Y="0.5"/>
+                                                </Canvas.RenderTransformOrigin>
+                                                <TextBlock Grid.Row="0" Grid.Column="0" x:Name="tb_canvas_bmp"
+                                                           Background="Transparent" Foreground="#FF0000"
+                                                   FontSize="{Binding SelectedStyle.FontSize, Mode=TwoWay}" Width="128" 
+                                                   FontFamily="{Binding SelectedStyle.Font, Mode=TwoWay}" 
+                                                   FontWeight="{Binding SelectedStyle.FontWeight, Converter={StaticResource IntToFontWeightConverter}}"
+                                                   FontStyle="{Binding SelectedStyle.FontStyle, Converter={StaticResource IntToFontStyleConverter}}"
+                                                   Text="{Binding ElementName=tb_text_bmp, Path=Text}"
+                                                   TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"
+                                                   TextWrapping="Wrap" 
+                                                   Canvas.Top="{Binding SelectedStyle.MarginTop, Mode=TwoWay}" 
+                                                   Canvas.Left="{Binding SelectedStyle.MarginLeft, Mode=TwoWay}"
+                                                   VerticalAlignment="{Binding SelectedStyle.AlignmentV, Converter={StaticResource IntToVerticalAlignmentConverter}, Mode=TwoWay}"
+                                                   HorizontalAlignment="{Binding SelectedStyle.AlignmentH, Converter={StaticResource IntToHorizontalAlignmentConverter}, Mode=TwoWay}">
+                                                </TextBlock>
+                                                <!--<TextBlock Grid.Row="0" Grid.Column="0" x:Name="tb_canvas_bmp" HorizontalAlignment="Center"
+                                                    FontSize="{Binding ElementName=ud_fontsize_bmp, Path=Value}" Width="64" FontFamily="#Arial" 
+                                                    Height="16" Text="{Binding ElementName=tb_text_bmp, Path=Text}"
+                                                    TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"
+                                                    TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" Background="Transparent" Foreground="#FF0000"
+                                                    Canvas.Top="{Binding ElementName=ud_top, Path=Value}" Canvas.Left="{Binding ElementName=ud_left, Path=Value}">
+                                                    <TextBlock.FontFamily>
+                                                        <Binding ElementName="cb_font_bmp" Path="SelectedItem" />
+                                                    </TextBlock.FontFamily>
+                                                    <TextBlock.FontWeight>
+                                                        <Binding ElementName="cb_fontweight_bmp" Path="SelectedItem" />
+                                                    </TextBlock.FontWeight>
+                                                </TextBlock>-->
+                                                <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Stretch="Fill" x:Name="img_canvas_bmp" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="{Binding ElementName=ud_img_w, Path=Value}" Height="{Binding ElementName=ud_img_h, Path=Value}"
+                                                    Canvas.Top="{Binding ElementName=ud_img_top, Path=Value}" Canvas.Left="{Binding ElementName=ud_img_left, Path=Value}"/>
+                                            </Canvas>
+                                        </Grid>
+                                    </GroupBox>
+                                </Grid>
+                            </Grid>
+                        </TabItem>
+                        <!--<TabItem Header="Display Formats" Name="DisplaysTab" Width="160" Height="30">
+                            <TextBlock Text="Display Settings Content" Margin="10"/>
+                        </TabItem>-->
                         <TabItem Header="RMS Server" Name="RMSServerTab" Width="160" Height="30">
                             <Grid Margin="10">
                                 <Grid.RowDefinitions>
@@ -1411,174 +1477,7 @@
                                 </Grid>
                             </Grid>
                         </TabItem>
-                        <TabItem Header="Display Fonts" Name="FontsTab" Width="160" Height="30">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="Display Font Management" FontWeight="Bold" FontSize="18" Margin="10"/>
-                                <GroupBox Grid.Row="1" Margin="2" Header="Display Styles">
-                                    <DataGrid Name="DisplayStylesDataGrid" AutoGenerateColumns="False" Margin="5" ItemsSource="{Binding DisplayStyles}">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="S.No" Binding="{Binding Sno}" Width="50"/>
-                                            <DataGridTextColumn Header="Style Name" Binding="{Binding StyleName}" Width="100"/>
-                                            <DataGridComboBoxColumn Header="Language" SelectedItemBinding="{Binding Language}" 
-                                                ItemsSource="{x:Static models:RegionalLanguageEnum.Values}" Width="100"/>
-                                            <DataGridTextColumn Header="Font Size" Binding="{Binding FontSize}" Width="75"/>
-                                            <DataGridTextColumn Header="Font Weight" Binding="{Binding FontWeight}" Width="100"/>
-                                            <DataGridTextColumn Header="Font Style" Binding="{Binding FontStyle}" Width="100"/>
-                                            <DataGridTextColumn Header="Margin Top" Binding="{Binding MarginTop}" Width="75"/>
-                                            <DataGridTextColumn Header="Margin Left" Binding="{Binding MarginLeft}" Width="75"/>
-                                            <DataGridTextColumn Header="Alignment H" Binding="{Binding AlignmentH}" Width="100"/>
-                                            <DataGridTextColumn Header="Alignment V" Binding="{Binding AlignmentV}" Width="100"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </GroupBox>
-                                <Grid Grid.Row="2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <GroupBox Grid.Column="0" Margin="2" Header="Settings-Trial">
-                                        <Grid Margin="2">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="2*"/>
-                                            </Grid.ColumnDefinitions>
 
-                                            <!-- Style Name -->
-                                            <TextBlock Text="Style Name" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Height="24" Text="{Binding SelectedStyle.StyleName, Mode=TwoWay}"/>
-
-                                            <!-- Language -->
-                                            <TextBlock Text="Language" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <ComboBox Grid.Row="1" Grid.Column="1" Margin="2" Height="24"
-                              ItemsSource="{x:Static models:RegionalLanguageEnum.Values}"
-                              SelectedItem="{Binding SelectedStyle.Language, Mode=TwoWay}"/>
-
-                                            <!-- Font Size -->
-                                            <TextBlock Text="Font Size" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <xctk:IntegerUpDown Grid.Row="2" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.FontSize, Mode=TwoWay}"/>
-
-                                            <!-- Font Weight -->
-                                            <TextBlock Text="Font Weight" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <ComboBox Grid.Row="3" Grid.Column="1" Margin="2" Height="24"
-                              SelectedItem="{Binding SelectedStyle.FontWeight, Mode=TwoWay}">
-                                                <ComboBoxItem Content="Normal" />
-                                                <ComboBoxItem Content="Bold" />
-                                                <ComboBoxItem Content="Thin" />
-                                                <ComboBoxItem Content="ExtraLight" />
-                                                <ComboBoxItem Content="Light" />
-                                                <ComboBoxItem Content="Medium" />
-                                                <ComboBoxItem Content="SemiBold" />
-                                                <ComboBoxItem Content="ExtraBold" />
-                                                <ComboBoxItem Content="Black" />
-                                            </ComboBox>
-
-                                            <!-- Font Style -->
-                                            <TextBlock Text="Font Style" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <ComboBox Grid.Row="4" Grid.Column="1" Margin="2" Height="24"
-                              SelectedItem="{Binding SelectedStyle.FontStyle, Mode=TwoWay}">
-                                                <ComboBoxItem Content="Normal" />
-                                                <ComboBoxItem Content="Italic" />
-                                                <ComboBoxItem Content="Oblique" />
-                                            </ComboBox>
-
-                                            <!-- Margin Top -->
-                                            <TextBlock Text="Margin Top" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <xctk:IntegerUpDown Grid.Row="5" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.MarginTop, Mode=TwoWay}"/>
-
-                                            <!-- Margin Left -->
-                                            <TextBlock Text="Margin Left" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <xctk:IntegerUpDown Grid.Row="6" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.MarginLeft, Mode=TwoWay}"/>
-
-                                            <!-- Alignment Horizontal -->
-                                            <TextBlock Text="Alignment Horizontal" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <ComboBox Grid.Row="7" Grid.Column="1" Margin="2" Height="24"
-                              SelectedItem="{Binding SelectedStyle.AlignmentH, Mode=TwoWay}">
-                                                <ComboBoxItem Content="Left" />
-                                                <ComboBoxItem Content="Center" />
-                                                <ComboBoxItem Content="Right" />
-                                            </ComboBox>
-
-                                            <!-- Alignment Vertical -->
-                                            <TextBlock Text="Alignment Vertical" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <ComboBox Grid.Row="8" Grid.Column="1" Margin="2" Height="24"
-                              SelectedItem="{Binding SelectedStyle.AlignmentV, Mode=TwoWay}">
-                                                <ComboBoxItem Content="Top" />
-                                                <ComboBoxItem Content="Center" />
-                                                <ComboBoxItem Content="Bottom" />
-                                            </ComboBox>
-
-                                            <!-- Save Button -->
-                                            <Button Grid.Row="9" Grid.ColumnSpan="2" Content="Save" Margin="2" Height="30" Width="100" Command="{Binding SaveCommand}"/>
-                                        </Grid>
-                                    </GroupBox>
-                                    <GroupBox Grid.Column="1" Margin="2" Header="Simulated Display">
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="*"/>
-                                            </Grid.RowDefinitions>
-                                            <Grid Grid.Row="0">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="2*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="Test Text" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                                <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Height="24" x:Name="tb_text_bmp" Text="Hello" VerticalContentAlignment="Center"/>
-                                            </Grid>
-                                            <Canvas Grid.Row="1" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"  RenderOptions.EdgeMode="Aliased" x:Name="lb_canvas_bmp" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#000000" Width="64" Height="16">
-                                                <Canvas.RenderTransform>
-                                                    <ScaleTransform ScaleX="8" ScaleY="8"/>
-                                                </Canvas.RenderTransform>
-                                                <Canvas.RenderTransformOrigin>
-                                                    <Point X="0.5" Y="0.5"/>
-                                                </Canvas.RenderTransformOrigin>
-                                                <TextBlock Grid.Row="0" Grid.Column="0" x:Name="tb_canvas_bmp" HorizontalAlignment="Center"
-                                                    FontSize="{Binding ElementName=ud_fontsize_bmp, Path=Value}" Width="64" FontFamily="#Arial" 
-                                                    Height="16" Text="{Binding ElementName=tb_text_bmp, Path=Text}"
-                                                    TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"
-                                                    TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" Background="Transparent" Foreground="#FF0000"
-                                                    Canvas.Top="{Binding ElementName=ud_top, Path=Value}" Canvas.Left="{Binding ElementName=ud_left, Path=Value}">
-                                                    <!--<TextBlock.FontFamily>
-                                                        <Binding ElementName="cb_font_bmp" Path="SelectedItem" />
-                                                    </TextBlock.FontFamily>-->
-                                                    <TextBlock.FontWeight>
-                                                        <Binding ElementName="cb_fontweight_bmp" Path="SelectedItem" />
-                                                    </TextBlock.FontWeight>
-                                                </TextBlock>
-                                                <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Stretch="Fill" x:Name="img_canvas_bmp" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="{Binding ElementName=ud_img_w, Path=Value}" Height="{Binding ElementName=ud_img_h, Path=Value}"
-                                                    Canvas.Top="{Binding ElementName=ud_img_top, Path=Value}" Canvas.Left="{Binding ElementName=ud_img_left, Path=Value}"/>
-                                            </Canvas>
-                                        </Grid>
-                                    </GroupBox>
-                                </Grid>
-                            </Grid>
-                        </TabItem>
-                        <TabItem Header="Display Formats" Name="DisplaysTab" Width="160" Height="30">
-                            <TextBlock Text="Display Settings Content" Margin="10"/>
-                            <!-- Placeholder for Local Settings content -->
-                        </TabItem>
-                        <TabItem Header="New Setup" Name="NewSetupTab" Width="160" Height="30">
-                            <TextBlock Text="New Setup Content" Margin="10"/>
-                            <!-- Placeholder for New Setup content -->
-                        </TabItem>
                     </TabControl>
                 </Grid>
             </TabItem>

@@ -8,6 +8,7 @@ namespace IpisCentralDisplayController.models
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
         public DeviceType DeviceType { get; set; }
+        public string Description { get; set; }
         public string IpAddress { get; set; }
         public bool Status { get; set; }
         public DateTime LastStatusWhen { get; set; }

@@ -1,0 +1,96 @@
+﻿<Window x:Class="IpisCentralDisplayController.views.UserCategoryDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="clr-namespace:IpisCentralDisplayController.models"
+        Title="User Category" Height="600" Width="400" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Category Name" VerticalAlignment="Center" Margin="10"/>
+            <TextBox Name="CategoryNameTextBox" VerticalContentAlignment="Center" Grid.Column="1" Height="30" Margin="10" />
+        </Grid>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="10">
+            <CheckBox Name="SelectAllCheckBox" Content="Select All" VerticalAlignment="Center" Margin="5" Checked="SelectAllCheckBox_Checked" Unchecked="SelectAllCheckBox_Unchecked"/>
+            <ComboBox Name="PredefinedConfigComboBox" VerticalAlignment="Center" Width="150" Margin="5" SelectionChanged="PredefinedConfigComboBox_SelectionChanged">
+                <ComboBoxItem Content="Select Preset" IsSelected="True"/>
+                <ComboBoxItem Content="Admin"/>
+                <ComboBoxItem Content="Guest"/>
+                <ComboBoxItem Content="IPIS Operator"/>
+            </ComboBox>
+        </StackPanel>
+
+        <TextBlock Text="User Rights" Grid.Row="2" Grid.Column="0" Margin="10"/>
+        <ListBox Name="RightsListBox" Grid.Row="2" Grid.Column="0" Margin="10" SelectionMode="Multiple">
+            <ListBox.ItemsSource>
+                <x:Array Type="{x:Type models:UserRights}">
+                    <models:UserRights>WorkspaceCreate</models:UserRights>
+                    <models:UserRights>WorkspaceUpdate</models:UserRights>
+                    <models:UserRights>WorkspaceDelete</models:UserRights>
+                    <models:UserRights>UserCategoriesCreate</models:UserRights>
+                    <models:UserRights>UserCategoriesRead</models:UserRights>
+                    <models:UserRights>UserCategoriesUpdate</models:UserRights>
+                    <models:UserRights>UserCategoriesDelete</models:UserRights>
+                    <models:UserRights>UserCreate</models:UserRights>
+                    <models:UserRights>UserRead</models:UserRights>
+                    <models:UserRights>UserUpdate</models:UserRights>
+                    <models:UserRights>UserDelete</models:UserRights>
+                    <models:UserRights>StationInfoCreate</models:UserRights>
+                    <models:UserRights>StationInfoRead</models:UserRights>
+                    <models:UserRights>StationInfoUpdate</models:UserRights>
+                    <models:UserRights>DisplaysCreate</models:UserRights>
+                    <models:UserRights>DisplaysRead</models:UserRights>
+                    <models:UserRights>DisplaysUpdate</models:UserRights>
+                    <models:UserRights>DisplaysDelete</models:UserRights>
+                    <models:UserRights>NetworkConfigurationCreate</models:UserRights>
+                    <models:UserRights>NetworkConfigurationRead</models:UserRights>
+                    <models:UserRights>NetworkConfigurationUpdate</models:UserRights>
+                    <models:UserRights>NetworkConfigurationDelete</models:UserRights>
+                    <models:UserRights>TrainInfoCreate</models:UserRights>
+                    <models:UserRights>TrainInfoRead</models:UserRights>
+                    <models:UserRights>TrainInfoUpdate</models:UserRights>
+                    <models:UserRights>TrainInfoDelete</models:UserRights>
+                    <models:UserRights>SoundsRecord</models:UserRights>
+                    <models:UserRights>SoundsPlay</models:UserRights>
+                    <models:UserRights>SoundsDelete</models:UserRights>
+                    <models:UserRights>PlaylistCreate</models:UserRights>
+                    <models:UserRights>PlaylistRead</models:UserRights>
+                    <models:UserRights>PlaylistUpdate</models:UserRights>
+                    <models:UserRights>PlaylistDelete</models:UserRights>
+                    <models:UserRights>RMSServerSettingsCreate</models:UserRights>
+                    <models:UserRights>RMSServerSettingsRead</models:UserRights>
+                    <models:UserRights>RMSServerSettingsUpdate</models:UserRights>
+                    <models:UserRights>RMSServerOperate</models:UserRights>
+                    <models:UserRights>MediaCreate</models:UserRights>
+                    <models:UserRights>MediaRead</models:UserRights>
+                    <models:UserRights>MediaUpdate</models:UserRights>
+                    <models:UserRights>MediaDelete</models:UserRights>
+                    <models:UserRights>ReportsCreate</models:UserRights>
+                    <models:UserRights>ReportsRead</models:UserRights>
+                    <models:UserRights>ReportsDelete</models:UserRights>
+                    <models:UserRights>BackupCreate</models:UserRights>
+                    <models:UserRights>BackupDelete</models:UserRights>
+                    <models:UserRights>SystemRestoreOperate</models:UserRights>
+                </x:Array>
+            </ListBox.ItemsSource>
+        </ListBox>
+
+        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button Content="Save" Width="100" Height="30" Margin="5" Click="SaveButton_Click"/>
+            <Button Content="Cancel" Width="100" Height="30" Margin="5" Click="CancelButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

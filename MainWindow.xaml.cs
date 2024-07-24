@@ -33,6 +33,7 @@ using FontFamily = System.Windows.Media.FontFamily;
 using IpisCentralDisplayController.Models;
 using System.IO.Compression;
 using IpisCentralDisplayController.custom;
+using System.ComponentModel;
 //using System.Windows.Forms;
 
 namespace IpisCentralDisplayController
@@ -223,6 +224,7 @@ namespace IpisCentralDisplayController
 
         private string _workspacePath;
         private readonly UserCategoryManager _userCategoryManager;
+
         private readonly UserManager _userManager;
         private readonly StationInfoManager _stationInfoManager;
         private PlatformDeviceManager _platformDeviceManager;
@@ -375,8 +377,11 @@ namespace IpisCentralDisplayController
 
             //Trains = new ObservableCollection<TrainViewModel>();
             //_viewModel = (TrainListViewModel)DataContext;
+            
 
             _mainViewModel = new MainViewModel();
+            _mainViewModel.LoadUserCategories(_userCategoryManager.LoadUserCategories());
+            _mainViewModel.LoadUsers(_userManager.LoadUsers());
             DataContext = _mainViewModel;
             Loaded += MainWindow_Loaded;
             //Loaded += onWindowLoaded;
@@ -386,9 +391,16 @@ namespace IpisCentralDisplayController
 
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            WorkspaceManager.DeleteWorkspace();
+            //WorkspaceManager.DeleteWorkspace();
             CheckWorkspacePath();
             PopulateStationInfo();
             LoadPlatforms();
@@ -416,6 +428,33 @@ namespace IpisCentralDisplayController
             }
 
             //await _viewModel.FetchAndDisplayTrains();
+        }
+
+        private void Logout_Click(object sender, RoutedEventArgs e)
+        {
+            Logout();
+        }
+
+        private void Logout()
+        {
+            tc_main.SelectedIndex = 0;
+            var loginWindow = new LoginWindow(_userManager);
+            bool? loginResult = loginWindow.ShowDialog();
+
+            if (loginResult == true)
+            {
+                // Proceed with further initialization only after successful login
+                CheckAndPromptForStationInfo();
+                PopulateStatusFields();
+
+                // await _viewModel.FetchAndDisplayTrains();
+                // Your further initialization code here
+            }
+            else
+            {
+                // Handle login cancellation or failure
+                this.Close(); // Close the MainWindow if login is not successful
+            }
         }
 
         //Workspace Related Code
@@ -742,6 +781,8 @@ namespace IpisCentralDisplayController
             return localTime;
         }
 
+
+        //User Categories
         private void InitializeUserCategories()
         {
             var categories = _userCategoryManager.LoadUserCategories();
@@ -769,34 +810,127 @@ namespace IpisCentralDisplayController
             UpdateStatusBar("Default admin category created.");
         }
 
+        private void AddCategory_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new UserCategoryDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                _userCategoryManager.AddUserCategory(dialog.UserCategory);
+                _mainViewModel.UserCategories.Add(dialog.UserCategory);
+            }
+        }
+
+        private void EditCategory_Click(object sender, RoutedEventArgs e)
+        {
+            if (UserCategoriesDataGrid.SelectedItem is UserCategory selectedCategory)
+            {
+                var dialog = new UserCategoryDialog(selectedCategory);
+                if (dialog.ShowDialog() == true)
+                {
+                    _userCategoryManager.UpdateUserCategory(dialog.UserCategory);
+                    int index = _mainViewModel.UserCategories.IndexOf(selectedCategory);
+                    _mainViewModel.UserCategories[index] = dialog.UserCategory;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a category to edit.", "Edit Category", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void DeleteCategory_Click(object sender, RoutedEventArgs e)
+        {
+            if (UserCategoriesDataGrid.SelectedItem is UserCategory selectedCategory)
+            {
+                var result = MessageBox.Show($"Are you sure you want to delete the category '{selectedCategory.Name}'?", "Delete Category", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    _userCategoryManager.DeleteUserCategory(selectedCategory.Name);
+                    _mainViewModel.UserCategories.Remove(selectedCategory);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a category to delete.", "Delete Category", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        // User Management
+        private void AddUser_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new UserDialog(_userCategoryManager);
+            if (dialog.ShowDialog() == true)
+            {
+                _userManager.AddUser(dialog.User);
+                _mainViewModel.Users.Add(dialog.User);
+            }
+        }
+
+        private void EditUser_Click(object sender, RoutedEventArgs e)
+        {
+            if (UsersDataGrid.SelectedItem is User selectedUser)
+            {
+                var dialog = new UserDialog(_userCategoryManager, selectedUser);
+                if (dialog.ShowDialog() == true)
+                {
+                    _userManager.UpdateUser(dialog.User);
+                    int index = _mainViewModel.Users.IndexOf(selectedUser);
+                    _mainViewModel.Users[index] = dialog.User;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a user to edit.", "Edit User", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void DeleteUser_Click(object sender, RoutedEventArgs e)
+        {
+            if (UsersDataGrid.SelectedItem is User selectedUser)
+            {
+                var result = MessageBox.Show($"Are you sure you want to delete the user '{selectedUser.Email}'?", "Delete User", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    _userManager.DeleteUser(selectedUser.Email);
+                    _mainViewModel.Users.Remove(selectedUser);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a user to delete.", "Delete User", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+
         private void CheckAndCreateDisplayStyles()
         {
+            _displayStyleManager.DeleteAllDisplayStyles();
             var displayStyles = _displayStyleManager.LoadDisplayStyles();
 
             var defaultStyles = new List<DisplayStyle>
             {
-                new DisplayStyle { StyleName = "English Default", Language = RegionalLanguage.ENGLISH, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Arial"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Hindi Default", Language = RegionalLanguage.HINDI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Assamese Default", Language = RegionalLanguage.ASSAMESE, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Bangla Default", Language = RegionalLanguage.BANGLA, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Bodo Default", Language = RegionalLanguage.BODO, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Dogri Default", Language = RegionalLanguage.DOGRI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Gujarati Default", Language = RegionalLanguage.GUJARATI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Kannada Default", Language = RegionalLanguage.KANNADA, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Kashmiri Default", Language = RegionalLanguage.KASHMIRI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Arial"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Konkani Default", Language = RegionalLanguage.KONKANI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Malayalam Default", Language = RegionalLanguage.MALAYALAM, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Marathi Default", Language = RegionalLanguage.MARATHI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Manipuri Default", Language = RegionalLanguage.MANIPURI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Nepali Default", Language = RegionalLanguage.NEPALI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Odia Default", Language = RegionalLanguage.ODIA, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Punjabi Default", Language = RegionalLanguage.PUNJABI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Sanskrit Default", Language = RegionalLanguage.SANSKRIT, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Santhali Default", Language = RegionalLanguage.SANTHALI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Sindhi Default", Language = RegionalLanguage.SINDHI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Arial"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Tamil Default", Language = RegionalLanguage.TAMIL, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Telugu Default", Language = RegionalLanguage.TELUGU, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center },
-                new DisplayStyle { StyleName = "Urdu Default", Language = RegionalLanguage.URDU, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Arial"), FontSize = 16, FontWeight = FontWeights.Normal, FontStyle = FontStyles.Normal, MarginTop = 0, MarginLeft = 0, AlignmentH = HorizontalAlignment.Center, AlignmentV = VerticalAlignment.Center }
+                new DisplayStyle { StyleName = "English Default", Language = RegionalLanguage.ENGLISH, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Arial"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Hindi Default", Language = RegionalLanguage.HINDI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Assamese Default", Language = RegionalLanguage.ASSAMESE, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Bangla Default", Language = RegionalLanguage.BANGLA, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Bodo Default", Language = RegionalLanguage.BODO, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Dogri Default", Language = RegionalLanguage.DOGRI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Gujarati Default", Language = RegionalLanguage.GUJARATI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Kannada Default", Language = RegionalLanguage.KANNADA, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Kashmiri Default", Language = RegionalLanguage.KASHMIRI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Arial"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Konkani Default", Language = RegionalLanguage.KONKANI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Malayalam Default", Language = RegionalLanguage.MALAYALAM, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Marathi Default", Language = RegionalLanguage.MARATHI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Manipuri Default", Language = RegionalLanguage.MANIPURI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Nepali Default", Language = RegionalLanguage.NEPALI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Odia Default", Language = RegionalLanguage.ODIA, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Punjabi Default", Language = RegionalLanguage.PUNJABI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Sanskrit Default", Language = RegionalLanguage.SANSKRIT, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Santhali Default", Language = RegionalLanguage.SANTHALI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Sindhi Default", Language = RegionalLanguage.SINDHI, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Arial"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Tamil Default", Language = RegionalLanguage.TAMIL, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Telugu Default", Language = RegionalLanguage.TELUGU, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Nirmala UI"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 },
+                new DisplayStyle { StyleName = "Urdu Default", Language = RegionalLanguage.URDU, Font = new FontFamily(new Uri("pack://application:,,,/"), "./fonts/#Arial"), FontSize = 16, FontWeight = 0, FontStyle = 0, MarginTop = 0, MarginLeft = 0, AlignmentH = 1, AlignmentV = 1 }
             };
 
             foreach (var style in defaultStyles)
@@ -828,14 +962,7 @@ namespace IpisCentralDisplayController
         private void CheckAndPromptForAdminUser()
         {
             //_userManager.DeleteAllUsers();
-            _userManager.CheckAndPromptForAdminUser();
-        }
-
-        private void AddUserButton_Click(object sender, RoutedEventArgs e)
-        {
-            var userCategoryManager = new UserCategoryManager(new SettingsJsonHelperAdapter());
-            var userWindow = new UserWindow(_userManager, userCategoryManager);
-            userWindow.ShowDialog();
+            _userManager.CheckAndPromptForAdminUser(_userCategoryManager, _mainViewModel);
         }
 
         private void CheckAndPromptForStationInfo()
@@ -895,216 +1022,391 @@ namespace IpisCentralDisplayController
             }
         }
 
+        //private void LoadPlatforms()
+        //{
+        //    PlatformListView.ItemsSource = _platformDeviceManager.CurrentPlatformInfo;
+        //}
+
+        //private void PlatformListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        //{
+        //    if (PlatformListView.SelectedItem is Platform selectedPlatform)
+        //    {
+        //        PlatformNumberTextBox.Text = selectedPlatform.PlatformNumber.ToString();
+        //        PlatformTypeComboBox.SelectedItem = selectedPlatform.PlatformType.ToString();
+        //        PlatformDescriptionTextBox.Text = selectedPlatform.Description;
+        //        PlatformSubnetTextBox.Text = selectedPlatform.Subnet;
+        //        DeviceListView.ItemsSource = selectedPlatform.Devices;
+        //    }
+        //}
+
+        //private void DeviceListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        //{
+        //    if (DeviceListView.SelectedItem is Device selectedDevice)
+        //    {
+        //        DeviceTypeComboBox.SelectedItem = selectedDevice.DeviceType.ToString();
+        //        DeviceIpAddressTextBox.Text = selectedDevice.IpAddress;
+        //        DeviceEnabledCheckBox.IsChecked = selectedDevice.IsEnabled;
+        //    }
+        //}
+
+        //private void AddPlatformButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var platformTypeComboBoxItem = PlatformTypeComboBox.SelectedItem as ComboBoxItem;
+        //    string platformTypeString = platformTypeComboBoxItem?.Content.ToString();
+
+        //    if (!Enum.TryParse(typeof(PlatformType), platformTypeString, out var platformTypeEnum))
+        //    {
+        //        MessageBox.Show("Invalid platform type selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        return;
+        //    }
+
+        //    string platformNumber = PlatformNumberTextBox.Text;
+        //    var existingPlatform = _platformDeviceManager.CurrentPlatformInfo.FirstOrDefault(p => p.PlatformNumber == platformNumber);
+
+        //    if (existingPlatform != null)
+        //    {
+        //        MessageBox.Show("Platform with this number already exists.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        return;
+        //    }
+
+        //    var newPlatform = new Platform
+        //    {
+        //        PlatformNumber = platformNumber, // Treat PlatformNumber as string
+        //        PlatformType = (PlatformType)platformTypeEnum,
+        //        Description = PlatformDescriptionTextBox.Text,
+        //        Subnet = PlatformSubnetTextBox.Text,
+        //        Devices = new System.Collections.Generic.List<Device>()
+        //    };
+        //    _platformDeviceManager.AddPlatform(newPlatform);
+        //    LoadPlatforms();
+        //}
+
+        //private void UpdatePlatformButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (PlatformListView.SelectedItem is Platform selectedPlatform)
+        //    {
+        //        var platformTypeComboBoxItem = PlatformTypeComboBox.SelectedItem as ComboBoxItem;
+        //        string platformTypeString = platformTypeComboBoxItem?.Content.ToString();
+
+        //        if (!Enum.TryParse(typeof(PlatformType), platformTypeString, out var platformTypeEnum))
+        //        {
+        //            MessageBox.Show("Invalid platform type selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //            return;
+        //        }
+
+        //        string platformNumber = PlatformNumberTextBox.Text;
+        //        var existingPlatform = _platformDeviceManager.CurrentPlatformInfo.FirstOrDefault(p => p.PlatformNumber == platformNumber && p != selectedPlatform);
+
+        //        if (existingPlatform != null)
+        //        {
+        //            MessageBox.Show("Platform with this number already exists.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //            return;
+        //        }
+
+        //        var result = MessageBox.Show("Are you sure you want to update this platform?", "Confirm Update", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        //        if (result == MessageBoxResult.Yes)
+        //        {
+        //            selectedPlatform.PlatformNumber = platformNumber;
+        //            selectedPlatform.PlatformType = (PlatformType)platformTypeEnum;
+        //            selectedPlatform.Description = PlatformDescriptionTextBox.Text;
+        //            selectedPlatform.Subnet = PlatformSubnetTextBox.Text;
+        //            _platformDeviceManager.UpdatePlatform(selectedPlatform);
+        //            LoadPlatforms();
+        //        }
+        //    }
+        //}
+
+        //private void DeletePlatformButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (PlatformListView.SelectedItem is Platform selectedPlatform)
+        //    {
+        //        var result = MessageBox.Show("Are you sure you want to delete this platform?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        //        if (result == MessageBoxResult.Yes)
+        //        {
+        //            _platformDeviceManager.DeletePlatform(selectedPlatform.PlatformNumber);
+        //            LoadPlatforms();
+        //        }
+        //    }
+        //}
+
+
+        //private void AddDeviceButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (PlatformListView.SelectedItem is Platform selectedPlatform)
+        //    {
+        //        try
+        //        {
+        //            string ipAddress = DeviceIpAddressTextBox.Text;
+        //            if (selectedPlatform.Devices.Any(d => d.IpAddress == ipAddress))
+        //            {
+        //                MessageBox.Show("A device with the same IP address already exists on this platform.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //                return;
+        //            }
+
+        //            var newDevice = new Device
+        //            {
+        //                Id = selectedPlatform.Devices.Count > 0 ? selectedPlatform.Devices.Max(d => d.Id) + 1 : 1,
+        //                DeviceType = (DeviceType)DeviceTypeComboBox.SelectedItem,
+        //                IpAddress = ipAddress,
+        //                IsEnabled = DeviceEnabledCheckBox.IsChecked ?? true,
+        //                Created = DateTime.Now,
+        //                Updated = DateTime.Now
+        //            };
+
+        //            _platformDeviceManager.AddDevice(selectedPlatform.PlatformNumber, newDevice);
+        //            DeviceListView.ItemsSource = selectedPlatform.Devices;
+        //            MessageBox.Show("Device added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        }
+        //        catch (InvalidOperationException ex)
+        //        {
+        //            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        }
+        //    }
+        //}
+
+        //private void UpdateDeviceButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (PlatformListView.SelectedItem is Platform selectedPlatform && DeviceListView.SelectedItem is Device selectedDevice)
+        //    {
+        //        try
+        //        {
+        //            string ipAddress = DeviceIpAddressTextBox.Text;
+        //            if (selectedPlatform.Devices.Any(d => d.IpAddress == ipAddress && d.Id != selectedDevice.Id))
+        //            {
+        //                MessageBox.Show("A device with the same IP address already exists on this platform.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //                return;
+        //            }
+
+        //            selectedDevice.DeviceType = (DeviceType)DeviceTypeComboBox.SelectedItem;
+        //            selectedDevice.IpAddress = ipAddress;
+        //            selectedDevice.IsEnabled = DeviceEnabledCheckBox.IsChecked ?? true;
+        //            selectedDevice.Updated = DateTime.Now;
+
+        //            if (MessageBox.Show("Are you sure you want to update this device?", "Confirm Update", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+        //            {
+        //                _platformDeviceManager.UpdateDevice(selectedPlatform.PlatformNumber, selectedDevice);
+        //                DeviceListView.ItemsSource = selectedPlatform.Devices;
+        //                MessageBox.Show("Device updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        //            }
+        //        }
+        //        catch (InvalidOperationException ex)
+        //        {
+        //            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        }
+        //    }
+        //}
+
+        //private void DeleteDeviceButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (DeviceListView.SelectedItem is Device selectedDevice && PlatformListView.SelectedItem is Platform selectedPlatform)
+        //    {
+        //        if (MessageBox.Show("Are you sure you want to delete this device?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+        //        {
+        //            _platformDeviceManager.DeleteDevice(selectedPlatform.PlatformNumber, selectedDevice.Id);
+        //            DeviceListView.ItemsSource = selectedPlatform.Devices;
+        //            MessageBox.Show("Device deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        }
+        //    }
+        //}
+
+        //private void DeleteDeviceMenuItem_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (DeviceListView.SelectedItem is Device selectedDevice && PlatformListView.SelectedItem is Platform selectedPlatform)
+        //    {
+        //        var result = MessageBox.Show("Are you sure you want to delete this device?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        //        if (result == MessageBoxResult.Yes)
+        //        {
+        //            _platformDeviceManager.DeleteDevice(selectedPlatform.PlatformNumber, selectedDevice.Id);
+        //            DeviceListView.ItemsSource = selectedPlatform.Devices;
+        //        }
+        //    }
+        //}
+
         private void LoadPlatforms()
         {
-            PlatformListView.ItemsSource = _platformDeviceManager.CurrentPlatformInfo;
-        }
-
-        private void PlatformListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (PlatformListView.SelectedItem is Platform selectedPlatform)
+            var platforms = _platformDeviceManager.LoadPlatforms();
+            _mainViewModel.Platforms.Clear();
+            foreach (var platform in platforms)
             {
-                PlatformNumberTextBox.Text = selectedPlatform.PlatformNumber.ToString();
-                PlatformTypeComboBox.SelectedItem = selectedPlatform.PlatformType.ToString();
-                PlatformDescriptionTextBox.Text = selectedPlatform.Description;
-                PlatformSubnetTextBox.Text = selectedPlatform.Subnet;
-                DeviceListView.ItemsSource = selectedPlatform.Devices;
-            }
-        }
-
-        private void DeviceListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (DeviceListView.SelectedItem is Device selectedDevice)
-            {
-                DeviceTypeComboBox.SelectedItem = selectedDevice.DeviceType.ToString();
-                DeviceIpAddressTextBox.Text = selectedDevice.IpAddress;
-                DeviceEnabledCheckBox.IsChecked = selectedDevice.IsEnabled;
+                _mainViewModel.Platforms.Add(platform);
             }
         }
 
         private void AddPlatformButton_Click(object sender, RoutedEventArgs e)
         {
-            var platformTypeComboBoxItem = PlatformTypeComboBox.SelectedItem as ComboBoxItem;
-            string platformTypeString = platformTypeComboBoxItem?.Content.ToString();
-
-            if (!Enum.TryParse(typeof(PlatformType), platformTypeString, out var platformTypeEnum))
+            var dialog = new PlatformDialog();
+            if (dialog.ShowDialog() == true)
             {
-                MessageBox.Show("Invalid platform type selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                var platform = new Platform
+                {
+                    PlatformNumber = dialog.PlatformNumber,
+                    PlatformType = dialog.PlatformType,
+                    Description = dialog.Description,
+                    Subnet = dialog.Subnet
+                };
+                _platformDeviceManager.AddPlatform(platform);
+                _mainViewModel.Platforms.Add(platform);
             }
-
-            string platformNumber = PlatformNumberTextBox.Text;
-            var existingPlatform = _platformDeviceManager.CurrentPlatformInfo.FirstOrDefault(p => p.PlatformNumber == platformNumber);
-
-            if (existingPlatform != null)
-            {
-                MessageBox.Show("Platform with this number already exists.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            var newPlatform = new Platform
-            {
-                PlatformNumber = platformNumber, // Treat PlatformNumber as string
-                PlatformType = (PlatformType)platformTypeEnum,
-                Description = PlatformDescriptionTextBox.Text,
-                Subnet = PlatformSubnetTextBox.Text,
-                Devices = new System.Collections.Generic.List<Device>()
-            };
-            _platformDeviceManager.AddPlatform(newPlatform);
-            LoadPlatforms();
         }
 
-        private void UpdatePlatformButton_Click(object sender, RoutedEventArgs e)
+        private void EditPlatformButton_Click(object sender, RoutedEventArgs e)
         {
-            if (PlatformListView.SelectedItem is Platform selectedPlatform)
+            if (_mainViewModel.SelectedPlatform != null)
             {
-                var platformTypeComboBoxItem = PlatformTypeComboBox.SelectedItem as ComboBoxItem;
-                string platformTypeString = platformTypeComboBoxItem?.Content.ToString();
-
-                if (!Enum.TryParse(typeof(PlatformType), platformTypeString, out var platformTypeEnum))
+                var dialog = new PlatformDialog(_mainViewModel.SelectedPlatform);
+                if (dialog.ShowDialog() == true)
                 {
-                    MessageBox.Show("Invalid platform type selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
+                    _mainViewModel.SelectedPlatform.PlatformNumber = dialog.PlatformNumber;
+                    _mainViewModel.SelectedPlatform.PlatformType = dialog.PlatformType;
+                    _mainViewModel.SelectedPlatform.Description = dialog.Description;
+                    _mainViewModel.SelectedPlatform.Subnet = dialog.Subnet;
+                    _platformDeviceManager.UpdatePlatform(_mainViewModel.SelectedPlatform);
                 }
-
-                string platformNumber = PlatformNumberTextBox.Text;
-                var existingPlatform = _platformDeviceManager.CurrentPlatformInfo.FirstOrDefault(p => p.PlatformNumber == platformNumber && p != selectedPlatform);
-
-                if (existingPlatform != null)
-                {
-                    MessageBox.Show("Platform with this number already exists.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                var result = MessageBox.Show("Are you sure you want to update this platform?", "Confirm Update", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.Yes)
-                {
-                    selectedPlatform.PlatformNumber = platformNumber;
-                    selectedPlatform.PlatformType = (PlatformType)platformTypeEnum;
-                    selectedPlatform.Description = PlatformDescriptionTextBox.Text;
-                    selectedPlatform.Subnet = PlatformSubnetTextBox.Text;
-                    _platformDeviceManager.UpdatePlatform(selectedPlatform);
-                    LoadPlatforms();
-                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a platform to edit.", "Edit Platform", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
         private void DeletePlatformButton_Click(object sender, RoutedEventArgs e)
         {
-            if (PlatformListView.SelectedItem is Platform selectedPlatform)
+            if (_mainViewModel.SelectedPlatform != null)
             {
-                var result = MessageBox.Show("Are you sure you want to delete this platform?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = MessageBox.Show($"Are you sure you want to delete the platform '{_mainViewModel.SelectedPlatform.PlatformNumber}'?", "Delete Platform", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
-                    _platformDeviceManager.DeletePlatform(selectedPlatform.PlatformNumber);
-                    LoadPlatforms();
+                    _platformDeviceManager.DeletePlatform(_mainViewModel.SelectedPlatform.PlatformNumber);
+                    _mainViewModel.Platforms.Remove(_mainViewModel.SelectedPlatform);
                 }
             }
+            else
+            {
+                MessageBox.Show("Please select a platform to delete.", "Delete Platform", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
-
 
         private void AddDeviceButton_Click(object sender, RoutedEventArgs e)
         {
-            if (PlatformListView.SelectedItem is Platform selectedPlatform)
+            if (_mainViewModel.SelectedPlatform != null)
             {
-                try
+                var dialog = new DeviceDialog(_mainViewModel.SelectedPlatform.PlatformNumber, _mainViewModel.SelectedPlatform.Subnet);
+                if (dialog.ShowDialog() == true)
                 {
-                    string ipAddress = DeviceIpAddressTextBox.Text;
-                    if (selectedPlatform.Devices.Any(d => d.IpAddress == ipAddress))
-                    {
-                        MessageBox.Show("A device with the same IP address already exists on this platform.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-
                     var newDevice = new Device
                     {
-                        Id = selectedPlatform.Devices.Count > 0 ? selectedPlatform.Devices.Max(d => d.Id) + 1 : 1,
-                        DeviceType = (DeviceType)DeviceTypeComboBox.SelectedItem,
-                        IpAddress = ipAddress,
-                        IsEnabled = DeviceEnabledCheckBox.IsChecked ?? true,
+                        Id = GenerateDeviceId(),
+                        DeviceType = dialog.DeviceType,
+                        IpAddress = dialog.IpAddress,
+                        IsEnabled = dialog.IsEnabled,
+                        Description = dialog.Description,
                         Created = DateTime.Now,
                         Updated = DateTime.Now
                     };
-
-                    _platformDeviceManager.AddDevice(selectedPlatform.PlatformNumber, newDevice);
-                    DeviceListView.ItemsSource = selectedPlatform.Devices;
-                    MessageBox.Show("Device added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    if (_platformDeviceManager.AddDevice(_mainViewModel.SelectedPlatform.PlatformNumber, newDevice))
+                    {
+                        _mainViewModel.Devices.Add(newDevice);
+                    }
                 }
-                catch (InvalidOperationException ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a platform to add a device.", "Add Device", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
-        private void UpdateDeviceButton_Click(object sender, RoutedEventArgs e)
+        private int GenerateDeviceId()
         {
-            if (PlatformListView.SelectedItem is Platform selectedPlatform && DeviceListView.SelectedItem is Device selectedDevice)
+            // Generate a new GUID and convert it to an integer hash code.
+            return Guid.NewGuid().GetHashCode();
+        }
+
+        private void EditDeviceButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_mainViewModel.SelectedDevice != null && _mainViewModel.SelectedPlatform != null)
             {
-                try
+                var dialog = new DeviceDialog(_mainViewModel.SelectedDevice, _mainViewModel.SelectedPlatform.PlatformNumber, _mainViewModel.SelectedPlatform.Subnet);
+                if (dialog.ShowDialog() == true)
                 {
-                    string ipAddress = DeviceIpAddressTextBox.Text;
-                    if (selectedPlatform.Devices.Any(d => d.IpAddress == ipAddress && d.Id != selectedDevice.Id))
-                    {
-                        MessageBox.Show("A device with the same IP address already exists on this platform.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-
-                    selectedDevice.DeviceType = (DeviceType)DeviceTypeComboBox.SelectedItem;
-                    selectedDevice.IpAddress = ipAddress;
-                    selectedDevice.IsEnabled = DeviceEnabledCheckBox.IsChecked ?? true;
-                    selectedDevice.Updated = DateTime.Now;
-
-                    if (MessageBox.Show("Are you sure you want to update this device?", "Confirm Update", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                    {
-                        _platformDeviceManager.UpdateDevice(selectedPlatform.PlatformNumber, selectedDevice);
-                        DeviceListView.ItemsSource = selectedPlatform.Devices;
-                        MessageBox.Show("Device updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
+                    _mainViewModel.SelectedDevice.DeviceType = dialog.DeviceType;
+                    _mainViewModel.SelectedDevice.IpAddress = dialog.IpAddress;
+                    _mainViewModel.SelectedDevice.IsEnabled = dialog.IsEnabled;
+                    _mainViewModel.SelectedDevice.Description = dialog.Description;
+                    _platformDeviceManager.UpdateDevice(_mainViewModel.SelectedPlatform.PlatformNumber, _mainViewModel.SelectedDevice);
                 }
-                catch (InvalidOperationException ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a device to edit.", "Edit Device", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
         private void DeleteDeviceButton_Click(object sender, RoutedEventArgs e)
         {
-            if (DeviceListView.SelectedItem is Device selectedDevice && PlatformListView.SelectedItem is Platform selectedPlatform)
+            if (_mainViewModel.SelectedDevice != null && _mainViewModel.SelectedPlatform != null)
             {
-                if (MessageBox.Show("Are you sure you want to delete this device?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                {
-                    _platformDeviceManager.DeleteDevice(selectedPlatform.PlatformNumber, selectedDevice.Id);
-                    DeviceListView.ItemsSource = selectedPlatform.Devices;
-                    MessageBox.Show("Device deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-        }
-
-        private void DeleteDeviceMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            if (DeviceListView.SelectedItem is Device selectedDevice && PlatformListView.SelectedItem is Platform selectedPlatform)
-            {
-                var result = MessageBox.Show("Are you sure you want to delete this device?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = MessageBox.Show($"Are you sure you want to delete the device '{_mainViewModel.SelectedDevice.DeviceType}'?", "Delete Device", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
-                    _platformDeviceManager.DeleteDevice(selectedPlatform.PlatformNumber, selectedDevice.Id);
-                    DeviceListView.ItemsSource = selectedPlatform.Devices;
+                    _platformDeviceManager.DeleteDevice(_mainViewModel.SelectedPlatform.PlatformNumber, _mainViewModel.SelectedDevice.Id);
+                    _mainViewModel.Devices.Remove(_mainViewModel.SelectedDevice);
                 }
+            }
+            else
+            {
+                MessageBox.Show("Please select a device to delete.", "Delete Device", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
-        private void Option1MenuItem_Click(object sender, RoutedEventArgs e)
+        private void ExportMapping_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Option 1 clicked");
+            var dialog = new CommonSaveFileDialog
+            {
+                Title = "Export Platform-Device Mapping",
+                DefaultExtension = "json",
+                Filters = { new CommonFileDialogFilter("JSON Files", "*.json") }
+            };
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                string filePath = dialog.FileName;
+                var platforms = _platformDeviceManager.LoadPlatforms();
+                string json = JsonConvert.SerializeObject(platforms, Formatting.Indented);
+                File.WriteAllText(filePath, json);
+                MessageBox.Show("Platform-Device mapping exported successfully.", "Export Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
-        private void Option2MenuItem_Click(object sender, RoutedEventArgs e)
+        private void ImportMapping_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Option 2 clicked");
-        }
+            var dialog = new CommonOpenFileDialog
+            {
+                Title = "Import Platform-Device Mapping",
+                Filters = { new CommonFileDialogFilter("JSON Files", "*.json") }
+            };
 
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                string filePath = dialog.FileName;
+                string json = File.ReadAllText(filePath);
+                var platforms = JsonConvert.DeserializeObject<List<Platform>>(json);
+
+                if (platforms != null)
+                {
+                    var result = MessageBox.Show("Do you want to overwrite the existing platform-device mapping?", "Confirm Overwrite", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        _platformDeviceManager.SavePlatforms(platforms);
+                        LoadPlatforms();
+                        MessageBox.Show("Platform-Device mapping imported and overwritten successfully.", "Import Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Invalid file format. Please select a valid JSON file.", "Import Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
 
         // code for dashboard
         private void InitializeDashboardComponents()
@@ -1646,11 +1948,6 @@ namespace IpisCentralDisplayController
             //HideUserForm();
         }
 
-        private void CancelUserButton_Click(object sender, RoutedEventArgs e)
-        {
-            HideUserForm();
-        }
-
         private void ToggleActiveCheckBox_Click(object sender, RoutedEventArgs e)
         {
             if (sender is CheckBox checkBox && checkBox.DataContext is User user)
@@ -1684,12 +1981,6 @@ namespace IpisCentralDisplayController
             //    PasswordTextBox.Clear();
             //    IsActiveCheckBox.IsChecked = true;
             //}
-        }
-
-        private void HideUserForm()
-        {
-            UserFormGrid.Visibility = Visibility.Collapsed;
-            CurrentUser = null;
         }
 
         // code for CAP section
@@ -1869,15 +2160,15 @@ namespace IpisCentralDisplayController
 
         private void SaveSettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(EmailTextBox.Text))
-            {
-                MessageBox.Show("Please specify an email address.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
+            //if (string.IsNullOrWhiteSpace(EmailTextBox.Text))
+            //{
+            //    MessageBox.Show("Please specify an email address.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //    return;
+            //}
 
-            // Implement the notification settings logic here
+            //// Implement the notification settings logic here
 
-            MessageBox.Show("Notification settings saved successfully.", "Settings", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show("Notification settings saved successfully.", "Settings", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         //code for restore option
@@ -2243,31 +2534,31 @@ namespace IpisCentralDisplayController
             MessageBox.Show("Station information updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void PlatformNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            string platformNumberText = PlatformNumberTextBox.Text;
-            if (int.TryParse(platformNumberText, out int platformNumber))
-            {
-                PlatformSubnetTextBox.Text = $"192.168.{platformNumber}.";
-            }
-            else if (System.Text.RegularExpressions.Regex.IsMatch(platformNumberText, @"^\d+A$"))
-            {
-                string numberPart = platformNumberText.TrimEnd('A');
-                if (int.TryParse(numberPart, out int specialPlatformNumber))
-                {
-                    int baseNumber = 100 + specialPlatformNumber;
-                    PlatformSubnetTextBox.Text = $"192.168.{baseNumber}.";
-                }
-                else
-                {
-                    PlatformSubnetTextBox.Text = string.Empty;
-                }
-            }
-            else
-            {
-                PlatformSubnetTextBox.Text = string.Empty;
-            }
-        }
+        //private void PlatformNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    string platformNumberText = PlatformNumberTextBox.Text;
+        //    if (int.TryParse(platformNumberText, out int platformNumber))
+        //    {
+        //        PlatformSubnetTextBox.Text = $"192.168.{platformNumber}.";
+        //    }
+        //    else if (System.Text.RegularExpressions.Regex.IsMatch(platformNumberText, @"^\d+A$"))
+        //    {
+        //        string numberPart = platformNumberText.TrimEnd('A');
+        //        if (int.TryParse(numberPart, out int specialPlatformNumber))
+        //        {
+        //            int baseNumber = 100 + specialPlatformNumber;
+        //            PlatformSubnetTextBox.Text = $"192.168.{baseNumber}.";
+        //        }
+        //        else
+        //        {
+        //            PlatformSubnetTextBox.Text = string.Empty;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        PlatformSubnetTextBox.Text = string.Empty;
+        //    }
+        //}
 
         private void SettingsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -2299,21 +2590,21 @@ namespace IpisCentralDisplayController
             }
         }
 
-        private void DeviceTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (PlatformListView.SelectedItem is Platform selectedPlatform && DeviceTypeComboBox.SelectedItem is DeviceType selectedDeviceType)
-            {
-                try
-                {
-                    string nextIp = _platformDeviceManager.CalculateNextIpAddress(selectedPlatform, selectedDeviceType);
-                    DeviceIpAddressTextBox.Text = nextIp;
-                }
-                catch (InvalidOperationException ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-        }
+        //private void DeviceTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (PlatformListView.SelectedItem is Platform selectedPlatform && DeviceTypeComboBox.SelectedItem is DeviceType selectedDeviceType)
+        //    {
+        //        try
+        //        {
+        //            string nextIp = _platformDeviceManager.CalculateNextIpAddress(selectedPlatform, selectedDeviceType);
+        //            DeviceIpAddressTextBox.Text = nextIp;
+        //        }
+        //        catch (InvalidOperationException ex)
+        //        {
+        //            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        }
+        //    }
+        //}
 
         //Test Tool Specific Code
         private void cb_cgdb_checked(object sender, RoutedEventArgs e)

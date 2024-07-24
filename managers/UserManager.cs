@@ -98,50 +98,22 @@ namespace IpisCentralDisplayController.Managers
             return true;
         }
 
-        //public void CheckAndPromptForAdminUser()
-        //{
-        //    var users = LoadUsers();
-        //    if (!users.Any())
-        //    {
-        //        MessageBox.Show("No users found. Please create an admin user.", "Admin User Creation", MessageBoxButton.OK, MessageBoxImage.Information);
-        //        var userCategoryManager = new UserCategoryManager(new SettingsJsonHelperAdapter());
-        //        var userWindow = new UserWindow(this, userCategoryManager);
-        //        userWindow.ShowDialog();
-        //    }
-        //}
-
-        //public void CheckAndPromptForAdminUser()
-        //{
-        //    var users = LoadUsers();
-        //    if (!users.Any(u => u.Category.Name == "Admin"))
-        //    {
-        //        MessageBox.Show("No admin users found. Please create an admin user.", "Admin User Creation", MessageBoxButton.OK, MessageBoxImage.Information);
-        //        var userCategoryManager = new UserCategoryManager(new SettingsJsonHelperAdapter());
-
-        //        while (!users.Any(u => u.Category.Name == "Admin"))
-        //        {
-        //            var userWindow = new UserWindow(this, userCategoryManager);
-        //            bool? result = userWindow.ShowDialog();
-        //            if (result == true)
-        //            {
-        //                users = LoadUsers();
-        //            }
-        //        }
-        //    }
-        //}
-
-        public void CheckAndPromptForAdminUser()
+        public void CheckAndPromptForAdminUser(UserCategoryManager userCategoryManager, MainViewModel mainViewModel)
         {
             var users = LoadUsers();
             if (!users.Any(u => u.Category?.Name == "Admin"))
             {
                 MessageBox.Show("No admin users found. Please create an admin user.", "Admin User Creation", MessageBoxButton.OK, MessageBoxImage.Information);
-                var userCategoryManager = new UserCategoryManager(new SettingsJsonHelperAdapter());
 
                 do
                 {
-                    var userWindow = new UserWindow(this, userCategoryManager);
-                    bool? result = userWindow.ShowDialog();
+                    var userDialog = new UserDialog(userCategoryManager);
+                    bool? result = userDialog.ShowDialog();
+                    if (result == true)
+                    {
+                        AddUser(userDialog.User);
+                        mainViewModel.Users.Add(userDialog.User);
+                    }
                     users = LoadUsers();
                 }
                 while (!users.Any(u => u.Category?.Name == "Admin"));

@@ -14,8 +14,15 @@ namespace IpisCentralDisplayController.Helpers
 
         public static T Load<T>(string key)
         {
-            string json = Properties.Settings.Default[key]?.ToString();
-            return string.IsNullOrEmpty(json) ? default : JsonConvert.DeserializeObject<T>(json);
+            try
+            {
+                string json = Properties.Settings.Default[key]?.ToString();
+                return string.IsNullOrEmpty(json) ? default : JsonConvert.DeserializeObject<T>(json);
+            }
+            catch(Exception ex)
+            {
+                return default;
+            }           
         }
 
         public static void Delete(string key)

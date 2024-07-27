@@ -1,4 +1,6 @@
-﻿using IpisCentralDisplayController.models;
+﻿using IpisCentralDisplayController.Managers;
+using IpisCentralDisplayController.models;
+using IpisCentralDisplayController.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -163,6 +165,94 @@ namespace IpisCentralDisplayController.views
             }
         }
 
+        private AudioSettings _audioSettings;
+        private ObservableCollection<string> _micInterfaces;
+        private ObservableCollection<string> _monitorInterfaces;
+        private ObservableCollection<string> _audioOutInterfaces;
+
+        public AudioSettings AudioSettings
+        {
+            get => _audioSettings;
+            set
+            {
+                if (_audioSettings != value)
+                {
+                    _audioSettings = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ObservableCollection<string> MicInterfaces
+        {
+            get => _micInterfaces;
+            set
+            {
+                _micInterfaces = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<string> MonitorInterfaces
+        {
+            get => _monitorInterfaces;
+            set
+            {
+                _monitorInterfaces = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<string> AudioOutInterfaces
+        {
+            get => _audioOutInterfaces;
+            set
+            {
+                _audioOutInterfaces = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private RmsSettings _rmsSettings;
+        private RmsSettingsManager _rmsSettingsManager;
+
+        public RmsSettings RmsSettings
+        {
+            get => _rmsSettings;
+            set
+            {
+                if (_rmsSettings != value)
+                {
+                    _rmsSettings = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ColorDisplayTheme _theme;
+        private ObservableCollection<TrainDisplayTemplate> _trainTemplates;
+
+        public ColorDisplayTheme Theme
+        {
+            get => _theme;
+            set
+            {
+                _theme = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<TrainDisplayTemplate> TrainTemplates
+        {
+            get => _trainTemplates;
+            set
+            {
+                _trainTemplates = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public MainViewModel()
         {
             UserCategories = new ObservableCollection<UserCategory>();
@@ -177,6 +267,60 @@ namespace IpisCentralDisplayController.views
             // Initialize the collection and commands
             DisplayStyles = new ObservableCollection<DisplayStyle>();
             //SaveCommand = new RelayCommand(Save);
+
+            MicInterfaces = new ObservableCollection<string>();
+            MonitorInterfaces = new ObservableCollection<string>();
+            AudioOutInterfaces = new ObservableCollection<string>();
+
+            RmsSettings = new RmsSettings();
+
+            TrainTemplates = new ObservableCollection<TrainDisplayTemplate>();
+        }
+
+        public void LoadRmsSettings(RmsSettings rmsSettings)
+        {
+            RmsSettings = rmsSettings;
+        }   
+
+        public void RefreshAudioInterfaces(AudioSettingsManager audioSettingsManager)
+        {
+            MicInterfaces.Clear();
+            MonitorInterfaces.Clear();
+            AudioOutInterfaces.Clear();
+
+            var interfaces = audioSettingsManager.RefreshInterfaces();
+
+            foreach (var audioInterface in interfaces)
+            {
+                MicInterfaces.Add(audioInterface);
+                MonitorInterfaces.Add(audioInterface);
+                AudioOutInterfaces.Add(audioInterface);
+            }
+        }
+
+        public void LoadAudioSettings(AudioSettings audioSettings)
+        {
+            AudioSettings = audioSettings;
+        }
+
+        public void SaveAudioSettings(AudioSettingsManager audioSettingsManager)
+        {
+            audioSettingsManager.SaveAudioSettings(AudioSettings);
+        }
+
+        public void RefreshAudioSettings(AudioSettingsManager audioSettingsManager)
+        {
+            AudioSettings = audioSettingsManager.LoadAudioSettings();
+        }
+
+        public void StartMonitorAudioTest(AudioSettingsManager audioSettingsManager)
+        {
+            //audioSettingsManager.StartAudioTest(AudioSettings);
+        }
+
+        public void StopMonitorAudioTest(AudioSettingsManager audioSettingsManager)
+        {
+            //audioSettingsManager.StopAudioTest();
         }
 
         private void Save()

@@ -23,6 +23,7 @@
         <conv:UserRightsConverter x:Key="UserRightsConverter"/>
         <validation:PlatformNumberValidationRule x:Key="platformNumberValidationRule"/>
         <conv:ColorToBrushConverter x:Key="colorConverter"/>
+        <conv:ColorToHexConverter x:Key="ColorToHexConverter"/>
         <conv:MacAddressConverter x:Key="MacAddressConverter"/>
         <Style TargetType="TextBox">
             <Style.Triggers>
@@ -75,10 +76,18 @@
                     <MenuItem Header="Refresh" Click="RefreshWorkspace_Click"/>
                 </MenuItem>
             </Menu>
-            <MenuItem Header="Platform-Devices">
+            <MenuItem Header="Export">
                 <MenuItem Header="Export Mapping" Click="ExportMapping_Click"/>
                 <MenuItem Header="Import Mapping" Click="ImportMapping_Click"/>
             </MenuItem>
+            <MenuItem Header="Import">
+                <MenuItem Header="Export Mapping" Click="ExportMapping_Click"/>
+                <MenuItem Header="Import Mapping" Click="ImportMapping_Click"/>
+            </MenuItem>
+            <!--<MenuItem Header="Platform-Devices">
+                <MenuItem Header="Export Mapping" Click="ExportMapping_Click"/>
+                <MenuItem Header="Import Mapping" Click="ImportMapping_Click"/>
+            </MenuItem>-->
             <MenuItem Header="User">
                 <MenuItem Header="Logout" Click="Logout_Click"/>
             </MenuItem>
@@ -229,7 +238,7 @@
 
                                 <!-- Audio Configuration -->
                                 <GroupBox Header="Audio Configuration" Grid.Column="1" Margin="5">
-                                    <StackPanel Margin="5">
+                                    <!--<StackPanel Margin="5">
                                         <ComboBox Name="AudioInterfaceComboBox" Width="200" Height="30" Margin="5"/>
                                         <ComboBox Name="MicrophoneComboBox" Width="200" Height="30" Margin="5"/>
                                         <Slider Name="MicVolumeSlider" Minimum="0" Maximum="100" TickFrequency="1" Margin="5" ValueChanged="MicVolumeSlider_ValueChanged"/>
@@ -242,7 +251,7 @@
                                         <CheckBox Name="LocalMuteCheckBox" Content="Mute Local Speaker" Margin="5" Checked="LocalMuteCheckBox_Checked" Unchecked="LocalMuteCheckBox_Unchecked"/>
                                         <CheckBox Name="PlayOnPaSpeakerCheckBox" Content="Play on PA Speaker" Margin="5"/>
                                         <CheckBox Name="PlayOnLocalSpeakerCheckBox" Content="Play on Local Speaker" Margin="5"/>
-                                    </StackPanel>
+                                    </StackPanel>-->
                                 </GroupBox>
                             </Grid>
 
@@ -373,7 +382,7 @@
 
             </TabItem>-->
 
-            <TabItem Name="LcdTvTab" Width="120" Height="30">
+            <TabItem Name="DisplaysTab" Width="120" Height="30">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <Image Width="24" Height="24" Source="icons/icon-lcd.png" Margin="2"/>
@@ -950,6 +959,15 @@
                 </Grid>
             </TabItem>
 
+            <TabItem Name="AutomationTab" Width="120" Height="30">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="24" Height="24" Source="icons/icon-auto.png" Margin="2"/>
+                        <TextBlock Text="AUTOMATION" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+            </TabItem>
             <TabItem Width="120" Height="30">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
@@ -1163,19 +1181,21 @@
                                 </Grid>
                             </Grid>
                         </TabItem>
-                        
+
                         <TabItem Header="Display Styles" Name="FontsTab" Width="160" Height="30">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
                                 <TextBlock Text="Display Styles Management" FontWeight="Bold" FontSize="18" Margin="10"/>
                                 <GroupBox Grid.Row="1" Margin="2" Header="Display Styles">
                                     <DataGrid Name="DisplayStylesDataGrid" AutoGenerateColumns="False" Margin="5" ItemsSource="{Binding DisplayStyles}" SelectedItem="{Binding SelectedStyle}">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="S.No" Binding="{Binding Sno}" Width="50"/>
                                             <DataGridTextColumn Header="Style Name" Binding="{Binding StyleName}" Width="100"/>
                                             <DataGridComboBoxColumn Header="Language" SelectedItemBinding="{Binding Language}" 
                                                 ItemsSource="{x:Static models:RegionalLanguageEnum.Values}" Width="100"/>
@@ -1189,90 +1209,12 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </GroupBox>
-                                <Grid Grid.Row="2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <!--<GroupBox Grid.Column="0" Margin="2" Header="Settings-Trial">
-                                        <Grid Margin="2">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="2*"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <TextBlock Text="Style Name" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Height="24" Text="{Binding SelectedStyle.StyleName, Mode=TwoWay}"/>
-
-                                            <TextBlock Text="Language" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <ComboBox Grid.Row="1" Grid.Column="1" Margin="2" Height="24"
-                              ItemsSource="{x:Static models:RegionalLanguageEnum.Values}"
-                              SelectedItem="{Binding SelectedStyle.Language, Mode=TwoWay}"/>
-
-                                            <TextBlock Text="Font Size" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <xctk:IntegerUpDown Grid.Row="2" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.FontSize, Mode=TwoWay}"/>
-
-                                            <TextBlock Text="Font Weight" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <ComboBox Grid.Row="3" Grid.Column="1" Margin="2" Height="24"
-                              SelectedItem="{Binding SelectedStyle.FontWeight, Mode=TwoWay}">
-                                                <ComboBoxItem Content="Normal" />
-                                                <ComboBoxItem Content="Bold" />
-                                                <ComboBoxItem Content="Thin" />
-                                                <ComboBoxItem Content="ExtraLight" />
-                                                <ComboBoxItem Content="Light" />
-                                                <ComboBoxItem Content="Medium" />
-                                                <ComboBoxItem Content="SemiBold" />
-                                                <ComboBoxItem Content="ExtraBold" />
-                                                <ComboBoxItem Content="Black" />
-                                            </ComboBox>
-
-                                            <TextBlock Text="Font Style" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <ComboBox Grid.Row="4" Grid.Column="1" Margin="2" Height="24"
-                              SelectedItem="{Binding SelectedStyle.FontStyle, Mode=TwoWay}">
-                                                <ComboBoxItem Content="Normal" />
-                                                <ComboBoxItem Content="Italic" />
-                                                <ComboBoxItem Content="Oblique" />
-                                            </ComboBox>
-
-                                            <TextBlock Text="Margin Top" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <xctk:IntegerUpDown Grid.Row="5" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.MarginTop, Mode=TwoWay}"/>
-
-                                            <TextBlock Text="Margin Left" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <xctk:IntegerUpDown Grid.Row="6" Grid.Column="1" Margin="2" Height="24" Value="{Binding SelectedStyle.MarginLeft, Mode=TwoWay}"/>
-
-                                            <TextBlock Text="Alignment Horizontal" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <ComboBox Grid.Row="7" Grid.Column="1" Margin="2" Height="24"
-                              SelectedItem="{Binding SelectedStyle.AlignmentH, Mode=TwoWay}">
-                                                <ComboBoxItem Content="Left" />
-                                                <ComboBoxItem Content="Center" />
-                                                <ComboBoxItem Content="Right" />
-                                            </ComboBox>
-
-                                            <TextBlock Text="Alignment Vertical" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                            <ComboBox Grid.Row="8" Grid.Column="1" Margin="2" Height="24"
-                              SelectedItem="{Binding SelectedStyle.AlignmentV, Mode=TwoWay}">
-                                                <ComboBoxItem Content="Top" />
-                                                <ComboBoxItem Content="Center" />
-                                                <ComboBoxItem Content="Bottom" />
-                                            </ComboBox>
-
-                                            <Button Grid.Row="9" Grid.ColumnSpan="2" Content="Save" Margin="2" Height="30" Width="100" Command="{Binding SaveCommand}"/>
-                                        </Grid>
-                                    </GroupBox>-->
-                                    <GroupBox Grid.Column="0" Margin="2" Header="Settings-Trial">
+                                <Grid Grid.Row="1" Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <GroupBox Grid.Row="0" Margin="2" Header="Settings-Trial">
                                         <Grid Margin="2">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -1360,7 +1302,7 @@
                                         </Grid>
                                     </GroupBox>
 
-                                    <GroupBox Grid.Column="1" Margin="2" Header="Simulated Display">
+                                    <GroupBox Grid.Row="1" Margin="2" Header="Simulated Display">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -1416,9 +1358,245 @@
                                 </Grid>
                             </Grid>
                         </TabItem>
-                        <!--<TabItem Header="Display Formats" Name="DisplaysTab" Width="160" Height="30">
-                            <TextBlock Text="Display Settings Content" Margin="10"/>
-                        </TabItem>-->
+                        <TabItem Header="Display Styles (Color)" Name="DisplayStylesRGBTab" Width="160" Height="30">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Display Styles for Color Display" FontWeight="Bold" FontSize="18" Margin="10" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"/>
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <GroupBox Header="Background Theme" Grid.Column="0" Margin="2">
+                                        <Grid Margin="5">
+                                            <!-- Column Definitions -->
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <!-- Row Definitions -->
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Background Color -->
+                                            <TextBlock Text="Background Color:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="5" />
+                                            <xctk:ColorPicker SelectedColor="{Binding Theme.BackgroundColor, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" Width="150" Margin="5"/>
+                                            <TextBlock Text="{Binding Theme.BackgroundColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+
+                                            <!-- Horizontal Line Color -->
+                                            <TextBlock Text="Horizontal Line Color:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="5" />
+                                            <xctk:ColorPicker SelectedColor="{Binding Theme.HorizontalLineColor, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" Width="150" Margin="5"/>
+                                            <TextBlock Text="{Binding Theme.HorizontalLineColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+
+                                            <!-- Vertical Line Color -->
+                                            <TextBlock Text="Vertical Line Color:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="5" />
+                                            <xctk:ColorPicker SelectedColor="{Binding Theme.VerticalLineColor, Mode=TwoWay}" Grid.Row="2" Grid.Column="1" Width="150" Margin="5"/>
+                                            <TextBlock Text="{Binding Theme.VerticalLineColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+
+                                            <!-- Message Line Color -->
+                                            <TextBlock Text="Message Line Color:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="5" />
+                                            <xctk:ColorPicker SelectedColor="{Binding Theme.MessageLineColor, Mode=TwoWay}" Grid.Row="3" Grid.Column="1" Width="150" Margin="5"/>
+                                            <TextBlock Text="{Binding Theme.MessageLineColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+                                        </Grid>
+                                    </GroupBox>
+                                    <GroupBox Header="Train Status List" Grid.Column="1" Margin="2">
+                                        <DataGrid Name="TrainTemplatesDataGrid" ItemsSource="{Binding TrainTemplates}" AutoGenerateColumns="False" CanUserAddRows="False">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Status Type" Binding="{Binding StatusType}" IsReadOnly="True" Width="*"/>
+                                                <DataGridTextColumn Header="Train Status" Binding="{Binding StatusDescription}" IsReadOnly="True" Width="2*"/>
+                                                <DataGridTemplateColumn Header="Train No Color" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <xctk:ColorPicker SelectedColor="{Binding TrainNoColor, Mode=TwoWay}" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Train Name Color" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <xctk:ColorPicker SelectedColor="{Binding TrainNameColor, Mode=TwoWay}" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Train Time Color" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <xctk:ColorPicker SelectedColor="{Binding TrainTimeColor, Mode=TwoWay}" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Train A/D Color" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <xctk:ColorPicker SelectedColor="{Binding TrainADColor, Mode=TwoWay}" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Train PF Color" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <xctk:ColorPicker SelectedColor="{Binding TrainPFColor, Mode=TwoWay}" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridCheckBoxColumn Header="Is Blinking" Binding="{Binding IsBlinking, Mode=TwoWay}" Width="Auto"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                    <!--<GroupBox Header="Preview" Grid.Column="2" Margin="2">
+                                        
+                                    </GroupBox>-->
+                                </Grid>
+                                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="2" HorizontalAlignment="Left">
+                                    <Button Height="30" Width="100" Content="Save" Click="SaveDisplaySettings_Click"/>
+                                </StackPanel>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="Audio Management" Name="AudioSettingsTab" Width="160" Height="30">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="Audio Management" FontWeight="Bold" FontSize="18" Margin="10" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"/>
+
+                                <Grid Grid.Row="1" Grid.ColumnSpan="3">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Microphone Settings -->
+                                    <GroupBox Header="Microphone" Margin="10" Grid.Column="0">
+                                        <StackPanel Margin="10">
+                                            <TextBlock Text="Select Mic Interface" Margin="5"/>
+                                            <ComboBox Name="MicInterfaceComboBox" Margin="5" ItemsSource="{Binding MicInterfaces}" SelectedItem="{Binding SelectedMicInterface}"/>
+
+                                            <TextBlock Text="Set Volume" Margin="5"/>
+                                            <StackPanel Orientation="Horizontal" Margin="5">
+                                                <Slider Name="MicVolumeSlider" Orientation="Horizontal" Minimum="0" Maximum="100" TickFrequency="1" Width="150" Value="{Binding MicVolume, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <TextBlock Text="{Binding MicVolume, StringFormat=F0}" Margin="5" Width="50" VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                                                <Button Name="MicRefreshButton" Content="Refresh" Margin="5" Width="100" Height="30" Click="RefreshButton_Click"/>
+                                                <Button Name="MicSaveButton" Content="Save" Margin="5" Width="100" Height="30" Click="SaveButton_Click"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </GroupBox>
+
+                                    <!-- Audio Monitor Settings -->
+                                    <GroupBox Header="Audio Monitor" Margin="10" Grid.Column="1">
+                                        <StackPanel Margin="10">
+                                            <TextBlock Text="Select Monitor Audio Interface" Margin="5"/>
+                                            <ComboBox Name="MonitorInterfaceComboBox" Margin="5" ItemsSource="{Binding MonitorInterfaces}" SelectedItem="{Binding SelectedMonitorInterface}"/>
+
+                                            <TextBlock Text="Set Volume" Margin="5"/>
+                                            <StackPanel Orientation="Horizontal" Margin="5">
+                                                <Slider Name="MonitorVolumeSlider" Orientation="Horizontal" Minimum="0" Maximum="100" TickFrequency="1" Width="150" Value="{Binding MonitorVolume, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <TextBlock Text="{Binding MonitorVolume, StringFormat=F0}" Margin="5" Width="50" VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <TextBlock Text="Equalizer" FontWeight="Bold" Margin="5"/>
+                                            <Grid Margin="5">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding MonitorEqualizerSlider1, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="0" Margin="5"/>
+                                                <TextBlock Text="{Binding MonitorEqualizerSlider2, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="1" Margin="5"/>
+                                                <TextBlock Text="{Binding MonitorEqualizerSlider3, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="2" Margin="5"/>
+                                                <TextBlock Text="{Binding MonitorEqualizerSlider4, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="3" Margin="5"/>
+                                                <TextBlock Text="{Binding MonitorEqualizerSlider5, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="4" Margin="5"/>
+                                                <Slider Name="MonitorEqualizerSlider1" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="0" Height="100" Value="{Binding MonitorEqualizerSlider1, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <Slider Name="MonitorEqualizerSlider2" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="1" Height="100" Value="{Binding MonitorEqualizerSlider2, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <Slider Name="MonitorEqualizerSlider3" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="2" Height="100" Value="{Binding MonitorEqualizerSlider3, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <Slider Name="MonitorEqualizerSlider4" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="3" Height="100" Value="{Binding MonitorEqualizerSlider4, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <Slider Name="MonitorEqualizerSlider5" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="4" Height="100" Value="{Binding MonitorEqualizerSlider5, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <TextBlock Text="Bass" HorizontalAlignment="Center" Grid.Column="0" Margin="5"/>
+                                                <TextBlock Text="Mid" HorizontalAlignment="Center" Grid.Column="1" Margin="5"/>
+                                                <TextBlock Text="Treble" HorizontalAlignment="Center" Grid.Column="2" Margin="5"/>
+                                                <TextBlock Text="Highs" HorizontalAlignment="Center" Grid.Column="3" Margin="5"/>
+                                                <TextBlock Text="Lows" HorizontalAlignment="Center" Grid.Column="4" Margin="5"/>
+                                            </Grid>
+
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                                                <Button Name="MonitorRefreshButton" Content="Refresh" Margin="5" Width="100" Height="30" Click="RefreshButton_Click"/>
+                                                <Button Name="MonitorSaveButton" Content="Save" Margin="5" Width="100" Height="30" Click="SaveButton_Click"/>
+                                                <ToggleButton Name="MonitorTestAudioToggleButton" Content="Test Audio" Margin="5" Width="100" Height="30" Click="TestAudioToggleButton_Click"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </GroupBox>
+
+                                    <!-- Audio Out Settings -->
+                                    <GroupBox Header="Audio Out" Margin="10" Grid.Column="2">
+                                        <StackPanel Margin="10">
+                                            <TextBlock Text="Select Audio Out Interface" Margin="5"/>
+                                            <ComboBox Name="AudioOutInterfaceComboBox" Margin="5" ItemsSource="{Binding AudioOutInterfaces}" SelectedItem="{Binding SelectedAudioOutInterface}"/>
+
+                                            <TextBlock Text="Set Volume" Margin="5"/>
+                                            <StackPanel Orientation="Horizontal" Margin="5">
+                                                <Slider Name="AudioOutVolumeSlider" Orientation="Horizontal" Minimum="0" Maximum="100" TickFrequency="1" Width="150" Value="{Binding AudioOutVolume, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <TextBlock Text="{Binding AudioOutVolume, StringFormat=F0}" Margin="5" Width="50" VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <TextBlock Text="Equalizer" FontWeight="Bold" Margin="5"/>
+                                            <Grid Margin="5">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding AudioOutEqualizerSlider1, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="0" Margin="5"/>
+                                                <TextBlock Text="{Binding AudioOutEqualizerSlider2, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="1" Margin="5"/>
+                                                <TextBlock Text="{Binding AudioOutEqualizerSlider3, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="2" Margin="5"/>
+                                                <TextBlock Text="{Binding AudioOutEqualizerSlider4, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="3" Margin="5"/>
+                                                <TextBlock Text="{Binding AudioOutEqualizerSlider5, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="4" Margin="5"/>
+                                                <Slider Name="AudioOutEqualizerSlider1" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="0" Height="100" Value="{Binding AudioOutEqualizerSlider1, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <Slider Name="AudioOutEqualizerSlider2" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="1" Height="100" Value="{Binding AudioOutEqualizerSlider2, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <Slider Name="AudioOutEqualizerSlider3" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="2" Height="100" Value="{Binding AudioOutEqualizerSlider3, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <Slider Name="AudioOutEqualizerSlider4" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="3" Height="100" Value="{Binding AudioOutEqualizerSlider4, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <Slider Name="AudioOutEqualizerSlider5" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="4" Height="100" Value="{Binding AudioOutEqualizerSlider5, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <TextBlock Text="Bass" HorizontalAlignment="Center" Grid.Column="0" Margin="5"/>
+                                                <TextBlock Text="Mid" HorizontalAlignment="Center" Grid.Column="1" Margin="5"/>
+                                                <TextBlock Text="Treble" HorizontalAlignment="Center" Grid.Column="2" Margin="5"/>
+                                                <TextBlock Text="Highs" HorizontalAlignment="Center" Grid.Column="3" Margin="5"/>
+                                                <TextBlock Text="Lows" HorizontalAlignment="Center" Grid.Column="4" Margin="5"/>
+                                            </Grid>
+
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                                                <Button Name="AudioOutRefreshButton" Content="Refresh" Margin="5" Width="100" Height="30" Click="RefreshButton_Click"/>
+                                                <Button Name="AudioOutSaveButton" Content="Save" Margin="5" Width="100" Height="30" Click="SaveButton_Click"/>
+                                                <ToggleButton Name="AudioOutTestAudioToggleButton" Content="Test Audio" Margin="5" Width="100" Height="30" Click="TestAudioToggleButton_Click"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </GroupBox>
+                                </Grid>
+                            </Grid>
+                        </TabItem>
                         <TabItem Header="RMS Server" Name="RMSServerTab" Width="160" Height="30">
                             <Grid Margin="10">
                                 <Grid.RowDefinitions>
@@ -1427,53 +1605,82 @@
                                 </Grid.RowDefinitions>
 
                                 <!-- Title -->
-                                <StackPanel Margin="5" Grid.Row="0">
-                                    <TextBlock Text="RMS Server Management" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" Margin="10"/>
-                                </StackPanel>
+                                <TextBlock Text="RMS Server Management" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" Margin="10" Grid.Row="0"/>
 
                                 <!-- Sections -->
                                 <Grid Grid.Row="1" Margin="5">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                    <!-- System Configuration GroupBox -->
-                                    <GroupBox Header="System Configuration" Margin="5" Grid.Row="0">
-                                        <StackPanel Margin="10">
-                                            <TextBlock Text="IP Address" Height="30" VerticalAlignment="Center" Margin="5"/>
-                                            <TextBox Name="IpAddressTextBox" Height="30" Margin="5"/>
-                                            <TextBlock Text="Network Settings" Height="30" VerticalAlignment="Center" Margin="5"/>
-                                            <TextBox Name="NetworkSettingsTextBox" Height="30" Margin="5"/>
-                                            <Button Content="Save Configuration" Width="100" Height="30" Margin="5" Click="SaveSystemConfigButton_Click"/>
-                                        </StackPanel>
+                                    <!-- Server 1 Settings GroupBox -->
+                                    <GroupBox Header="RMS Server 1" Margin="5" Grid.Column="0">
+                                        <Grid Margin="10">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+
+                                            <TextBlock Text="Server IP" Grid.Row="0" Margin="5" VerticalAlignment="Center"/>
+                                            <TextBox Name="Server1IpTextBox" Grid.Row="1" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+
+                                            <TextBlock Text="Common API Endpoint" Grid.Row="2" Margin="5" VerticalAlignment="Center"/>
+                                            <TextBox Name="Server1ApiEndpointTextBox" Grid.Row="3" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+
+                                            <TextBlock Text="API Key" Grid.Row="4" Margin="5" VerticalAlignment="Center"/>
+                                            <PasswordBox Name="Server1ApiKeyPasswordBox" Grid.Row="5" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+
+                                            <Grid Grid.Row="6" Margin="5">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button Content="Test Connection" Width="100" Height="30" Margin="5" Grid.Column="0" Click="TestServer1ConnectionButton_Click"/>
+                                                <Button Content="Save" Width="100" Height="30" Margin="5" Grid.Column="1" Click="SaveServer1SettingsButton_Click"/>
+                                            </Grid>
+                                        </Grid>
                                     </GroupBox>
 
-                                    <!-- User Management GroupBox -->
-                                    <GroupBox Header="User Management" Margin="5" Grid.Row="1">
-                                        <StackPanel Margin="10">
-                                            <TextBlock Text="User Name" Height="30" VerticalAlignment="Center" Margin="5"/>
-                                            <TextBox Name="UserNameTextBox" Height="30" Margin="5"/>
-                                            <TextBlock Text="Role" Height="30" VerticalAlignment="Center" Margin="5"/>
-                                            <ComboBox Name="UserRoleComboBox" Height="30" Margin="5">
-                                                <ComboBoxItem Content="Admin"/>
-                                                <ComboBoxItem Content="User"/>
-                                            </ComboBox>
-                                            <Button Content="Save User" Width="100" Height="30" Margin="5" Click="SaveUserManagementButton_Click"/>
-                                        </StackPanel>
+
+                                    <!-- Server 2 Settings GroupBox -->
+                                    <GroupBox Header="RMS Server 2" Margin="5" Grid.Column="1">
+                                        <Grid Margin="10">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+
+                                            <TextBlock Text="Server IP" Grid.Row="0" Margin="5" VerticalAlignment="Center"/>
+                                            <TextBox Name="Server2IpTextBox" Grid.Row="1" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+
+                                            <TextBlock Text="Common API Endpoint" Grid.Row="2" Margin="5" VerticalAlignment="Center"/>
+                                            <TextBox Name="Server2ApiEndpointTextBox" Grid.Row="3" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+
+                                            <TextBlock Text="API Key" Grid.Row="4" Margin="5" VerticalAlignment="Center"/>
+                                            <PasswordBox Name="Server2ApiKeyPasswordBox" Grid.Row="5" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+
+                                            <Grid Grid.Row="6" Margin="5">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button Content="Test Connection" Width="100" Height="30" Margin="5" Grid.Column="0" Click="TestServer2ConnectionButton_Click"/>
+                                                <Button Content="Save" Width="100" Height="30" Margin="5" Grid.Column="1" Click="SaveServer2SettingsButton_Click"/>
+                                            </Grid>
+                                        </Grid>
                                     </GroupBox>
 
-                                    <!-- Alerts and Notifications GroupBox -->
-                                    <GroupBox Header="Alerts and Notifications" Margin="5" Grid.Row="2">
-                                        <StackPanel Margin="10">
-                                            <TextBlock Text="Alert Threshold" Height="30" VerticalAlignment="Center" Margin="5"/>
-                                            <TextBox Name="AlertThresholdTextBox" Height="30" Margin="5"/>
-                                            <TextBlock Text="Notification Email" Height="30" VerticalAlignment="Center" Margin="5"/>
-                                            <TextBox Name="NotificationEmailTextBox" Height="30" Margin="5"/>
-                                            <Button Content="Save Alerts" Width="100" Height="30" Margin="5" Click="SaveAlertNotificationButton_Click"/>
-                                        </StackPanel>
-                                    </GroupBox>
                                 </Grid>
                             </Grid>
                         </TabItem>
@@ -1948,6 +2155,10 @@
                         <ListBoxItem Content="users"/>
                         <ListBoxItem Content="stationInfo"/>
                         <ListBoxItem Content="platformInfo"/>
+                        <ListBoxItem Content="displayStyles"/>
+                        <ListBoxItem Content="displaySettings"/>
+                        <ListBoxItem Content="rmsSettings"/>
+                        <ListBoxItem Content="audioSettings"/>
                     </ListBox>
 
                     <!-- ScrollViewer for displaying selected setting's content -->

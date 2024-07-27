@@ -94,5 +94,29 @@ namespace IpisCentralDisplayController.Properties {
                 this["displayStyles"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string audioSettings {
+            get {
+                return ((string)(this["audioSettings"]));
+            }
+            set {
+                this["audioSettings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string trainStatusDisplays {
+            get {
+                return ((string)(this["trainStatusDisplays"]));
+            }
+            set {
+                this["trainStatusDisplays"] = value;
+            }
+        }
     }
 }

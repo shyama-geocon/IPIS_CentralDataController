@@ -34,6 +34,7 @@ using IpisCentralDisplayController.Models;
 using System.IO.Compression;
 using IpisCentralDisplayController.custom;
 using System.ComponentModel;
+using System.Windows.Controls.Primitives;
 //using System.Windows.Forms;
 
 namespace IpisCentralDisplayController
@@ -230,6 +231,12 @@ namespace IpisCentralDisplayController
         private PlatformDeviceManager _platformDeviceManager;
 
         private DisplayStyleManager _displayStyleManager;
+        private AudioSettingsManager _audioSettingsManager;
+
+        private RmsSettingsManager _rmsSettingsManager;
+
+        private readonly TrainStatusDisplayManager _trainStatusDisplayManager;
+
         private MainViewModel _mainViewModel;
 
         DispDataIPIS_t DispDataIPIS;
@@ -291,7 +298,9 @@ namespace IpisCentralDisplayController
             _stationInfoManager = new StationInfoManager(jsonHelperAdapter);
             _platformDeviceManager = new PlatformDeviceManager(jsonHelperAdapter);
             _displayStyleManager = new DisplayStyleManager(jsonHelperAdapter);
-
+            _audioSettingsManager = new AudioSettingsManager(jsonHelperAdapter);
+            _rmsSettingsManager = new RmsSettingsManager(jsonHelperAdapter);
+            _trainStatusDisplayManager = new TrainStatusDisplayManager(jsonHelperAdapter);
 
             //Tickets = new ObservableCollection<Ticket>();
             //TicketsDataGrid.ItemsSource = Tickets;
@@ -382,6 +391,8 @@ namespace IpisCentralDisplayController
             _mainViewModel = new MainViewModel();
             _mainViewModel.LoadUserCategories(_userCategoryManager.LoadUserCategories());
             _mainViewModel.LoadUsers(_userManager.LoadUsers());
+            _mainViewModel.LoadAudioSettings(_audioSettingsManager.LoadAudioSettings());
+            _mainViewModel.LoadRmsSettings(_rmsSettingsManager.LoadRmsSettings());
             DataContext = _mainViewModel;
             Loaded += MainWindow_Loaded;
             //Loaded += onWindowLoaded;
@@ -402,6 +413,8 @@ namespace IpisCentralDisplayController
         {
             //WorkspaceManager.DeleteWorkspace();
             CheckWorkspacePath();
+            LoadDisplaySettings();
+            LoadAudioInterfaces();
             PopulateStationInfo();
             LoadPlatforms();
             InitializeUserCategories();
@@ -409,23 +422,23 @@ namespace IpisCentralDisplayController
             CheckAndCreateDisplayStyles();
             CheckAndPromptForAdminUser();
 
-            var loginWindow = new LoginWindow(_userManager);
-            bool? loginResult = loginWindow.ShowDialog();
+            //var loginWindow = new LoginWindow(_userManager);
+            //bool? loginResult = loginWindow.ShowDialog();
 
-            if (loginResult == true)
-            {
-                // Proceed with further initialization only after successful login
-                CheckAndPromptForStationInfo();
-                PopulateStatusFields();
+            //if (loginResult == true)
+            //{
+            //    // Proceed with further initialization only after successful login
+            //    CheckAndPromptForStationInfo();
+            //    PopulateStatusFields();
 
-                // await _viewModel.FetchAndDisplayTrains();
-                // Your further initialization code here
-            }
-            else
-            {
-                // Handle login cancellation or failure
-                this.Close(); // Close the MainWindow if login is not successful
-            }
+            //    // await _viewModel.FetchAndDisplayTrains();
+            //    // Your further initialization code here
+            //}
+            //else
+            //{
+            //    // Handle login cancellation or failure
+            //    this.Close(); // Close the MainWindow if login is not successful
+            //}
 
             //await _viewModel.FetchAndDisplayTrains();
         }
@@ -454,6 +467,97 @@ namespace IpisCentralDisplayController
             {
                 // Handle login cancellation or failure
                 this.Close(); // Close the MainWindow if login is not successful
+            }
+        }
+
+        //Color Display Related code
+        private void LoadDisplaySettings()
+        {
+            // Load display settings from the manager
+            var displaySettings = _trainStatusDisplayManager.LoadDisplaySettings();
+
+            // Update the ViewModel with the loaded settings
+            _mainViewModel.Theme = displaySettings.Theme;
+            _mainViewModel.TrainTemplates = new System.Collections.ObjectModel.ObservableCollection<TrainDisplayTemplate>(displaySettings.TrainTemplates);
+        }
+
+        private void SaveDisplaySettings_Click(object sender, RoutedEventArgs e)
+        {
+            SaveDisplaySettings();
+        }
+
+        private void SaveDisplaySettings()
+        {
+            // Prompt the user to confirm saving settings
+            var result = MessageBox.Show("Do you want to save the display settings?", "Save Settings", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    // Prepare the data to be saved
+                    var trainTemplatesList = new List<TrainDisplayTemplate>(_mainViewModel.TrainTemplates);
+
+                    // Save the current theme and train templates using the manager
+                    _trainStatusDisplayManager.SaveDisplaySettings(_mainViewModel.Theme, trainTemplatesList);
+
+                    // Notify the user of a successful save
+                    MessageBox.Show("Display settings saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    // Notify the user if there was an error during the save process
+                    MessageBox.Show($"An error occurred while saving the display settings: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+
+        //Audio Interface Related Code
+        private void LoadAudioInterfaces()
+        {
+            _mainViewModel.RefreshAudioInterfaces(_audioSettingsManager);
+        }
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            _mainViewModel.SaveAudioSettings(_audioSettingsManager);
+            MessageBox.Show("Audio settings have been saved successfully.", "Save Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            _mainViewModel.RefreshAudioSettings(_audioSettingsManager);
+            MessageBox.Show("Audio settings and interfaces have been refreshed.", "Refresh Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void TestAudioToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            var toggleButton = sender as ToggleButton;
+            if (toggleButton != null)
+            {
+                if (toggleButton.IsChecked == true)
+                {
+                    MessageBoxResult result = MessageBox.Show("Are you sure you want to start the audio test? This will output test audio through the selected interface.", "Start Audio Test", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        _mainViewModel.StartMonitorAudioTest(_audioSettingsManager);
+                    }
+                    else
+                    {
+                        toggleButton.IsChecked = false; // Revert the toggle if user cancels
+                    }
+                }
+                else
+                {
+                    MessageBoxResult result = MessageBox.Show("Are you sure you want to stop the audio test?", "Stop Audio Test", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        _mainViewModel.StopMonitorAudioTest(_audioSettingsManager);
+                    }
+                    else
+                    {
+                        toggleButton.IsChecked = true; // Revert the toggle if user cancels
+                    }
+                }
             }
         }
 
@@ -581,7 +685,6 @@ namespace IpisCentralDisplayController
             }
         }
 
-
         private void ChangeWorkspace_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new CommonOpenFileDialog
@@ -677,7 +780,6 @@ namespace IpisCentralDisplayController
             }
         }
 
-
         private async void ExportWorkspace_Click(object sender, RoutedEventArgs e)
         {
             string workspacePath = WorkspaceManager.GetWorkspacePath();
@@ -736,7 +838,6 @@ namespace IpisCentralDisplayController
             }
         }
 
-
         private void RepairWorkspace_Click(object sender, RoutedEventArgs e)
         {
             string workspacePath = WorkspaceManager.GetWorkspacePath();
@@ -779,6 +880,65 @@ namespace IpisCentralDisplayController
             DateTime linkTimeUtc = epoch.AddSeconds(secondsSince1970);
             DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(linkTimeUtc, TimeZoneInfo.Local);
             return localTime;
+        }
+
+        //RMS Server specific code
+        private void SaveSystemConfigButton_Click(object sender, RoutedEventArgs e)
+        {
+            _rmsSettingsManager.SaveRmsSettings(_mainViewModel.RmsSettings);
+            MessageBox.Show("RMS settings saved successfully.");
+        }
+
+        private void TestServer1ConnectionButton_Click(object sender, RoutedEventArgs e)
+        {
+            bool isConnected = _rmsSettingsManager.TestConnection(
+                _mainViewModel.RmsSettings.Server1Ip,
+                _mainViewModel.RmsSettings.Server1ApiEndpoint,
+                _mainViewModel.RmsSettings.Server1ApiKey
+            );
+            MessageBox.Show(isConnected ? "Server 1 connected successfully." : "Failed to connect to Server 1.");
+        }
+
+        private void TestServer2ConnectionButton_Click(object sender, RoutedEventArgs e)
+        {
+            bool isConnected = _rmsSettingsManager.TestConnection(
+                _mainViewModel.RmsSettings.Server2Ip,
+                _mainViewModel.RmsSettings.Server2ApiEndpoint,
+                _mainViewModel.RmsSettings.Server2ApiKey
+            );
+            MessageBox.Show(isConnected ? "Server 2 connected successfully." : "Failed to connect to Server 2.");
+        }
+
+        private void SaveServer1SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            string server1Ip = Server1IpTextBox.Text;
+            string server1ApiEndpoint = Server1ApiEndpointTextBox.Text;
+            string server1ApiKey = Server1ApiKeyPasswordBox.Password;
+
+            if (string.IsNullOrEmpty(server1Ip) || string.IsNullOrEmpty(server1ApiEndpoint) || string.IsNullOrEmpty(server1ApiKey))
+            {
+                MessageBox.Show("Please fill in all the fields for Server 1.", "Incomplete Data", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Save these values as needed
+            MessageBox.Show("Server 1 settings saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void SaveServer2SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            string server2Ip = Server2IpTextBox.Text;
+            string server2ApiEndpoint = Server2ApiEndpointTextBox.Text;
+            string server2ApiKey = Server2ApiKeyPasswordBox.Password;
+
+            if (string.IsNullOrEmpty(server2Ip) || string.IsNullOrEmpty(server2ApiEndpoint) || string.IsNullOrEmpty(server2ApiKey))
+            {
+                MessageBox.Show("Please fill in all the fields for Server 2.", "Incomplete Data", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Save these values as needed
+            MessageBox.Show("Server 2 settings saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
 
@@ -1021,206 +1181,6 @@ namespace IpisCentralDisplayController
                 NumberOfPlatformBridgesTextBox.Value = stationInfo.NumberOfPlatformBridges;
             }
         }
-
-        //private void LoadPlatforms()
-        //{
-        //    PlatformListView.ItemsSource = _platformDeviceManager.CurrentPlatformInfo;
-        //}
-
-        //private void PlatformListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        //{
-        //    if (PlatformListView.SelectedItem is Platform selectedPlatform)
-        //    {
-        //        PlatformNumberTextBox.Text = selectedPlatform.PlatformNumber.ToString();
-        //        PlatformTypeComboBox.SelectedItem = selectedPlatform.PlatformType.ToString();
-        //        PlatformDescriptionTextBox.Text = selectedPlatform.Description;
-        //        PlatformSubnetTextBox.Text = selectedPlatform.Subnet;
-        //        DeviceListView.ItemsSource = selectedPlatform.Devices;
-        //    }
-        //}
-
-        //private void DeviceListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        //{
-        //    if (DeviceListView.SelectedItem is Device selectedDevice)
-        //    {
-        //        DeviceTypeComboBox.SelectedItem = selectedDevice.DeviceType.ToString();
-        //        DeviceIpAddressTextBox.Text = selectedDevice.IpAddress;
-        //        DeviceEnabledCheckBox.IsChecked = selectedDevice.IsEnabled;
-        //    }
-        //}
-
-        //private void AddPlatformButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var platformTypeComboBoxItem = PlatformTypeComboBox.SelectedItem as ComboBoxItem;
-        //    string platformTypeString = platformTypeComboBoxItem?.Content.ToString();
-
-        //    if (!Enum.TryParse(typeof(PlatformType), platformTypeString, out var platformTypeEnum))
-        //    {
-        //        MessageBox.Show("Invalid platform type selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        //        return;
-        //    }
-
-        //    string platformNumber = PlatformNumberTextBox.Text;
-        //    var existingPlatform = _platformDeviceManager.CurrentPlatformInfo.FirstOrDefault(p => p.PlatformNumber == platformNumber);
-
-        //    if (existingPlatform != null)
-        //    {
-        //        MessageBox.Show("Platform with this number already exists.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        //        return;
-        //    }
-
-        //    var newPlatform = new Platform
-        //    {
-        //        PlatformNumber = platformNumber, // Treat PlatformNumber as string
-        //        PlatformType = (PlatformType)platformTypeEnum,
-        //        Description = PlatformDescriptionTextBox.Text,
-        //        Subnet = PlatformSubnetTextBox.Text,
-        //        Devices = new System.Collections.Generic.List<Device>()
-        //    };
-        //    _platformDeviceManager.AddPlatform(newPlatform);
-        //    LoadPlatforms();
-        //}
-
-        //private void UpdatePlatformButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (PlatformListView.SelectedItem is Platform selectedPlatform)
-        //    {
-        //        var platformTypeComboBoxItem = PlatformTypeComboBox.SelectedItem as ComboBoxItem;
-        //        string platformTypeString = platformTypeComboBoxItem?.Content.ToString();
-
-        //        if (!Enum.TryParse(typeof(PlatformType), platformTypeString, out var platformTypeEnum))
-        //        {
-        //            MessageBox.Show("Invalid platform type selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        //            return;
-        //        }
-
-        //        string platformNumber = PlatformNumberTextBox.Text;
-        //        var existingPlatform = _platformDeviceManager.CurrentPlatformInfo.FirstOrDefault(p => p.PlatformNumber == platformNumber && p != selectedPlatform);
-
-        //        if (existingPlatform != null)
-        //        {
-        //            MessageBox.Show("Platform with this number already exists.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        //            return;
-        //        }
-
-        //        var result = MessageBox.Show("Are you sure you want to update this platform?", "Confirm Update", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        //        if (result == MessageBoxResult.Yes)
-        //        {
-        //            selectedPlatform.PlatformNumber = platformNumber;
-        //            selectedPlatform.PlatformType = (PlatformType)platformTypeEnum;
-        //            selectedPlatform.Description = PlatformDescriptionTextBox.Text;
-        //            selectedPlatform.Subnet = PlatformSubnetTextBox.Text;
-        //            _platformDeviceManager.UpdatePlatform(selectedPlatform);
-        //            LoadPlatforms();
-        //        }
-        //    }
-        //}
-
-        //private void DeletePlatformButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (PlatformListView.SelectedItem is Platform selectedPlatform)
-        //    {
-        //        var result = MessageBox.Show("Are you sure you want to delete this platform?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-        //        if (result == MessageBoxResult.Yes)
-        //        {
-        //            _platformDeviceManager.DeletePlatform(selectedPlatform.PlatformNumber);
-        //            LoadPlatforms();
-        //        }
-        //    }
-        //}
-
-
-        //private void AddDeviceButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (PlatformListView.SelectedItem is Platform selectedPlatform)
-        //    {
-        //        try
-        //        {
-        //            string ipAddress = DeviceIpAddressTextBox.Text;
-        //            if (selectedPlatform.Devices.Any(d => d.IpAddress == ipAddress))
-        //            {
-        //                MessageBox.Show("A device with the same IP address already exists on this platform.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        //                return;
-        //            }
-
-        //            var newDevice = new Device
-        //            {
-        //                Id = selectedPlatform.Devices.Count > 0 ? selectedPlatform.Devices.Max(d => d.Id) + 1 : 1,
-        //                DeviceType = (DeviceType)DeviceTypeComboBox.SelectedItem,
-        //                IpAddress = ipAddress,
-        //                IsEnabled = DeviceEnabledCheckBox.IsChecked ?? true,
-        //                Created = DateTime.Now,
-        //                Updated = DateTime.Now
-        //            };
-
-        //            _platformDeviceManager.AddDevice(selectedPlatform.PlatformNumber, newDevice);
-        //            DeviceListView.ItemsSource = selectedPlatform.Devices;
-        //            MessageBox.Show("Device added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-        //        }
-        //        catch (InvalidOperationException ex)
-        //        {
-        //            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        //        }
-        //    }
-        //}
-
-        //private void UpdateDeviceButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (PlatformListView.SelectedItem is Platform selectedPlatform && DeviceListView.SelectedItem is Device selectedDevice)
-        //    {
-        //        try
-        //        {
-        //            string ipAddress = DeviceIpAddressTextBox.Text;
-        //            if (selectedPlatform.Devices.Any(d => d.IpAddress == ipAddress && d.Id != selectedDevice.Id))
-        //            {
-        //                MessageBox.Show("A device with the same IP address already exists on this platform.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        //                return;
-        //            }
-
-        //            selectedDevice.DeviceType = (DeviceType)DeviceTypeComboBox.SelectedItem;
-        //            selectedDevice.IpAddress = ipAddress;
-        //            selectedDevice.IsEnabled = DeviceEnabledCheckBox.IsChecked ?? true;
-        //            selectedDevice.Updated = DateTime.Now;
-
-        //            if (MessageBox.Show("Are you sure you want to update this device?", "Confirm Update", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-        //            {
-        //                _platformDeviceManager.UpdateDevice(selectedPlatform.PlatformNumber, selectedDevice);
-        //                DeviceListView.ItemsSource = selectedPlatform.Devices;
-        //                MessageBox.Show("Device updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-        //            }
-        //        }
-        //        catch (InvalidOperationException ex)
-        //        {
-        //            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        //        }
-        //    }
-        //}
-
-        //private void DeleteDeviceButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (DeviceListView.SelectedItem is Device selectedDevice && PlatformListView.SelectedItem is Platform selectedPlatform)
-        //    {
-        //        if (MessageBox.Show("Are you sure you want to delete this device?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-        //        {
-        //            _platformDeviceManager.DeleteDevice(selectedPlatform.PlatformNumber, selectedDevice.Id);
-        //            DeviceListView.ItemsSource = selectedPlatform.Devices;
-        //            MessageBox.Show("Device deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-        //        }
-        //    }
-        //}
-
-        //private void DeleteDeviceMenuItem_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (DeviceListView.SelectedItem is Device selectedDevice && PlatformListView.SelectedItem is Platform selectedPlatform)
-        //    {
-        //        var result = MessageBox.Show("Are you sure you want to delete this device?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-        //        if (result == MessageBoxResult.Yes)
-        //        {
-        //            _platformDeviceManager.DeleteDevice(selectedPlatform.PlatformNumber, selectedDevice.Id);
-        //            DeviceListView.ItemsSource = selectedPlatform.Devices;
-        //        }
-        //    }
-        //}
 
         private void LoadPlatforms()
         {
@@ -1707,39 +1667,14 @@ namespace IpisCentralDisplayController
             SelectMedia(MediaFilesListBox.SelectedIndex);
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Media and Timeline data saved.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            // Implement logic to save media and timeline data
-        }
+        //private void SaveButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    MessageBox.Show("Media and Timeline data saved.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    // Implement logic to save media and timeline data
+        //}
 
         // code for rms server
-        private void SaveSystemConfigButton_Click(object sender, RoutedEventArgs e)
-        {
-            string ipAddress = IpAddressTextBox.Text;
-            string networkSettings = NetworkSettingsTextBox.Text;
 
-            // Implement logic to save system configuration
-            MessageBox.Show("System configuration saved.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void SaveUserManagementButton_Click(object sender, RoutedEventArgs e)
-        {
-            string userName = UserNameTextBox.Text;
-            string userRole = (UserRoleComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
-
-            // Implement logic to save user management information
-            MessageBox.Show("User management saved.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void SaveAlertNotificationButton_Click(object sender, RoutedEventArgs e)
-        {
-            string alertThreshold = AlertThresholdTextBox.Text;
-            string notificationEmail = NotificationEmailTextBox.Text;
-
-            // Implement logic to save alerts and notifications information
-            MessageBox.Show("Alerts and notifications saved.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
 
         // code for platform manager
         private void AddDisplayButton_Click(object sender, RoutedEventArgs e)
@@ -2573,7 +2508,7 @@ namespace IpisCentralDisplayController
                         settingContent = _workspacePath;
                         break;
                     case "userCategories":
-                        settingContent = JsonConvert.SerializeObject(_userCategoryManager.LoadUserCategories(), Formatting.Indented);
+                        settingContent = JsonConvert.SerializeObject(_userCategoryManager.LoadUserCategories(), Formatting.None);
                         break;
                     case "users":
                         settingContent = JsonConvert.SerializeObject(_userManager.LoadUsers(), Formatting.Indented);
@@ -2583,6 +2518,18 @@ namespace IpisCentralDisplayController
                         break;
                     case "platformInfo":
                         settingContent = JsonConvert.SerializeObject(_platformDeviceManager.CurrentPlatformInfo, Formatting.Indented);
+                        break;
+                    case "displayStyles":
+                        settingContent = JsonConvert.SerializeObject(_displayStyleManager.LoadDisplayStyles(), Formatting.Indented);
+                        break;
+                    case "displaySettings":
+                        settingContent = JsonConvert.SerializeObject(_trainStatusDisplayManager.LoadDisplaySettings(), Formatting.Indented);
+                        break;
+                    case "audioSettings":
+                        settingContent = JsonConvert.SerializeObject(_audioSettingsManager.LoadAudioSettings(), Formatting.Indented);
+                        break;
+                    case "rmsSettings":
+                        settingContent = JsonConvert.SerializeObject(_rmsSettingsManager.LoadRmsSettings(), Formatting.Indented);
                         break;
                 }
 

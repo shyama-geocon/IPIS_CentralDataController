@@ -35,7 +35,9 @@ using System.IO.Compression;
 using IpisCentralDisplayController.custom;
 using System.ComponentModel;
 using System.Windows.Controls.Primitives;
-//using System.Windows.Forms;
+using MediaToolkit;
+using MediaToolkit.Model;
+using MediaToolkit.Options;
 
 namespace IpisCentralDisplayController
 {
@@ -73,7 +75,7 @@ namespace IpisCentralDisplayController
         public bool IsActive { get; set; }
     }
 
-    public class MediaFile
+    public class CAPMediaFile
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -191,20 +193,6 @@ namespace IpisCentralDisplayController
         }
     }
 
-    //public class User
-    //{
-    //    public string Name { get; set; }
-    //    public string Email { get; set; }
-    //}
-
-    //public class Train
-    //{
-    //    public string TrainNumber { get; set; }
-    //    public string TrainName { get; set; }
-    //    public string ArrivalTime { get; set; }
-    //    public string DepartureTime { get; set; }
-    //}
-
     public class CgdbManager
     {
         public string DisplayId { get; set; }
@@ -237,7 +225,15 @@ namespace IpisCentralDisplayController
 
         private readonly TrainStatusDisplayManager _trainStatusDisplayManager;
 
+        private MediaManager _mediaManager;
+
+        private TimelineManager _timelineManager;
+
+
         private MainViewModel _mainViewModel;
+
+        private DispatcherTimer _mediaTimer;
+        private double _imageZoom = 1.0;
 
         DispDataIPIS_t DispDataIPIS;
         DispDataIPISs_t DispDataIPISs;
@@ -251,7 +247,6 @@ namespace IpisCentralDisplayController
         Canvas canvas;
 
         private NtesApiResponse951 ntesApiResponse951;
-
         public ObservableCollection<Ticket> Tickets { get; set; }
         public ObservableCollection<BackupItem> LocalBackups { get; set; }
         public ObservableCollection<BackupItem> CloudBackups { get; set; }
@@ -264,11 +259,8 @@ namespace IpisCentralDisplayController
         public ObservableCollection<User> Users { get; set; }
         public User CurrentUser { get; set; }
 
-        //public ObservableCollection<Display> Displays { get; set; }
-        //public ObservableCollection<DisplaySummary> DisplaySummaries { get; set; }
-        //public Display SelectedDisplay { get; set; }
 
-        public ObservableCollection<MediaFile> MediaFiles { get; set; }
+        //public ObservableCollection<MediaFile> MediaFiles { get; set; }
         public ObservableCollection<Clip> TimelineClips { get; set; }
         public int SelectedMediaIndex { get; set; }
         public string ActiveTab { get; set; }
@@ -292,6 +284,10 @@ namespace IpisCentralDisplayController
             InitializeComponent();
             this.DataContext = new ColorViewModel();
 
+            _mediaTimer = new DispatcherTimer();
+            _mediaTimer.Interval = TimeSpan.FromMilliseconds(500);
+            _mediaTimer.Tick += MediaTimer_Tick;
+
             var jsonHelperAdapter = new SettingsJsonHelperAdapter();
             _userManager = new UserManager(jsonHelperAdapter);
             _userCategoryManager = new UserCategoryManager(jsonHelperAdapter);
@@ -301,105 +297,21 @@ namespace IpisCentralDisplayController
             _audioSettingsManager = new AudioSettingsManager(jsonHelperAdapter);
             _rmsSettingsManager = new RmsSettingsManager(jsonHelperAdapter);
             _trainStatusDisplayManager = new TrainStatusDisplayManager(jsonHelperAdapter);
+            _mediaManager = new MediaManager(jsonHelperAdapter);
+            _timelineManager = new TimelineManager(jsonHelperAdapter);
 
-            //Tickets = new ObservableCollection<Ticket>();
-            //TicketsDataGrid.ItemsSource = Tickets;
-
-            //LocalBackups = new ObservableCollection<BackupItem>();
-            //CloudBackups = new ObservableCollection<BackupItem>();
-
-            //// Bind data grids to collections
-            //LocalBackupHistoryDataGrid.ItemsSource = LocalBackups;
-            //CloudBackupHistoryDataGrid.ItemsSource = CloudBackups;
-
-            //Logs = new ObservableCollection<LogItem>
-            //{
-            //    new LogItem { Timestamp = "2024-06-01 10:00:00", Message = "IPIS system started", Severity = "info" },
-            //    new LogItem { Timestamp = "2024-06-01 10:05:00", Message = "Train 1234 arrived at platform 1", Severity = "info" },
-            //    new LogItem { Timestamp = "2024-06-01 10:10:00", Message = "Announcement made for train 1234", Severity = "info" },
-            //    new LogItem { Timestamp = "2024-06-01 10:15:00", Message = "Minor delay in announcement", Severity = "warning" },
-            //    new LogItem { Timestamp = "2024-06-01 11:00:00", Message = "IPIS system error", Severity = "error" },
-            //    new LogItem { Timestamp = "2024-06-02 09:00:00", Message = "IPIS system maintenance", Severity = "info" },
-            //    new LogItem { Timestamp = "2024-06-02 10:15:00", Message = "Train 5678 departed from platform 2", Severity = "info" },
-            //    new LogItem { Timestamp = "2024-06-02 11:00:00", Message = "Platform 3 speaker malfunction", Severity = "error" },
-            //    new LogItem { Timestamp = "2024-06-03 08:00:00", Message = "Morning announcements started", Severity = "info" },
-            //    new LogItem { Timestamp = "2024-06-03 08:30:00", Message = "Train 7890 delayed by 5 minutes", Severity = "warning" }
-            //};
-            //FilteredLogs = new ObservableCollection<LogItem>(Logs);
-
-            //LogsDataGrid.ItemsSource = FilteredLogs;
-
-            //Alerts = new ObservableCollection<Alert>
-            //{
-            //    new Alert { Message = "Flood warning in the area", StartTime = "2024-06-18T08:00:00Z", EndTime = "2024-06-18T12:00:00Z", AudioAvailable = true, Urgency = "Immediate", Severity = "Severe", Certainty = "Observed", IsActive = true },
-            //    new Alert { Message = "Cyclone alert", StartTime = "2024-06-18T09:00:00Z", EndTime = "2024-06-18T15:00:00Z", AudioAvailable = false, Urgency = "Expected", Severity = "Extreme", Certainty = "Likely", IsActive = true },
-            //    new Alert { Message = "Heat wave alert", StartTime = "2024-06-17T10:00:00Z", EndTime = "2024-06-17T18:00:00Z", AudioAvailable = false, Urgency = "Expected", Severity = "Moderate", Certainty = "Possible", IsActive = false }
-            //};
-
-            //ActiveAlerts = new ObservableCollection<Alert>(Alerts.Where(alert => alert.IsActive));
-
-            //AllAlertsDataGrid.ItemsSource = Alerts;
-            //ActiveAlertsDataGrid.ItemsSource = ActiveAlerts;
-
-            //Users = new ObservableCollection<User>();
-            //UsersDataGrid.ItemsSource = Users;
-
-            //Displays = new ObservableCollection<Display>();
-            //DisplaySummaries = new ObservableCollection<DisplaySummary>();
-            //DisplaySummaryDataGrid.ItemsSource = DisplaySummaries;
-
-            //MediaFiles = new ObservableCollection<MediaFile>();
-            //TimelineClips = new ObservableCollection<Clip>();
-            //ActiveTab = "media";
-
-            //MediaFilesListBox.ItemsSource = MediaFiles;
-            //TimelineListBox.ItemsSource = TimelineClips;
-
-            //InitializePAComponents();
-
-            //// Bind audio interfaces, microphones, and speakers
-            //AudioInterfaceComboBox.ItemsSource = new string[] { "Interface 1", "Interface 2", "Interface 3" };
-            //MicrophoneComboBox.ItemsSource = new string[] { "Mic 1", "Mic 2", "Mic 3" };
-            //PaSpeakerComboBox.ItemsSource = new string[] { "Speaker 1", "Speaker 2", "Speaker 3" };
-            //LocalSpeakerComboBox.ItemsSource = new string[] { "Speaker 1", "Speaker 2", "Speaker 3" };
-
-            //// Bind audio files and playlist
-            //audioFiles = new ObservableCollection<string> { "file1.mp3", "file2.mp3", "file3.mp3" };
-            //playlist = new ObservableCollection<string>();
-            //AudioFilesListBox.ItemsSource = audioFiles;
-            //PlaylistListBox.ItemsSource = playlist;
-
-            //InitializeDashboardComponents();
             InitializeDateTimeUpdate();
-
-            //// Bind user information and status
-            //UsernameStatus.Text = GetCurrentUser().Name;
-            //UsertypeStatus.Text = "Admin"; // Mock user type
-            //IpStatus.Text = "No conflicts";
-            //ConnectedDevicesStatus.Text = "0";
-            //NtesStatus.Text = "CONNECTED";
-
-
-            //// Bind train list and CGDB manager list
-            //TrainListBox.ItemsSource = trainList;
-            ////CgdbManagerListBox.ItemsSource = cgdbManagerList;
-
-            //Trains = new ObservableCollection<TrainViewModel>();
-            //_viewModel = (TrainListViewModel)DataContext;
-            
-
+          
             _mainViewModel = new MainViewModel();
             _mainViewModel.LoadUserCategories(_userCategoryManager.LoadUserCategories());
             _mainViewModel.LoadUsers(_userManager.LoadUsers());
             _mainViewModel.LoadAudioSettings(_audioSettingsManager.LoadAudioSettings());
             _mainViewModel.LoadRmsSettings(_rmsSettingsManager.LoadRmsSettings());
+            _mainViewModel.LoadMediaFiles(_mediaManager.LoadMediaFiles());
+            _mainViewModel.LoadTimelines(_timelineManager.LoadTimelines());
             DataContext = _mainViewModel;
             Loaded += MainWindow_Loaded;
-            //Loaded += onWindowLoaded;
-
-            //// Start refreshing data
-            //refreshTimer.Start();
-
+          
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -421,6 +333,9 @@ namespace IpisCentralDisplayController
 
             CheckAndCreateDisplayStyles();
             CheckAndPromptForAdminUser();
+
+            EnsureDefaultTimeline();
+            tb_timeline.Text = _mainViewModel.SelectedTimeline.Name;
 
             //var loginWindow = new LoginWindow(_userManager);
             //bool? loginResult = loginWindow.ShowDialog();
@@ -909,39 +824,6 @@ namespace IpisCentralDisplayController
             MessageBox.Show(isConnected ? "Server 2 connected successfully." : "Failed to connect to Server 2.");
         }
 
-        private void SaveServer1SettingsButton_Click(object sender, RoutedEventArgs e)
-        {
-            string server1Ip = Server1IpTextBox.Text;
-            string server1ApiEndpoint = Server1ApiEndpointTextBox.Text;
-            string server1ApiKey = Server1ApiKeyPasswordBox.Password;
-
-            if (string.IsNullOrEmpty(server1Ip) || string.IsNullOrEmpty(server1ApiEndpoint) || string.IsNullOrEmpty(server1ApiKey))
-            {
-                MessageBox.Show("Please fill in all the fields for Server 1.", "Incomplete Data", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // Save these values as needed
-            MessageBox.Show("Server 1 settings saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void SaveServer2SettingsButton_Click(object sender, RoutedEventArgs e)
-        {
-            string server2Ip = Server2IpTextBox.Text;
-            string server2ApiEndpoint = Server2ApiEndpointTextBox.Text;
-            string server2ApiKey = Server2ApiKeyPasswordBox.Password;
-
-            if (string.IsNullOrEmpty(server2Ip) || string.IsNullOrEmpty(server2ApiEndpoint) || string.IsNullOrEmpty(server2ApiKey))
-            {
-                MessageBox.Show("Please fill in all the fields for Server 2.", "Incomplete Data", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // Save these values as needed
-            MessageBox.Show("Server 2 settings saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-
         //User Categories
         private void InitializeUserCategories()
         {
@@ -1160,6 +1042,7 @@ namespace IpisCentralDisplayController
                 // Set other fields (IpStatus, ConnectedDevicesStatus, NtesStatus) as needed
             }
         }
+
         private void PopulateStationInfo()
         {
             var stationInfo = _stationInfoManager.CurrentStationInfo;
@@ -1577,101 +1460,614 @@ namespace IpisCentralDisplayController
         }
 
         // code for multimedia
-        private void AddClipToTimeline(Clip clip)
+        private void AddImageMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            TimelineClips.Add(clip);
-        }
-
-        private void RemoveClipFromTimeline(int index)
-        {
-            if (index >= 0 && index < TimelineClips.Count)
-            {
-                TimelineClips.RemoveAt(index);
-            }
-        }
-
-        private void SelectMedia(int index)
-        {
-            if (index >= 0 && index < MediaFiles.Count)
-            {
-                SelectedMediaIndex = index;
-                MediaFilesListBox.SelectedIndex = index;
-                PreviewMedia();
-            }
-        }
-
-        private void PreviewMedia()
-        {
-            if (SelectedMediaIndex >= 0 && SelectedMediaIndex < MediaFiles.Count)
-            {
-                var selectedMedia = MediaFiles[SelectedMediaIndex];
-                // Implement media preview logic
-            }
-        }
-
-        private void HandleTabChange(object sender, SelectionChangedEventArgs e)
-        {
-            if (MediaTabControl.SelectedItem is TabItem selectedTab)
-            {
-                ActiveTab = selectedTab.Header.ToString().ToLower();
-                RenderActiveComponent();
-            }
-        }
-
-        private void RenderActiveComponent()
-        {
-            // Implement logic to render the active component based on ActiveTab
-        }
-
-        private void ImportMediaButton_Click(object sender, RoutedEventArgs e)
-        {
-            var openFileDialog = new Microsoft.Win32.OpenFileDialog
+            var openFileDialog = new OpenFileDialog
             {
                 Multiselect = true,
-                Filter = "Media Files|*.mp4;*.mp3;*.jpg;*.png;*.avi;*.wav"
+                Filter = "Image Files|*.jpg;*.png;*.bmp;*.gif"
             };
 
             if (openFileDialog.ShowDialog() == true)
             {
                 foreach (var fileName in openFileDialog.FileNames)
                 {
-                    var mediaFile = new MediaFile
+                    var imageFile = new ImageFile
                     {
                         Id = fileName,
                         Name = System.IO.Path.GetFileName(fileName),
-                        Type = GetMediaType(fileName),
-                        FilePath = fileName
+                        FilePath = fileName,
+                        Resolution = GetImageResolution(fileName)
                     };
-                    MediaFiles.Add(mediaFile);
+
+                    // Add to MediaManager and ViewModel
+                    try
+                    {
+                        _mediaManager.AddMediaFile(imageFile);
+                        _mainViewModel.ImageFiles.Add(imageFile);
+                        _mainViewModel.MediaFiles.Add(imageFile);
+                    }
+                    catch (Exception exp)
+                    {
+                        MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+
+                // Save the updated collection
+                _mediaManager.SaveMediaFiles(_mainViewModel.MediaFiles.ToList());
+            }
+        }
+
+        private void AddVideoMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Multiselect = true,
+                Filter = "Video Files|*.mp4;*.avi;*.mkv;*.mov"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                foreach (var fileName in openFileDialog.FileNames)
+                {
+                    var videoFile = new VideoFile
+                    {
+                        Id = fileName,
+                        Name = System.IO.Path.GetFileName(fileName),
+                        FilePath = fileName,
+                        Resolution = GetVideoResolution(fileName),
+                        Duration = GetVideoDuration(fileName),
+                        ThumbnailPath = GenerateThumbnail(fileName, _workspacePath)
+                    };
+
+                    // Add to MediaManager and ViewModel
+                    try
+                    {
+                        _mediaManager.AddMediaFile(videoFile);
+                        _mainViewModel.VideoFiles.Add(videoFile);
+                        _mainViewModel.MediaFiles.Add(videoFile);
+                    }
+                    catch (Exception exp)
+                    {
+                        MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+
+                // Save the updated collection
+                //_mediaManager.SaveMediaFiles(_mainViewModel.MediaFiles.ToList());
+            }
+        }
+
+        private void RemoveImageMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (ImageListView.SelectedItem is ImageFile selectedImage)
+            {
+                // Remove from MediaManager and ViewModel
+                _mediaManager.DeleteMediaFile(selectedImage.Id);
+                _mainViewModel.ImageFiles.Remove(selectedImage);
+                _mainViewModel.MediaFiles.Remove(selectedImage);
+
+                // Save the updated collection
+                _mediaManager.SaveMediaFiles(_mainViewModel.MediaFiles.ToList());
+            }
+        }
+
+        private void RemoveVideoMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (VideoListView.SelectedItem is VideoFile selectedVideo)
+            {
+                // Remove from MediaManager and ViewModel
+                _mediaManager.DeleteMediaFile(selectedVideo.Id);
+                _mainViewModel.VideoFiles.Remove(selectedVideo);
+                _mainViewModel.MediaFiles.Remove(selectedVideo);
+
+                // Save the updated collection
+                _mediaManager.SaveMediaFiles(_mainViewModel.MediaFiles.ToList());
+            }
+        }
+
+        private void ImageListView_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                foreach (var file in files)
+                {
+                    if (System.IO.Path.GetExtension(file).ToLower() is ".jpg" or ".png" or ".bmp" or ".gif")
+                    {
+                        var imageFile = new ImageFile
+                        {
+                            Id = file,
+                            Name = System.IO.Path.GetFileName(file),
+                            FilePath = file,
+                            Resolution = GetImageResolution(file)
+                        };
+
+                        // Add to MediaManager and ViewModel
+                        try
+                        {
+                            _mediaManager.AddMediaFile(imageFile);
+                            _mainViewModel.ImageFiles.Add(imageFile);
+                            _mainViewModel.MediaFiles.Add(imageFile);
+                        }
+                        catch (Exception exp)
+                        {
+                            MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+
+                // Save the updated collection
+                _mediaManager.SaveMediaFiles(_mainViewModel.MediaFiles.ToList());
+            }
+        }
+
+        private void VideoListView_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                foreach (var file in files)
+                {
+                    if (System.IO.Path.GetExtension(file).ToLower() is ".mp4" or ".avi" or ".mkv" or ".mov")
+                    {
+                        var videoFile = new VideoFile
+                        {
+                            Id = file,
+                            Name = System.IO.Path.GetFileName(file),
+                            FilePath = file,
+                            Resolution = GetVideoResolution(file),
+                            Duration = GetVideoDuration(file)
+                        };
+
+                        // Add to MediaManager and ViewModel
+                        try
+                        {
+                            _mediaManager.AddMediaFile(videoFile);
+                            _mainViewModel.VideoFiles.Add(videoFile);
+                            _mainViewModel.MediaFiles.Add(videoFile);
+                        }
+                        catch (Exception exp)
+                        {
+                            MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+
+                // Save the updated collection
+                _mediaManager.SaveMediaFiles(_mainViewModel.MediaFiles.ToList());
+            }
+        }
+
+        private void AddAudioMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Multiselect = true,
+                Filter = "Audio Files|*.mp3;*.wav"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                foreach (var fileName in openFileDialog.FileNames)
+                {
+                    var audioFile = new AudioFile
+                    {
+                        Id = fileName,
+                        Name = System.IO.Path.GetFileName(fileName),
+                        FilePath = fileName,
+                        Duration = GetAudioDuration(fileName),
+                        BitRate = GetAudioBitRate(fileName)
+                    };
+
+                    // Add to MediaManager and ViewModel
+                    try
+                    {
+                        _mediaManager.AddMediaFile(audioFile);
+                        _mainViewModel.AudioFiles.Add(audioFile);
+                        _mainViewModel.MediaFiles.Add(audioFile);
+                    }
+                    catch (Exception exp)
+                    {
+                        MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+
+                // Save the updated collection
+                _mediaManager.SaveMediaFiles(_mainViewModel.MediaFiles.ToList());
+            }
+        }
+
+        private void RemoveAudioMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (AudioListView.SelectedItem is AudioFile selectedAudio)
+            {
+                // Remove from MediaManager and ViewModel
+                _mediaManager.DeleteMediaFile(selectedAudio.Id);
+                _mainViewModel.AudioFiles.Remove(selectedAudio);
+                _mainViewModel.MediaFiles.Remove(selectedAudio);
+
+                // Save the updated collection
+                _mediaManager.SaveMediaFiles(_mainViewModel.MediaFiles.ToList());
+            }
+        }
+
+        private void AudioListView_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                foreach (var file in files)
+                {
+                    if (System.IO.Path.GetExtension(file).ToLower() is ".mp3" or ".wav")
+                    {
+                        var audioFile = new AudioFile
+                        {
+                            Id = file,
+                            Name = System.IO.Path.GetFileName(file),
+                            FilePath = file,
+                            Duration = GetAudioDuration(file),
+                            BitRate = GetAudioBitRate(file)
+                        };
+
+                        // Add to MediaManager and ViewModel
+                        try
+                        {
+                            _mediaManager.AddMediaFile(audioFile);
+                            _mainViewModel.AudioFiles.Add(audioFile);
+                            _mainViewModel.MediaFiles.Add(audioFile);
+                        }
+                        catch (Exception exp)
+                        {
+                            MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+
+                // Save the updated collection
+                _mediaManager.SaveMediaFiles(_mainViewModel.MediaFiles.ToList());
+            }
+        }
+
+        private TimeSpan GetAudioDuration(string filePath)
+        {
+            // Implement logic to get audio duration
+            return TimeSpan.Zero; // Placeholder
+        }
+
+        private string GetAudioBitRate(string filePath)
+        {
+            // Implement logic to get audio bit rate
+            return "Unknown"; // Placeholder
+        }
+
+        public TimeSpan GetVideoDuration(string filePath)
+        {
+            try
+            {
+                var inputFile = new MediaToolkit.Model.MediaFile { Filename = filePath };
+                using (var engine = new Engine())
+                {
+                    engine.GetMetadata(inputFile);
+                }
+                return inputFile.Metadata.Duration;
+            }
+            catch
+            {
+                return TimeSpan.Zero;
+            }
+        }
+
+        public string GetVideoResolution(string filePath)
+        {
+            try
+            {
+                var inputFile = new MediaToolkit.Model.MediaFile { Filename = filePath };
+                using (var engine = new Engine())
+                {
+                    engine.GetMetadata(inputFile);
+                }
+                return $"{inputFile.Metadata.VideoData.FrameSize}";
+            }
+            catch
+            {
+                return "Unknown";
+            }
+        }
+
+        public string GenerateThumbnail(string videoFilePath, string workspacePath, double frameTime = 1.0)
+        {
+            string internalDir = Path.Combine(workspacePath, "Internal");
+            Directory.CreateDirectory(internalDir);
+            string thumbnailPath = Path.Combine(internalDir, Path.GetFileNameWithoutExtension(videoFilePath) + ".jpg");
+
+            try
+            {
+                var inputFile = new MediaToolkit.Model.MediaFile { Filename = videoFilePath };
+                var outputFile = new MediaToolkit.Model.MediaFile { Filename = thumbnailPath };
+
+                using (var engine = new Engine())
+                {
+                    engine.GetMetadata(inputFile);
+
+                    var options = new ConversionOptions
+                    {
+                        Seek = TimeSpan.FromSeconds(frameTime),
+                        CustomWidth = 160,
+                        CustomHeight = 120
+                    };
+
+                    engine.GetThumbnail(inputFile, outputFile, options);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error generating thumbnail: {ex.Message}");
+                return null;
+            }
+
+            return thumbnailPath;
+        }
+
+        private string GetImageResolution(string filePath)
+        {
+            try
+            {
+                var bitmap = new BitmapImage(new Uri(filePath));
+                return $"{bitmap.PixelWidth}x{bitmap.PixelHeight}";
+            }
+            catch
+            {
+                return "Unknown";
+            }
+        }
+
+        private void UseAudioMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void UseVideoMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (VideoListView.SelectedItem is VideoFile selectedVideo)
+            {
+                var newTimelineItem = new TimelineItem
+                {
+                    Name = selectedVideo.Name,
+                    ItemType = TimelineItemType.Video,
+                    FilePath = selectedVideo.FilePath,
+                    Resolution = selectedVideo.Resolution,
+                    Duration = selectedVideo.Duration,
+                    ThumbnailPath = selectedVideo.ThumbnailPath, // Assuming thumbnail is already generated
+                    Offset = CalculateNextItemOffset(), // Calculate start time
+                    Position = _mainViewModel.TimelineItems.Count // Position at the end of the timeline
+                };
+
+                _mainViewModel.TimelineItems.Add(newTimelineItem);
+                _mainViewModel.SelectedTimeline.Items.Add(newTimelineItem);
+            }
+        }
+
+
+        private void UseImageMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (ImageListView.SelectedItem is ImageFile selectedImage)
+            {
+                var newTimelineItem = new TimelineItem
+                {
+                    Name = selectedImage.Name,
+                    ItemType = TimelineItemType.Image,
+                    FilePath = selectedImage.FilePath,
+                    Resolution = selectedImage.Resolution,
+                    ThumbnailPath = selectedImage.FilePath, // Assuming thumbnail is the image itself
+                    Duration = TimeSpan.FromSeconds(5), // Default duration, can be adjusted
+                    Offset = CalculateNextItemOffset(), // Calculate start time
+                    Position = _mainViewModel.TimelineItems.Count // Position at the end of the timeline
+                };
+
+                _mainViewModel.TimelineItems.Add(newTimelineItem);
+                _mainViewModel.SelectedTimeline.Items.Add(newTimelineItem);
+            }
+        }
+
+        private void UseTextSlideMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (TextSlideListView.SelectedItem is TextSlideFile selectedTextSlide)
+            {
+                var newTimelineItem = new TimelineItem
+                {
+                    Name = selectedTextSlide.Name,
+                    ItemType = TimelineItemType.TextSlide,
+                    FilePath = selectedTextSlide.FilePath, // Assuming it was saved as an image
+                    Resolution = "Unknown", // You can calculate this if needed
+                    Duration = TimeSpan.FromSeconds(5), // Default duration, can be adjusted
+                    Offset = CalculateNextItemOffset(), // Calculate start time
+                    Position = _mainViewModel.TimelineItems.Count // Position at the end of the timeline
+                };
+
+                _mainViewModel.TimelineItems.Add(newTimelineItem);
+                _mainViewModel.SelectedTimeline.Items.Add(newTimelineItem);
+            }
+        }
+
+        private TimeSpan CalculateNextItemOffset()
+        {
+            TimeSpan offset = TimeSpan.Zero;
+
+            foreach (var item in _mainViewModel.TimelineItems)
+            {
+                offset += item.Duration;
+            }
+
+            return offset;
+        }
+
+        private void EnsureDefaultTimeline()
+        {
+            if (_mainViewModel.SelectedTimeline == null)
+            {
+                var newTimeline = new Timeline
+                {
+                    Name = "New Timeline",
+                    Created = DateTime.Now,
+                    Updated = DateTime.Now
+                };
+
+                _mainViewModel.Timelines.Add(newTimeline);
+                _mainViewModel.SelectedTimeline = newTimeline;
+            }
+        }
+
+
+        private void AddTextSlideMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var ivdOvdHeight = _mainViewModel.IvdOvdHeight;
+            var addTextSlideWindow = new AddTextSlideWindow(_workspacePath, 432, ivdOvdHeight);
+            if (addTextSlideWindow.ShowDialog() == true)
+            {
+                var newTextSlide = addTextSlideWindow.TextSlide;
+
+                _mediaManager.AddMediaFile(newTextSlide);
+                _mainViewModel.TextSlideFiles.Add(newTextSlide);
+            }
+        }
+
+        private void RemoveTextSlideMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (TextSlideListView.SelectedItem is TextSlideFile selectedTextSlide)
+            {
+                var result = MessageBox.Show("Are you sure you want to remove this text slide?", "Confirm Removal", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    _mainViewModel.TextSlideFiles.Remove(selectedTextSlide);
+                    _mediaManager.DeleteMediaFile(selectedTextSlide.Id);
                 }
             }
         }
 
-        private string GetMediaType(string fileName)
+        private void TextSlideListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var extension = System.IO.Path.GetExtension(fileName).ToLower();
-            return extension switch
+            if (TextSlideListView.SelectedItem is TextSlideFile selectedTextSlide)
             {
-                ".mp4" => "video",
-                ".avi" => "video",
-                ".mp3" => "audio",
-                ".wav" => "audio",
-                ".jpg" => "image",
-                ".png" => "image",
-                _ => "unknown",
-            };
+                DisplayImageInMediaElement(selectedTextSlide.FilePath);
+            }
         }
 
-        private void MediaFilesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ImageListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SelectMedia(MediaFilesListBox.SelectedIndex);
+            if (ImageListView.SelectedItem is ImageFile selectedImage)
+            {
+                DisplayImageInMediaElement(selectedImage.FilePath);
+            }
         }
 
-        //private void SaveButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    MessageBox.Show("Media and Timeline data saved.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    // Implement logic to save media and timeline data
-        //}
+        private void VideoListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (VideoListView.SelectedItem is VideoFile selectedVideo)
+            {
+                DisplayVideoInMediaElement(selectedVideo.FilePath);
+            }
+        }
+
+        private void AudioListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AudioListView.SelectedItem is AudioFile selectedAudio)
+            {
+                DisplayVideoInMediaElement(selectedAudio.FilePath);
+            }
+        }
+
+        private void DisplayImageInMediaElement(string filePath)
+        {
+            PreviewMediaElement.Visibility = Visibility.Visible;
+            MediaControlsPanel.Visibility = Visibility.Collapsed;
+            ImageControlsPanel.Visibility = Visibility.Visible;
+
+            // Create a BitmapImage and set it to MediaElement's Source
+            BitmapImage bitmap = new BitmapImage(new Uri(filePath));
+            PreviewMediaElement.Source = null;
+            PreviewMediaElement.LoadedBehavior = MediaState.Manual;
+            PreviewMediaElement.UnloadedBehavior = MediaState.Manual;
+            PreviewMediaElement.Stretch = System.Windows.Media.Stretch.Uniform;
+
+            // MediaElement does not directly support BitmapImage, so we need to use a trick
+            PreviewMediaElement.BeginInit();
+            PreviewMediaElement.Source = bitmap.UriSource;
+            PreviewMediaElement.EndInit();
+
+            ResetImageZoom();
+        }
+
+        private void DisplayVideoInMediaElement(string filePath)
+        {
+            PreviewMediaElement.Visibility = Visibility.Visible;
+            MediaControlsPanel.Visibility = Visibility.Visible;
+            ImageControlsPanel.Visibility = Visibility.Collapsed;
+
+            PreviewMediaElement.Source = new Uri(filePath);
+            PreviewMediaElement.LoadedBehavior = MediaState.Manual;
+            PreviewMediaElement.UnloadedBehavior = MediaState.Manual;
+            PreviewMediaElement.Stretch = System.Windows.Media.Stretch.Uniform;
+            PreviewMediaElement.Play();
+            _mediaTimer.Start();
+        }
+
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            PreviewMediaElement.Play();
+        }
+
+        private void PauseButton_Click(object sender, RoutedEventArgs e)
+        {
+            PreviewMediaElement.Pause();
+        }
+
+        private void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            PreviewMediaElement.Stop();
+            _mediaTimer.Stop();
+        }
+
+        private void MediaTimer_Tick(object sender, EventArgs e)
+        {
+            if (PreviewMediaElement.Source != null && PreviewMediaElement.NaturalDuration.HasTimeSpan)
+            {
+                MediaSlider.Minimum = 0;
+                MediaSlider.Maximum = PreviewMediaElement.NaturalDuration.TimeSpan.TotalSeconds;
+                MediaSlider.Value = PreviewMediaElement.Position.TotalSeconds;
+                PlayedDurationText.Text = PreviewMediaElement.Position.ToString(@"hh\:mm\:ss");
+                TotalDurationText.Text = PreviewMediaElement.NaturalDuration.TimeSpan.ToString(@"hh\:mm\:ss");
+            }
+        }
+
+        private void MediaSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (PreviewMediaElement.Source != null)
+            {
+                PreviewMediaElement.Position = TimeSpan.FromSeconds(MediaSlider.Value);
+            }
+        }
+
+        private void ZoomInButton_Click(object sender, RoutedEventArgs e)
+        {
+            _imageZoom += 0.1;
+            PreviewMediaElement.LayoutTransform = new ScaleTransform(_imageZoom, _imageZoom);
+        }
+
+        private void ZoomOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_imageZoom > 0.1)
+            {
+                _imageZoom -= 0.1;
+                PreviewMediaElement.LayoutTransform = new ScaleTransform(_imageZoom, _imageZoom);
+            }
+        }
+
+        private void ResetImageZoom()
+        {
+            _imageZoom = 1.0;
+            PreviewMediaElement.LayoutTransform = new ScaleTransform(_imageZoom, _imageZoom);
+        }
 
         // code for rms server
 
@@ -1722,80 +2118,6 @@ namespace IpisCentralDisplayController
             string baseIp = "192.168.0.";
             return baseIp + (160 + index).ToString();
         }
-
-        private void UpdateDisplayFormGroup()
-        {
-            //DisplayFormGroup.Children.Clear();
-            //foreach (var display in Displays)
-            //{
-            //    var formGroup = new StackPanel
-            //    {
-            //        Margin = new Thickness(5),
-            //        Background = display == SelectedDisplay ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(Colors.Transparent),
-            //        //BorderBrush = new SolidColorBrush(Colors.Gray),
-            //        //BorderThickness = new Thickness(1),
-            //        //Padding = new Thickness(10)
-            //    };
-
-            //    formGroup.Children.Add(new TextBlock { Text = "Type:", Height = 30 });
-            //    var typeComboBox = new ComboBox { Height = 30, ItemsSource = new[] { "SLDB", "MLDB", "IVD", "OVD", "PFDB", "AAGDB", "CGDB", "DM" }, SelectedItem = display.Type };
-            //    typeComboBox.SelectionChanged += (s, e) => { display.Type = (string)typeComboBox.SelectedItem; display.IpAddr = CalculateIpAddr(display.Type, Displays.IndexOf(display)); };
-            //    formGroup.Children.Add(typeComboBox);
-
-            //    formGroup.Children.Add(new TextBlock { Text = "Lines:", Height = 30 });
-            //    var linesTextBox = new TextBox { Height = 30, Text = display.Lines.ToString() };
-            //    linesTextBox.TextChanged += (s, e) => display.Lines = int.Parse(linesTextBox.Text);
-            //    formGroup.Children.Add(linesTextBox);
-
-            //    formGroup.Children.Add(new TextBlock { Text = "IP Address:", Height = 30 });
-            //    var ipAddrTextBox = new TextBox { Height = 30, Text = display.IpAddr };
-            //    ipAddrTextBox.TextChanged += (s, e) => display.IpAddr = ipAddrTextBox.Text;
-            //    formGroup.Children.Add(ipAddrTextBox);
-
-            //    var enabledCheckBox = new CheckBox { Content = "Enabled", IsChecked = display.Enabled };
-            //    enabledCheckBox.Checked += (s, e) => display.Enabled = enabledCheckBox.IsChecked ?? false;
-            //    enabledCheckBox.Unchecked += (s, e) => display.Enabled = enabledCheckBox.IsChecked ?? false;
-            //    formGroup.Children.Add(enabledCheckBox);
-
-            //    formGroup.MouseLeftButtonUp += (s, e) =>
-            //    {
-            //        SelectedDisplay = display;
-            //        UpdateDisplayFormGroup();
-            //    };
-
-            //    DisplayFormGroup.Children.Add(formGroup);
-            //}
-            //UpdateDisplaySummary();
-        }
-
-        private void UpdateDisplaySummary()
-        {
-            //DisplaySummaries.Clear();
-            //var groupedDisplays = Displays.GroupBy(d => d.Type);
-            //foreach (var group in groupedDisplays)
-            //{
-            //    DisplaySummaries.Add(new DisplaySummary
-            //    {
-            //        Type = group.Key,
-            //        Quantity = group.Count(),
-            //        Lines = group.Average(d => d.Lines).ToString("0"),
-            //        Enabled = group.Count(d => d.Enabled)
-            //    });
-            //}
-        }
-
-        //private void ShowSnackbar(string message)
-        //{
-        //    Snackbar.Visibility = Visibility.Visible;
-        //    SnackbarMessage.Text = message;
-        //    var timer = new System.Timers.Timer(3000);
-        //    timer.Elapsed += (s, e) =>
-        //    {
-        //        Snackbar.Dispatcher.Invoke(() => Snackbar.Visibility = Visibility.Collapsed);
-        //        timer.Stop();
-        //    };
-        //    timer.Start();
-        //}
 
         // code for station info
         private void SaveStationInfoButton_Click(object sender, RoutedEventArgs e)
@@ -1918,27 +2240,18 @@ namespace IpisCentralDisplayController
             //}
         }
 
-        // code for CAP section
-        private void OverrideAlertButton_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Override Alert clicked", "CAP Status", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void PauseAlertButton_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Pause Alert clicked", "CAP Status", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
+        //// code for CAP section
 
         private void SaveConfigurationButton_Click(object sender, RoutedEventArgs e)
         {
-            string apiEndpoint = ApiEndpointTextBox.Text;
-            int alertDisplayTime = int.TryParse(AlertDisplayTimeTextBox.Text, out var displayTime) ? displayTime : 30;
-            int alertRepetitionInterval = int.TryParse(AlertRepetitionIntervalTextBox.Text, out var repetitionInterval) ? repetitionInterval : 60;
-            int messageLength = int.TryParse(MessageLengthTextBox.Text, out var maxLength) ? maxLength : 306;
-            string language = LanguageTextBox.Text;
+            //string apiEndpoint = ApiEndpointTextBox.Text;
+            //int alertDisplayTime = int.TryParse(AlertDisplayTimeTextBox.Text, out var displayTime) ? displayTime : 30;
+            //int alertRepetitionInterval = int.TryParse(AlertRepetitionIntervalTextBox.Text, out var repetitionInterval) ? repetitionInterval : 60;
+            //int messageLength = int.TryParse(MessageLengthTextBox.Text, out var maxLength) ? maxLength : 306;
+            //string language = LanguageTextBox.Text;
 
-            // Save configuration settings (backend implementation to be done later)
-            MessageBox.Show($"Configuration Saved:\nAPI Endpoint: {apiEndpoint}\nAlert Display Time: {alertDisplayTime} seconds\nAlert Repetition Interval: {alertRepetitionInterval} seconds\nMaximum Message Length: {messageLength} characters\nDisplay Language: {language}", "CAP Setup", MessageBoxButton.OK, MessageBoxImage.Information);
+            //// Save configuration settings (backend implementation to be done later)
+            //MessageBox.Show($"Configuration Saved:\nAPI Endpoint: {apiEndpoint}\nAlert Display Time: {alertDisplayTime} seconds\nAlert Repetition Interval: {alertRepetitionInterval} seconds\nMaximum Message Length: {messageLength} characters\nDisplay Language: {language}", "CAP Setup", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         //code for logs section
@@ -2215,75 +2528,6 @@ namespace IpisCentralDisplayController
         }
 
         //NTES API 951 implementation
-        //public async Task FetchAndDisplayTrains()
-        //{
-        //    try
-        //    {
-        //        var trainService = new NtesAPI951();
-        //        var trainsResponse = await trainService.GetTrainsAsync("NDLS", 30);
-
-        //        if (trainsResponse != null)
-        //        {
-        //            Console.WriteLine("Scheduled Trains:");
-        //            if (trainsResponse.VTrainList != null)
-        //            {
-        //                foreach (var train in trainsResponse.VTrainList)
-        //                {
-        //                    Console.WriteLine($"{train.TrainNo} - {train.TrainName}");
-        //                }
-        //            }
-        //            else
-        //            {
-        //                Console.WriteLine("No scheduled trains found.");
-        //            }
-
-        //            Console.WriteLine("\nRescheduled Trains:");
-        //            if (trainsResponse.VRescheduledTrainList != null)
-        //            {
-        //                foreach (var rescheduledTrain in trainsResponse.VRescheduledTrainList)
-        //                {
-        //                    Console.WriteLine($"Rescheduled: {rescheduledTrain.TrainNo} - {rescheduledTrain.TrainName}");
-        //                }
-        //            }
-        //            else
-        //            {
-        //                Console.WriteLine("No rescheduled trains found.");
-        //            }
-
-        //            Console.WriteLine("\nCancelled Trains:");
-        //            if (trainsResponse.VCancelledTrainList != null)
-        //            {
-        //                foreach (var cancelledTrain in trainsResponse.VCancelledTrainList)
-        //                {
-        //                    Console.WriteLine($"Cancelled: {cancelledTrain.TrainNo} - {cancelledTrain.TrainName}");
-        //                }
-        //            }
-        //            else
-        //            {
-        //                Console.WriteLine("No cancelled trains found.");
-        //            }
-
-        //            // Handle other lists as needed
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine("No data received from the API.");
-        //        }
-        //    }
-        //    catch (HttpRequestException httpEx)
-        //    {
-        //        Console.WriteLine($"HTTP Request Error: {httpEx.Message}");
-        //    }
-        //    catch (JsonSerializationException jsonEx)
-        //    {
-        //        Console.WriteLine($"JSON Serialization Error: {jsonEx.Message}");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"An unexpected error occurred: {ex.Message}");
-        //    }
-        //}
-
         public async Task FetchAndDisplayTrains()
         {
             try
@@ -2469,32 +2713,6 @@ namespace IpisCentralDisplayController
             MessageBox.Show("Station information updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        //private void PlatformNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        //{
-        //    string platformNumberText = PlatformNumberTextBox.Text;
-        //    if (int.TryParse(platformNumberText, out int platformNumber))
-        //    {
-        //        PlatformSubnetTextBox.Text = $"192.168.{platformNumber}.";
-        //    }
-        //    else if (System.Text.RegularExpressions.Regex.IsMatch(platformNumberText, @"^\d+A$"))
-        //    {
-        //        string numberPart = platformNumberText.TrimEnd('A');
-        //        if (int.TryParse(numberPart, out int specialPlatformNumber))
-        //        {
-        //            int baseNumber = 100 + specialPlatformNumber;
-        //            PlatformSubnetTextBox.Text = $"192.168.{baseNumber}.";
-        //        }
-        //        else
-        //        {
-        //            PlatformSubnetTextBox.Text = string.Empty;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        PlatformSubnetTextBox.Text = string.Empty;
-        //    }
-        //}
-
         private void SettingsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (SettingsListBox.SelectedItem is ListBoxItem selectedItem)
@@ -2531,27 +2749,18 @@ namespace IpisCentralDisplayController
                     case "rmsSettings":
                         settingContent = JsonConvert.SerializeObject(_rmsSettingsManager.LoadRmsSettings(), Formatting.Indented);
                         break;
+                    case "mediaFiles":
+                        settingContent = JsonConvert.SerializeObject(_mediaManager.LoadMediaFiles(), Formatting.Indented);
+                        break;
+                    case "timelines":
+                        settingContent = JsonConvert.SerializeObject(_timelineManager.LoadTimelines(), Formatting.Indented);
+                        break;
+
                 }
 
                 SettingsContentTextBox.Text = settingContent;
             }
         }
-
-        //private void DeviceTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if (PlatformListView.SelectedItem is Platform selectedPlatform && DeviceTypeComboBox.SelectedItem is DeviceType selectedDeviceType)
-        //    {
-        //        try
-        //        {
-        //            string nextIp = _platformDeviceManager.CalculateNextIpAddress(selectedPlatform, selectedDeviceType);
-        //            DeviceIpAddressTextBox.Text = nextIp;
-        //        }
-        //        catch (InvalidOperationException ex)
-        //        {
-        //            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        //        }
-        //    }
-        //}
 
         //Test Tool Specific Code
         private void cb_cgdb_checked(object sender, RoutedEventArgs e)
@@ -3671,6 +3880,11 @@ namespace IpisCentralDisplayController
             }
         }
 
+        private void TogglePasswordVisibility(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private async void bt_rst(object sender, RoutedEventArgs e)
         {
             if (tb_ipAddr.Text == "")
@@ -3751,6 +3965,296 @@ namespace IpisCentralDisplayController
                 }));
             }
         }
+
+        private void ToggleButton_Checked(object sender, RoutedEventArgs e)
+        {
+            // Implement the logic for Auto mode
+            ((ToggleButton)sender).Content = "Auto";
+        }
+
+        private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            // Implement the logic for Manual mode
+            ((ToggleButton)sender).Content = "Manual";
+        }
+
+        private void ViewAlertButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Implement the logic to view the alert in a popup window
+        }
+
+        private void OverrideAlertButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Implement the logic to override the alert
+        }
+
+        private void PauseResumeAlertButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = (Button)sender;
+            int duration = PauseResumeDuration.Value ?? 600; // Default to 600 if null
+
+            if (button.Content.ToString() == "Pause Alert")
+            {
+                // Implement the logic to pause the alert with the specified duration
+                button.Content = "Resume Alert";
+            }
+            else
+            {
+                // Implement the logic to resume the alert with the specified duration
+                button.Content = "Pause Alert";
+            }
+        }
+
+        private void AutomationToggleButton_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void AutomationToggleButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void cb_ivd_ovd_selection_changed(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = sender as ComboBox;
+            if (comboBox != null)
+            {
+                int selectedIndex = comboBox.SelectedIndex;
+
+                Console.WriteLine($"Selected Index: {selectedIndex}");
+            }
+        }
+
+
+        private void MoveLeftButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedIndex = TimelineListBox.SelectedIndex;
+            if (selectedIndex > 0)
+            {
+                var item = _mainViewModel.TimelineItems[selectedIndex];
+                _mainViewModel.TimelineItems.Move(selectedIndex, selectedIndex - 1);
+            }
+        }
+
+        private void MoveRightButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedIndex = TimelineListBox.SelectedIndex;
+            if (selectedIndex < _mainViewModel.TimelineItems.Count - 1)
+            {
+                var item = _mainViewModel.TimelineItems[selectedIndex];
+                _mainViewModel.TimelineItems.Move(selectedIndex, selectedIndex + 1);
+            }
+        }
+
+        private void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedIndex = TimelineListBox.SelectedIndex;
+            if (selectedIndex >= 0)
+            {
+                _mainViewModel.TimelineItems.RemoveAt(selectedIndex);
+            }
+        }
+
+        private void DuplicateButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = TimelineListBox.SelectedItem as TimelineItem;
+            if (selectedItem != null)
+            {
+                var duplicateItem = new TimelineItem
+                {
+                    Name = selectedItem.Name + " (Copy)",
+                    FilePath = selectedItem.FilePath,
+                    ItemType = selectedItem.ItemType,
+                    Duration = selectedItem.Duration,
+                    Offset = CalculateNextItemOffset(), // Set the offset for the duplicated item
+                    Resolution = selectedItem.Resolution,
+                    ThumbnailPath = selectedItem.ThumbnailPath,
+                    Position = selectedItem.Position + 1 // Increment the position for the duplicate
+                };
+
+                _mainViewModel.TimelineItems.Insert(TimelineListBox.SelectedIndex + 1, duplicateItem);
+                _mainViewModel.SelectedTimeline.Items.Insert(TimelineListBox.SelectedIndex + 1, duplicateItem);
+            }
+        }
+
+
+        private void PlayFromHereButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = TimelineListBox.SelectedItem as TimelineItem;
+            if (selectedItem != null)
+            {
+                // Implement logic to start playback from the selected item
+            }
+        }
+
+        private void ClearTimelineButton_Click(object sender, RoutedEventArgs e)
+        {
+            _mainViewModel.TimelineItems.Clear();
+        }
+
+        private void SaveTimelineButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_mainViewModel.SelectedTimeline != null)
+            {
+                _timelineManager.SaveTimeline(_mainViewModel.SelectedTimeline);
+                MessageBox.Show("Timeline saved successfully!", "Save Timeline", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("No timeline selected.", "Save Timeline", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void SaveAsTimelineButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_mainViewModel.SelectedTimeline != null)
+            {
+                InputDialog inputDialog = new InputDialog("Enter new timeline name:");
+                if (inputDialog.ShowDialog() == true)
+                {
+                    string newTimelineName = inputDialog.ResponseText;
+                    var newTimeline = _mainViewModel.SelectedTimeline.Clone(); // Assuming Clone() creates a deep copy
+                    newTimeline.Name = newTimelineName;
+
+                    _timelineManager.SaveTimelineAs(newTimeline);
+                    _mainViewModel.Timelines.Add(newTimeline);
+                    MessageBox.Show("Timeline saved as successfully!", "Save As Timeline", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No timeline selected.", "Save As Timeline", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+
+        //timelines
+        private void CreateTimelineMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var inputDialog = new InputDialog("Enter Timeline Name:");
+            if (inputDialog.ShowDialog() == true)
+            {
+                var timelineName = inputDialog.ResponseText;
+                if (!string.IsNullOrWhiteSpace(timelineName))
+                {
+                    var newTimeline = new Timeline { Name = timelineName };
+                    _mainViewModel.Timelines.Add(newTimeline);
+                    _timelineManager.SaveTimelines(_mainViewModel.Timelines.ToList());
+                }
+            }
+        }
+
+
+        private void OpenTimelineMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (_mainViewModel.SelectedTimeline != null)
+            {
+                // Logic to open the selected timeline
+                MessageBox.Show($"Opening Timeline: {_mainViewModel.SelectedTimeline.Name}");
+            }
+            else
+            {
+                MessageBox.Show("Please select a timeline to open.", "No Timeline Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void DeleteTimelineMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (_mainViewModel.SelectedTimeline != null)
+            {
+                var result = MessageBox.Show($"Are you sure you want to delete the timeline '{_mainViewModel.SelectedTimeline.Name}'?",
+                                             "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    _mainViewModel.Timelines.Remove(_mainViewModel.SelectedTimeline);
+                    _timelineManager.SaveTimelines(_mainViewModel.Timelines.ToList());
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a timeline to delete.", "No Timeline Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void TimelineListBox_DragEnter(object sender, DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void TimelineListBox_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void TimelineListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedItem = TimelineListBox.SelectedItem as TimelineItem;
+            if (selectedItem != null)
+            {
+                // Set the SelectedTimelineItem in the ViewModel
+                _mainViewModel.SelectedTimelineItem = selectedItem;
+
+                // Optionally, trigger loading of the item in the preview window
+                LoadItemInPreview(selectedItem);
+            }
+        }
+
+        private void LoadItemInPreview(TimelineItem item)
+        {
+            //switch (item.ItemType)
+            //{
+            //    case TimelineItemType.Image:
+            //    case TimelineItemType.TextSlide:
+            //        DisplayImage(item.FilePath);
+            //        break;
+            //    case TimelineItemType.Video:
+            //        DisplayVideoInMediaElement(item.FilePath);
+            //        break;
+            //    case TimelineItemType.Audio:
+            //        DisplayAudioInMediaElement(item.FilePath);
+            //        break;
+            //        // Handle other item types like transitions, effects here if necessary
+            //}
+        }
+
+
+        private void TimelineListBox_Drop(object sender, DragEventArgs e)
+        {
+            //if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            //{
+            //    var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            //    foreach (var file in files)
+            //    {
+            //        // Add logic to determine file type and add as TimelineItem
+            //        // Example for Image
+            //        if (file.EndsWith(".jpg") || file.EndsWith(".png"))
+            //        {
+            //            var imageItem = new TimelineItem
+            //            {
+            //                Name = System.IO.Path.GetFileName(file),
+            //                FilePath = file,
+            //                MediaType = MediaType.Image,
+            //                StartTime = TimeSpan.Zero // Update start time based on where it should be placed in the timeline
+            //            };
+            //            _mainViewModel.TimelineItems.Add(imageItem);
+            //        }
+            //        // Add logic for other types (Video, TextSlide)
+            //    }
+            //}
+        }
+
 
     }
 }

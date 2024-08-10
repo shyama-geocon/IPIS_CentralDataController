@@ -25,6 +25,10 @@
         <conv:ColorToBrushConverter x:Key="colorConverter"/>
         <conv:ColorToHexConverter x:Key="ColorToHexConverter"/>
         <conv:MacAddressConverter x:Key="MacAddressConverter"/>
+        <conv:LineToIntegerConverter x:Key="LineToIntegerConverter"/>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <conv:TimeSpanToDoubleConverter x:Key="TimeSpanToDoubleConverter"/>
+        <conv:BooleanToReadOnlyConverter x:Key="BooleanToReadOnlyConverter"/>
         <Style TargetType="TextBox">
             <Style.Triggers>
                 <Trigger Property="Validation.HasError" Value="true">
@@ -121,6 +125,9 @@
                 <ColumnDefinition Width="160"/>
                 <ColumnDefinition Width="160"/>
                 <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="160"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -132,14 +139,16 @@
             <TextBlock HorizontalAlignment="Center" Text="IP-STATUS" Grid.Row="0" Grid.Column="3" FontWeight="Bold" Margin="5"/>
             <TextBlock HorizontalAlignment="Center" Text="CONNECTED DEVICES" Grid.Row="0" Grid.Column="4" FontWeight="Bold" Margin="5"/>
             <TextBlock HorizontalAlignment="Center" Text="NTES-STATUS" Grid.Row="0" Grid.Column="5" FontWeight="Bold" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Text="DATE-TIME" Grid.Row="0" Grid.Column="6" FontWeight="Bold" Margin="5"/>
+            <TextBlock HorizontalAlignment="Center" Text="CAP-SERVER" Grid.Row="0" Grid.Column="6" FontWeight="Bold" Margin="5"/>
+            <TextBlock HorizontalAlignment="Center" Text="RMS-SERVER" Grid.Row="0" Grid.Column="7" FontWeight="Bold" Margin="5"/>
+            <TextBlock HorizontalAlignment="Center" Text="DATE-TIME" Grid.Row="0" Grid.Column="8" FontWeight="Bold" Margin="5"/>
             <TextBlock HorizontalAlignment="Center" Name="UserEmailStatus" Grid.Row="1" Grid.Column="0" Margin="5"/>
             <TextBlock HorizontalAlignment="Center" Name="UsernameStatus" Grid.Row="1" Grid.Column="1" Margin="5"/>
             <TextBlock HorizontalAlignment="Center" Name="UsertypeStatus" Grid.Row="1" Grid.Column="2" Margin="5"/>
             <TextBlock HorizontalAlignment="Center" Name="IpStatus" Grid.Row="1" Grid.Column="3" Margin="5"/>
             <TextBlock HorizontalAlignment="Center" Name="ConnectedDevicesStatus" Grid.Row="1" Grid.Column="4" Margin="5"/>
             <TextBlock HorizontalAlignment="Center" Name="NtesStatus" Grid.Row="1" Grid.Column="5" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Name="DateTimeStatus" Grid.Row="1" Grid.Column="6" Margin="5"/>
+            <TextBlock HorizontalAlignment="Center" Name="DateTimeStatus" Grid.Row="1" Grid.Column="8" Margin="5"/>
         </Grid>
         <TabControl x:Name="tc_main" Grid.Row="3">
             <TabControl.Resources>
@@ -282,93 +291,295 @@
                         <TextBlock Text="MEDIA" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
                     </StackPanel>
                 </TabItem.Header>
-                <Grid Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40*"/>
-                        <RowDefinition Height="50*"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Timeline Component -->
-                    <GroupBox Header="Timeline" Grid.Row="0" Margin="5">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
-                            <ListBox Name="TimelineListBox" Margin="5">
-                                <!-- Placeholder for Timeline items -->
-                            </ListBox>
-                        </ScrollViewer>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Header="Timeline Bank" Width="240" Margin="5">
+                        <ListView Name="TimelineListView" ItemsSource="{Binding Timelines}" SelectedItem="{Binding SelectedTimeline}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Create New Timeline" Click="CreateTimelineMenuItem_Click"/>
+                                    <MenuItem Header="Open Timeline" Click="OpenTimelineMenuItem_Click"/>
+                                    <Separator/>
+                                    <MenuItem Header="Delete Timeline" Click="DeleteTimelineMenuItem_Click"/>
+                                </ContextMenu>
+                            </ListView.ContextMenu>
+                        </ListView>
                     </GroupBox>
-
-                    <!-- Media Management and Preview -->
-                    <Grid Grid.Row="1" Margin="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Media Management Tabs -->
-                        <GroupBox Header="Media Management" Margin="5" Grid.Column="0">
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="4*"/>
+                            <RowDefinition Height="5*"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Margin="5" Header="Display Configuration">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                    <!-- IVD/OVD Type Selection -->
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Text="Display Type:" VerticalAlignment="Center" Margin="5"/>
+                                        <ComboBox x:Name="cb_ivd_ovd_lines" Width="120" Height="30" SelectionChanged="cb_ivd_ovd_selection_changed"
+          SelectedIndex="{Binding IvdOvdHeight, Converter={StaticResource LineToIntegerConverter}}">
+                                            <ComboBoxItem Content="6-line"/>
+                                            <ComboBoxItem Content="12-line"/>
+                                            <ComboBoxItem Content="18-line"/>
+                                            <ComboBoxItem Content="LED-TV HD"/>
+                                            <ComboBoxItem Content="Custom"/>
+                                        </ComboBox>
+                                        <TextBlock Text="Pixel Width:" VerticalAlignment="Center" Margin="5"/>
+                                        <xctk:IntegerUpDown Width="60" Value="{Binding PixelWidth, Mode=TwoWay}" 
+                    IsReadOnly="{Binding IsCustomResolution, Converter={StaticResource BooleanToReadOnlyConverter}}" 
+                    VerticalAlignment="Center" Margin="5"/>
+                                        <TextBlock Text="Pixel Height:" VerticalAlignment="Center" Margin="5"/>
+                                        <xctk:IntegerUpDown Width="60" Value="{Binding PixelHeight, Mode=TwoWay}" 
+                    IsReadOnly="{Binding IsCustomResolution, Converter={StaticResource BooleanToReadOnlyConverter}}" 
+                    VerticalAlignment="Center" Margin="5"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Margin="5" Grid.Column="1" Header="Timeline">
+                                <TextBlock x:Name="tb_timeline" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </GroupBox>
+                        </Grid>
+                        <GroupBox Header="Timeline" Grid.Row="1" Margin="5">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TabControl Name="MediaTabControl" Grid.Row="0" SelectionChanged="HandleTabChange">
-                                    <TabItem Header="Overlay" Width="160" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
-                                            <StackPanel Margin="5">
-                                                <TextBlock Text="Overlay specific content goes here." Margin="5"/>
-                                            </StackPanel>
-                                        </ScrollViewer>
-                                    </TabItem>
-                                    <TabItem Header="Text" Width="160" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
-                                            <StackPanel Margin="5">
-                                                <TextBlock Text="Text specific content goes here." Margin="5"/>
-                                            </StackPanel>
-                                        </ScrollViewer>
-                                    </TabItem>
-                                    <TabItem Header="Media" Width="160" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
-                                            <StackPanel Margin="5">
-                                                <TextBlock Text="Media specific content goes here." Margin="5"/>
-                                                <Button Content="Import Media" Width="100" Height="30" Click="ImportMediaButton_Click" Margin="5"/>
-                                                <ListBox Name="MediaFilesListBox" Margin="5" SelectionChanged="MediaFilesListBox_SelectionChanged">
-                                                    <ListBox.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Text="{Binding Name}" Margin="5"/>
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </ListBox.ItemTemplate>
-                                                </ListBox>
-                                            </StackPanel>
-                                        </ScrollViewer>
-                                    </TabItem>
-                                    <TabItem Header="Effects" Width="160" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
-                                            <StackPanel Margin="5">
-                                                <TextBlock Text="Effects specific content goes here." Margin="5"/>
-                                            </StackPanel>
-                                        </ScrollViewer>
-                                    </TabItem>
-                                    <TabItem Header="Transitions" Width="160" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
-                                            <StackPanel Margin="5">
-                                                <TextBlock Text="Transitions specific content goes here." Margin="5"/>
-                                            </StackPanel>
-                                        </ScrollViewer>
-                                    </TabItem>
-                                </TabControl>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="0">
+                                    <TextBlock Text="Display Mode:" VerticalAlignment="Center" Margin="5"/>
+                                    <ComboBox Width="100" Height="30" SelectedValue="{Binding SelectedTimelineItem.DisplayMode, Mode=TwoWay}">
+                                        <ComboBoxItem Content="Center"/>
+                                        <ComboBoxItem Content="Fit"/>
+                                        <ComboBoxItem Content="Crop"/>
+                                        <ComboBoxItem Content="Stretch"/>
+                                    </ComboBox>
+                                    <!-- Offset Time Control -->
+                                    <TextBlock Text="Offset Time:" VerticalAlignment="Center" Margin="5"/>
+                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding TimelineLength}" Value="{Binding SelectedTimelineItem.Offset, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="5" 
+                    ToolTip="Adjust to set offset time"/>
+                                    <TextBlock Text="{Binding SelectedTimelineItem.Offset, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="5"/>
+
+                                    <!-- Duration Control -->
+                                    <TextBlock Text="Duration:" VerticalAlignment="Center" Margin="5"/>
+                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding SelectedTimelineItem.MaxDuration.TotalSeconds}" Value="{Binding SelectedTimelineItem.Duration, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="5" 
+                    ToolTip="Adjust to set duration"/>
+                                    <TextBlock Text="{Binding SelectedTimelineItem.Duration, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="5"/>
+
+                                    <!-- Start-Stop Time Control for Videos -->
+                                    <TextBlock Text="Start Time:" VerticalAlignment="Center" Margin="5" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding SelectedTimelineItem.VideoDuration.TotalSeconds}" Value="{Binding SelectedTimelineItem.StartTime, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="5" 
+                    ToolTip="Adjust to set start time" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <TextBlock Text="{Binding SelectedTimelineItem.StartTime, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="5" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                                    <TextBlock Text="Stop Time:" VerticalAlignment="Center" Margin="5" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding SelectedTimelineItem.VideoDuration.TotalSeconds}" Value="{Binding SelectedTimelineItem.StopTime, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="5" 
+                    ToolTip="Adjust to set stop time" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <TextBlock Text="{Binding SelectedTimelineItem.StopTime, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="5" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                </StackPanel>
+
+
+
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5"  Grid.Row="1">
+                                    <ListBox Name="TimelineListBox" Margin="5" ItemsSource="{Binding TimelineItems}" SelectionChanged="TimelineListBox_SelectionChanged" SelectionMode="Single"
+                                        DragEnter="TimelineListBox_DragEnter" DragOver="TimelineListBox_DragOver" Drop="TimelineListBox_Drop">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Vertical" Margin="5" Width="160">
+                                                    <Image Source="{Binding ThumbnailPath}" Width="150" Height="100" Margin="5"/>
+                                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5" TextAlignment="Center"/>
+                                                    <TextBlock Text="{Binding MediaType}" VerticalAlignment="Center" Margin="5" TextAlignment="Center"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+
+                                </ScrollViewer>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0" Grid.Row="2">
+                                    <Button Content="Move Left" Click="MoveLeftButton_Click" Width="100" Height="30" Margin="5"/>
+                                    <Button Content="Move Right" Click="MoveRightButton_Click" Width="100" Height="30" Margin="5"/>
+                                    <Button Content="Remove Item" Click="RemoveButton_Click" Width="100" Height="30" Margin="5"/>
+                                    <Button Content="Duplicate Item" Click="DuplicateButton_Click" Width="100" Height="30" Margin="5"/>
+                                    <Button Content="Play from Here" Click="PlayFromHereButton_Click" Width="100" Height="30" Margin="5"/>
+                                    <Button Content="Clear Timeline" Click="ClearTimelineButton_Click" Width="100" Height="30" Margin="5"/>
+                                    <Button Content="Save" Click="SaveTimelineButton_Click" Width="100" Height="30" Margin="5"/>
+                                    <Button Content="Save As" Click="SaveAsTimelineButton_Click" Width="100" Height="30" Margin="5"/>
+                                </StackPanel>
                             </Grid>
                         </GroupBox>
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <!-- Preview Window -->
-                        <GroupBox Header="Preview Window" Margin="5" Grid.Column="1">
-                            <StackPanel Margin="5">
-                                <TextBlock Text="Preview of the media will be shown here." Margin="5"/>
-                                <!-- Placeholder for preview window -->
-                            </StackPanel>
-                        </GroupBox>
+                            <!-- Media Management Tabs -->
+                            <GroupBox Header="Media Management" Margin="5" Grid.Column="0">
+                                <TabControl Name="MediaTabControl" Grid.Row="0">
+                                    <TabItem Header="Overlay" Width="80" Height="30">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
+
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Text Slides" Width="80" Height="30">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
+                                            <ListView Name="TextSlideListView" Margin="5" ItemsSource="{Binding TextSlideFiles}" AllowDrop="True" SelectionChanged="TextSlideListView_SelectionChanged">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                                            <Image Source="{Binding FilePath}" Width="100" Height="100" Margin="5"/>
+                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                                <ListView.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Add New Item" Click="AddTextSlideMenuItem_Click"/>
+                                                        <MenuItem Header="Use Item" Click="UseTextSlideMenuItem_Click"/>
+                                                        <MenuItem Header="Remove" Click="RemoveTextSlideMenuItem_Click"/>
+                                                    </ContextMenu>
+                                                </ListView.ContextMenu>
+                                            </ListView>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Images" Width="80" Height="30">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
+                                            <ListView Name="ImageListView" Margin="5" ItemsSource="{Binding ImageFiles}" AllowDrop="True" Drop="ImageListView_Drop" SelectionChanged="ImageListView_SelectionChanged">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                                            <Image Source="{Binding FilePath}" Width="100" Height="100" Margin="5"/>
+                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                                <ListView.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Add New Item" Click="AddImageMenuItem_Click"/>
+                                                        <MenuItem Header="Use Item" Click="UseImageMenuItem_Click"/>
+                                                        <MenuItem Header="Remove" Click="RemoveImageMenuItem_Click"/>
+                                                    </ContextMenu>
+                                                </ListView.ContextMenu>
+                                            </ListView>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Videos" Width="80" Height="30">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
+                                            <ListView Name="VideoListView" Margin="5" ItemsSource="{Binding VideoFiles}" AllowDrop="True" Drop="VideoListView_Drop" SelectionChanged="VideoListView_SelectionChanged">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                                            <Image Source="{Binding ThumbnailPath}" Width="160" Height="120" Margin="5"/>
+                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
+                                                            <TextBlock Text="{Binding Resolution}" VerticalAlignment="Center" Margin="5"/>
+                                                            <TextBlock Text="{Binding Duration}" VerticalAlignment="Center" Margin="5"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                                <ListView.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Add New Item" Click="AddVideoMenuItem_Click"/>
+                                                        <MenuItem Header="Use Item" Click="UseVideoMenuItem_Click"/>
+                                                        <MenuItem Header="Remove" Click="RemoveVideoMenuItem_Click"/>
+                                                    </ContextMenu>
+                                                </ListView.ContextMenu>
+                                            </ListView>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Audio" Width="80" Height="30">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
+                                            <ListView Name="AudioListView" Margin="5" ItemsSource="{Binding AudioFiles}" SelectionChanged="AudioListView_SelectionChanged">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                                            <Image Source="icons/icon-audio.png" Width="48" Height="48" Margin="5"/>
+                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
+                                                            <TextBlock Text="{Binding BitRate}" VerticalAlignment="Center" Margin="5"/>
+                                                            <TextBlock Text="{Binding Duration}" VerticalAlignment="Center" Margin="5"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                                <ListView.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Add New Item" Click="AddAudioMenuItem_Click"/>
+                                                        <MenuItem Header="Use Item" Click="UseAudioMenuItem_Click"/>
+                                                        <MenuItem Header="Remove" Click="RemoveAudioMenuItem_Click"/>
+                                                    </ContextMenu>
+                                                </ListView.ContextMenu>
+                                            </ListView>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Effects" Width="80" Height="30">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
+                                            <ListView Name="EffectsListView" Margin="5">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                            </ListView>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Transitions" Width="80" Height="30">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
+
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    
+                                </TabControl>
+                            </GroupBox>
+
+                            <!-- Preview Window -->
+                            <GroupBox Header="Preview Window" Margin="5" Grid.Column="1">
+                                <StackPanel Margin="5" Background="Black" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                                    <MediaElement Name="PreviewMediaElement" Width="400" Height="300" Stretch="Uniform" Visibility="Collapsed" Margin="5"/>
+                                    <StackPanel Name="MediaControlsPanel" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Visibility="Collapsed">
+                                        <Button Content="Play" Click="PlayButton_Click" Width="80" Height="30" Margin="5"/>
+                                        <Button Content="Pause" Click="PauseButton_Click" Width="80" Height="30" Margin="5"/>
+                                        <Button Content="Stop" Click="StopButton_Click" Width="80" Height="30" Margin="5"/>
+                                        <Slider Name="MediaSlider" Width="200" Margin="5" ValueChanged="MediaSlider_ValueChanged"/>
+                                        <TextBlock Name="PlayedDurationText" Margin="5" Foreground="White"/>
+                                        <TextBlock Text="/" Margin="5" Foreground="White"/>
+                                        <TextBlock Name="TotalDurationText" Margin="5" Foreground="White"/>
+                                    </StackPanel>
+
+                                    <StackPanel Name="ImageControlsPanel" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Visibility="Collapsed">
+                                        <Button Content="Zoom In" Click="ZoomInButton_Click" Width="80" Height="30" Margin="5"/>
+                                        <Button Content="Zoom Out" Click="ZoomOutButton_Click" Width="80" Height="30" Margin="5"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+
+
+
+                        </Grid>
                     </Grid>
+                    <GroupBox Grid.Column="2" Header="Timeline Assignment" Width="320" Margin="5">
+
+                    </GroupBox>
                 </Grid>
             </TabItem>
 
@@ -394,7 +605,18 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Header="Display List" Grid.Column="0"></GroupBox>
+                    <GroupBox Header="Display List" Grid.Column="0">
+                        <DataGrid Name="DisplaysDataGrid" AutoGenerateColumns="False" Margin="5">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Platform" Binding="{Binding PlatformNumber}" Width="*"/>
+                                <DataGridTextColumn Header="Device Type" Binding="{Binding DeviceType}" Width="*"/>
+                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                                <DataGridTextColumn Header="IP Address" Binding="{Binding IpAddress}" Width="*"/>
+                                <DataGridCheckBoxColumn Header="Status" Binding="{Binding Status}" Width="*"/>
+                                <DataGridTextColumn Header="Last Status" Binding="{Binding LastStatusWhen}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
                     <GroupBox Header="Test Display" Grid.Column="1">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -958,7 +1180,6 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
-
             <TabItem Name="AutomationTab" Width="120" Height="30">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
@@ -967,7 +1188,31 @@
                     </StackPanel>
                 </TabItem.Header>
 
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Heading -->
+                    <TextBlock Text="Automation Logs" FontSize="24" FontWeight="Bold" Grid.Row="0" Margin="10"/>
+
+                    <!-- DataGrid for Automation Logs -->
+                    <DataGrid Name="AutomationLogsDataGrid" AutoGenerateColumns="False" Margin="10" Grid.Row="1">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" Width="*"/>
+                            <DataGridTextColumn Header="Log" Binding="{Binding Log}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Toggle Button for Automation -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10" Grid.Row="2">
+                        <ToggleButton Name="AutomationToggleButton" Content="Turn Automation On" Width="150" Height="30" Margin="5" Checked="AutomationToggleButton_Checked" Unchecked="AutomationToggleButton_Unchecked"/>
+                    </StackPanel>
+                </Grid>
             </TabItem>
+
             <TabItem Width="120" Height="30">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
@@ -1600,88 +1845,266 @@
                         <TabItem Header="RMS Server" Name="RMSServerTab" Width="160" Height="30">
                             <Grid Margin="10">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- RMS Server 1 -->
+                                <GroupBox Header="RMS Server 1" Grid.Row="0" Grid.Column="0" Margin="10">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Enable/Disable RMS Server 1 -->
+                                        <Label Content="Enable/Disable RMS Server:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <CheckBox Name="EnableRMS1" Grid.Row="0" Grid.Column="1" Margin="0,10,0,0"/>
+
+                                        <!-- API-URL RMS Server 1 -->
+                                        <Label Content="API-URL:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <TextBox Name="ApiUrl1" Grid.Row="1" Grid.Column="1" Width="300" Margin="0,10,0,0"/>
+
+                                        <!-- Enable CAP Sync RMS Server 1 -->
+                                        <Label Content="Enable CAP Sync:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <CheckBox Name="EnableCAPSync1" Grid.Row="2" Grid.Column="1" Margin="0,10,0,0"/>
+
+                                        <!-- Enable Event Logs RMS Server 1 -->
+                                        <Label Content="Enable Event Logs:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <CheckBox Name="EnableEventLogs1" Grid.Row="3" Grid.Column="1" Margin="0,10,0,0"/>
+
+                                        <!-- Enable Platforms-Devices Status RMS Server 1 -->
+                                        <Label Content="Enable Platforms-Devices Status:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <CheckBox Name="EnablePlatformsDevicesStatus1" Grid.Row="4" Grid.Column="1" Margin="0,10,0,0"/>
+
+                                        <!-- Enable Station Info RMS Server 1 -->
+                                        <Label Content="Enable Station Info:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <CheckBox Name="EnableStationInfo1" Grid.Row="5" Grid.Column="1" Margin="0,10,0,0"/>
+
+                                        <!-- Test Connection Button RMS Server 1 -->
+                                        <Button Content="Test Connection" Grid.Row="6" Grid.Column="0" Width="100" Height="30" Margin="0,10,10,0" HorizontalAlignment="Right"/>
+                                        <!-- Save Button RMS Server 1 -->
+                                        <Button Content="Save" Grid.Row="6" Grid.Column="1" Width="100" Height="30" Margin="10,10,0,0" HorizontalAlignment="Left"/>
+                                    </Grid>
+                                </GroupBox>
+
+                                <!-- RMS Server 2 -->
+                                <GroupBox Header="RMS Server 2" Grid.Row="0" Grid.Column="1" Margin="10">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Enable/Disable RMS Server 2 -->
+                                        <Label Content="Enable/Disable RMS Server:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <CheckBox Name="EnableRMS2" Grid.Row="0" Grid.Column="1" Margin="0,10,0,0"/>
+
+                                        <!-- API-URL RMS Server 2 -->
+                                        <Label Content="API-URL:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <TextBox Name="ApiUrl2" Grid.Row="1" Grid.Column="1" Width="300" Margin="0,10,0,0"/>
+
+                                        <!-- Enable CAP Sync RMS Server 2 -->
+                                        <Label Content="Enable CAP Sync:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <CheckBox Name="EnableCAPSync2" Grid.Row="2" Grid.Column="1" Margin="0,10,0,0"/>
+
+                                        <!-- Enable Event Logs RMS Server 2 -->
+                                        <Label Content="Enable Event Logs:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <CheckBox Name="EnableEventLogs2" Grid.Row="3" Grid.Column="1" Margin="0,10,0,0"/>
+
+                                        <!-- Enable Platforms-Devices Status RMS Server 2 -->
+                                        <Label Content="Enable Platforms-Devices Status:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <CheckBox Name="EnablePlatformsDevicesStatus2" Grid.Row="4" Grid.Column="1" Margin="0,10,0,0"/>
+
+                                        <!-- Enable Station Info RMS Server 2 -->
+                                        <Label Content="Enable Station Info:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <CheckBox Name="EnableStationInfo2" Grid.Row="5" Grid.Column="1" Margin="0,10,0,0"/>
+
+                                        <!-- Test Connection Button RMS Server 2 -->
+                                        <Button Content="Test Connection" Grid.Row="6" Grid.Column="0" Width="100" Height="30" Margin="0,10,10,0" HorizontalAlignment="Right"/>
+                                        <!-- Save Button RMS Server 2 -->
+                                        <Button Content="Save" Grid.Row="6" Grid.Column="1" Width="100" Height="30" Margin="10,10,0,0" HorizontalAlignment="Left"/>
+                                    </Grid>
+                                </GroupBox>
+                            </Grid>
+                        </TabItem>
+                        <!-- CAP Server Tab -->
+                        <TabItem Header="CAP Server" Name="CAPServerTab" Width="160" Height="30">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                                <!-- Title -->
-                                <TextBlock Text="RMS Server Management" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" Margin="10" Grid.Row="0"/>
+                                <!-- Enable/Disable CAP Server -->
+                                <Label Content="Enable/Disable CAP:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                <CheckBox Name="EnableCAP" Grid.Row="0" Grid.Column="1" Margin="0,10,0,0"/>
 
-                                <!-- Sections -->
-                                <Grid Grid.Row="1" Margin="5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
+                                <!-- Dissemination Mode -->
+                                <Label Content="Dissemination (auto/manual):" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                <ComboBox Name="DisseminationMode" SelectedIndex="0" Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" Width="120" HorizontalAlignment="Left">
+                                    <ComboBoxItem Content="Auto"/>
+                                    <ComboBoxItem Content="Manual"/>
+                                </ComboBox>
 
-                                    <!-- Server 1 Settings GroupBox -->
-                                    <GroupBox Header="RMS Server 1" Margin="5" Grid.Column="0">
-                                        <Grid Margin="10">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
+                                <!-- Server API-URL -->
+                                <Label Content="Server API-URL:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                <TextBox Name="CAPApiUrl" Grid.Row="2" Grid.Column="1" Margin="0,10,0,0"/>
 
-                                            <TextBlock Text="Server IP" Grid.Row="0" Margin="5" VerticalAlignment="Center"/>
-                                            <TextBox Name="Server1IpTextBox" Grid.Row="1" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+                                <!-- Authentication Stuff -->
+                                <GroupBox Header="Authentication" Grid.Row="3" Grid.ColumnSpan="2" Margin="2">
+                                    <Grid Margin="10">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
 
-                                            <TextBlock Text="Common API Endpoint" Grid.Row="2" Margin="5" VerticalAlignment="Center"/>
-                                            <TextBox Name="Server1ApiEndpointTextBox" Grid.Row="3" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+                                        <!-- Station Code -->
+                                        <Label Content="Station Code:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <TextBox HorizontalAlignment="Left" Name="StationCode" Width="160" Grid.Row="0" Grid.Column="1" Margin="0,10,0,0"/>
 
-                                            <TextBlock Text="API Key" Grid.Row="4" Margin="5" VerticalAlignment="Center"/>
-                                            <PasswordBox Name="Server1ApiKeyPasswordBox" Grid.Row="5" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+                                        <!-- API Key -->
+                                        <Label Content="API Key:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <PasswordBox Name="ApiKey" Grid.Row="1" Grid.Column="1" Margin="0,10,0,0"/>
+                                        <Button Content="Show" Grid.Row="1" Grid.Column="2" Width="50" Margin="5,10,0,0" Click="TogglePasswordVisibility"/>
 
-                                            <Grid Grid.Row="6" Margin="5">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Button Content="Test Connection" Width="100" Height="30" Margin="5" Grid.Column="0" Click="TestServer1ConnectionButton_Click"/>
-                                                <Button Content="Save" Width="100" Height="30" Margin="5" Grid.Column="1" Click="SaveServer1SettingsButton_Click"/>
-                                            </Grid>
-                                        </Grid>
-                                    </GroupBox>
+                                        <!-- Username -->
+                                        <Label Content="Username:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <TextBox Name="Username" HorizontalAlignment="Left" Width="160" Grid.Row="2" Grid.Column="1" Margin="0,10,0,0"/>
 
+                                        <!-- Password -->
+                                        <Label Content="Password:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                        <PasswordBox Name="CAPPassword" Width="160" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="1" Margin="0,10,0,0"/>
+                                        <Button Content="Show" Grid.Row="3" Grid.Column="2" Width="50" Margin="5,10,0,0" Click="TogglePasswordVisibility"/>
+                                    </Grid>
+                                </GroupBox>
 
-                                    <!-- Server 2 Settings GroupBox -->
-                                    <GroupBox Header="RMS Server 2" Margin="5" Grid.Column="1">
-                                        <Grid Margin="10">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
+                                <!-- Polling Interval -->
+                                <Label Content="Polling Interval (seconds):" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                <xctk:IntegerUpDown Name="PollingInterval" Width="160" HorizontalAlignment="Left" Grid.Row="4" Grid.Column="1" Margin="0,10,0,0"/>
 
-                                            <TextBlock Text="Server IP" Grid.Row="0" Margin="5" VerticalAlignment="Center"/>
-                                            <TextBox Name="Server2IpTextBox" Grid.Row="1" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+                                <!-- Alert Display Time -->
+                                <Label Content="Alert Display Time (seconds):" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                <xctk:IntegerUpDown Name="AlertDisplayTime" Width="160" HorizontalAlignment="Left" Grid.Row="5" Grid.Column="1" Margin="0,10,0,0"/>
 
-                                            <TextBlock Text="Common API Endpoint" Grid.Row="2" Margin="5" VerticalAlignment="Center"/>
-                                            <TextBox Name="Server2ApiEndpointTextBox" Grid.Row="3" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+                                <!-- Alert Repetition Time -->
+                                <Label Content="Alert Repetition Time (seconds):" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                                <xctk:IntegerUpDown Name="AlertRepetitionTime" Width="160" HorizontalAlignment="Left" Grid.Row="6" Grid.Column="1" Margin="0,10,0,0"/>
 
-                                            <TextBlock Text="API Key" Grid.Row="4" Margin="5" VerticalAlignment="Center"/>
-                                            <PasswordBox Name="Server2ApiKeyPasswordBox" Grid.Row="5" Margin="5" Height="24" VerticalContentAlignment="Center"/>
+                                <!-- Save Button -->
+                                <StackPanel Grid.Row="7" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                    <Button Content="Save" Width="100" Height="30" Margin="10"/>
+                                    <Button Content="Test Connection" Width="100" Height="30" Margin="10"/>
+                                </StackPanel>
+                            </Grid>
+                        </TabItem>
 
-                                            <Grid Grid.Row="6" Margin="5">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Button Content="Test Connection" Width="100" Height="30" Margin="5" Grid.Column="0" Click="TestServer2ConnectionButton_Click"/>
-                                                <Button Content="Save" Width="100" Height="30" Margin="5" Grid.Column="1" Click="SaveServer2SettingsButton_Click"/>
-                                            </Grid>
-                                        </Grid>
-                                    </GroupBox>
+                        <TabItem Header="Automation" Name="AutomationSettingsTab" Width="160" Height="30">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-                                </Grid>
+                                <!-- Display Brightness Schedule -->
+                                <TextBlock Text="Display Brightness Schedule" FontSize="16" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Margin="2" VerticalAlignment="Center"/>
+
+                                <StackPanel Grid.Row="1" Grid.Column="0" Margin="2" Orientation="Horizontal">
+                                    <CheckBox Content="Enable" Margin="2" VerticalAlignment="Center" x:Name="cb_enable_brightness"/>
+                                    <TextBlock Margin="2" Text="Brightness Schedule" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="2" Grid.Column="0" Margin="2" Orientation="Horizontal">
+                                    <TextBlock Margin="2" Text="Time of Day" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <xctk:TimePicker Width="100" Margin="1" Value="8:0" x:Name="ts_bright_time_1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBlock Margin="2" Text="%" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <xctk:IntegerUpDown Width="50" x:Name="ud_bright_val_1" Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center" Minimum="0" Maximum="100" Value="75"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="3" Grid.Column="0" Margin="2" Orientation="Horizontal">
+                                    <TextBlock Margin="2" Text="Time of Day" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <xctk:TimePicker Width="100" Margin="1" Value="14:0" x:Name="ts_bright_time_2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBlock Margin="2" Text="%" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <xctk:IntegerUpDown Width="50" x:Name="ud_bright_val_2" Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center" Minimum="0" Maximum="100" Value="100"/>
+                                </StackPanel>
+
+                                <!-- Fetch Status Timings -->
+                                <TextBlock Text="Fetch Status Timings" FontSize="16" FontWeight="Bold" Grid.Row="4" Grid.Column="0" Margin="2" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Row="5" Grid.Column="0" Margin="2" Orientation="Horizontal">
+                                    <CheckBox Content="Enable" Margin="2" VerticalAlignment="Center" x:Name="cb_enable_fetch_status"/>
+                                    <TextBlock Margin="2" Text="Fetch Every:" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <xctk:TimeSpanUpDown Width="100" x:Name="ts_auto_fetch_status_time" Value="0:30:0" Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Enable 8am Report -->
+                                <StackPanel Grid.Row="6" Grid.Column="0" Margin="2" Orientation="Horizontal">
+                                    <CheckBox Content="Enable" Margin="2" VerticalAlignment="Center" x:Name="cb_morning_report_enable"/>
+                                    <TextBlock Margin="2" Text="Enable 8am Report" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBlock Margin="2" Text="Generate at:" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <xctk:TimePicker Width="100" x:Name="ts_auto_morning_report_time" Value="8:0:0" Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Enable 8pm Report -->
+                                <StackPanel Grid.Row="7" Grid.Column="0" Margin="2" Orientation="Horizontal">
+                                    <CheckBox Content="Enable" Margin="2" VerticalAlignment="Center" x:Name="cb_evening_report_enable"/>
+                                    <TextBlock Margin="2" Text="Enable 8pm Report" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBlock Margin="2" Text="Generate at:" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <xctk:TimePicker Width="100" x:Name="ts_auto_evening_report_time" Value="20:0:0" Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Save Button -->
+                                <Button Content="Save" Width="100" Height="30" Grid.Row="8" Grid.Column="0" Margin="5" HorizontalAlignment="Center" Click="SaveSettingsButton_Click"/>
                             </Grid>
                         </TabItem>
 
@@ -1698,8 +2121,7 @@
                 </TabItem.Header>
                 <Grid Margin="10">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- CAP Status Section -->
@@ -1708,91 +2130,52 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Buttons Row -->
+                            <!-- Toggle Button for Auto/Manual Mode -->
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5" Grid.Row="0">
-                                <Button Content="Override Alert" Width="100" Height="30" Margin="5" Click="OverrideAlertButton_Click"/>
-                                <Button Content="Pause Alert" Width="100" Height="30" Margin="5" Click="PauseAlertButton_Click"/>
+                                <TextBlock Text="Mode:" VerticalAlignment="Center" Margin="5"/>
+                                <ToggleButton Name="AutoManualToggle" Content="Auto" Width="100" Height="30" Margin="5" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
                             </StackPanel>
 
-                            <!-- Active Alerts Section -->
-                            <TextBlock Text="Active Alerts" FontSize="16" FontWeight="Bold" Margin="5" Grid.Row="1"/>
-                            <DataGrid Name="ActiveAlertsDataGrid" AutoGenerateColumns="False" Margin="5" VerticalAlignment="Stretch" Grid.Row="2">
+                            <!-- Alerts DataGrid Section -->
+                            <TextBlock Text="Alerts" FontSize="16" FontWeight="Bold" Margin="5" Grid.Row="1"/>
+                            <DataGrid Name="AlertsDataGrid" AutoGenerateColumns="False" Margin="5" VerticalAlignment="Stretch" Grid.Row="2">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"/>
-                                    <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" Width="*"/>
-                                    <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" Width="*"/>
-                                    <DataGridTextColumn Header="Audio Available" Binding="{Binding AudioAvailable}" Width="*"/>
-                                    <DataGridTextColumn Header="Urgency" Binding="{Binding Urgency}" Width="*"/>
-                                    <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="*"/>
-                                    <DataGridTextColumn Header="Certainty" Binding="{Binding Certainty}" Width="*"/>
+                                    <DataGridTextColumn Header="Identifier" Binding="{Binding Identifier}" Width="*"/>
+                                    <DataGridTextColumn Header="Sender" Binding="{Binding Sender}" Width="*"/>
+                                    <DataGridTextColumn Header="Sent" Binding="{Binding Sent}" Width="*"/>
+                                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*"/>
+                                    <DataGridTextColumn Header="Message Type" Binding="{Binding MsgType}" Width="*"/>
+                                    <DataGridTextColumn Header="Urgency" Binding="{Binding Info.Urgency}" Width="*"/>
+                                    <DataGridTextColumn Header="Severity" Binding="{Binding Info.Severity}" Width="*"/>
+                                    <DataGridTextColumn Header="Certainty" Binding="{Binding Info.Certainty}" Width="*"/>
                                 </DataGrid.Columns>
                             </DataGrid>
 
-                            <!-- All Alerts Section -->
-                            <TextBlock Text="All Alerts" FontSize="16" FontWeight="Bold" Margin="5" Grid.Row="3"/>
-                            <DataGrid Name="AllAlertsDataGrid" AutoGenerateColumns="False" Margin="5" VerticalAlignment="Stretch" Grid.Row="4">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"/>
-                                    <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" Width="*"/>
-                                    <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" Width="*"/>
-                                    <DataGridTextColumn Header="Audio Available" Binding="{Binding AudioAvailable}" Width="*"/>
-                                    <DataGridTextColumn Header="Urgency" Binding="{Binding Urgency}" Width="*"/>
-                                    <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="*"/>
-                                    <DataGridTextColumn Header="Certainty" Binding="{Binding Certainty}" Width="*"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
+                            <!-- Buttons Section -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5" Grid.Row="3">
+                                <Button Content="View" Width="100" Height="30" Margin="5" Click="ViewAlertButton_Click"/>
+                                <Button Content="Override Alert" Width="100" Height="30" Margin="5" Click="OverrideAlertButton_Click"/>
+                                <Button Name="PauseResumeAlertButton" Content="Pause Alert" Width="100" Height="30" Margin="5" Click="PauseResumeAlertButton_Click"/>
+                                <TextBlock Text="Duration (sec):" VerticalAlignment="Center" Margin="5"/>
+                                <xctk:IntegerUpDown Name="PauseResumeDuration" Value="600" Minimum="0" Width="100" Height="30" Margin="5"/>
+                                <!--<Button Content="Send" Width="100" Height="30" Margin="5" Click="SendAlertButton_Click"/>-->
+                            </StackPanel>
                         </Grid>
                     </GroupBox>
-
-
-                    <!-- CAP Setup Section -->
-                    <GroupBox Header="CAP Setup" Grid.Column="1" Margin="10">
-                        <Grid Margin="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Text="CAP API Endpoint" VerticalAlignment="Center" Margin="5" Grid.Row="0" Grid.Column="0"/>
-                            <TextBox Name="ApiEndpointTextBox" Margin="5" Grid.Row="0" Grid.Column="1"/>
-
-                            <TextBlock Text="Alert Display Time (seconds)" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="0"/>
-                            <TextBox Name="AlertDisplayTimeTextBox" Margin="5" Grid.Row="1" Grid.Column="1"/>
-
-                            <TextBlock Text="Alert Repetition Interval (seconds)" VerticalAlignment="Center" Margin="5" Grid.Row="2" Grid.Column="0"/>
-                            <TextBox Name="AlertRepetitionIntervalTextBox" Margin="5" Grid.Row="2" Grid.Column="1"/>
-
-                            <TextBlock Text="Maximum Message Length (characters)" VerticalAlignment="Center" Margin="5" Grid.Row="3" Grid.Column="0"/>
-                            <TextBox Name="MessageLengthTextBox" Margin="5" Grid.Row="3" Grid.Column="1"/>
-
-                            <TextBlock Text="Display Language" VerticalAlignment="Center" Margin="5" Grid.Row="4" Grid.Column="0"/>
-                            <TextBox Name="LanguageTextBox" Margin="5" Grid.Row="4" Grid.Column="1"/>
-
-                            <Button Content="Save Configuration" Width="150" Height="30" Margin="5" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Click="SaveConfigurationButton_Click"/>
-                        </Grid>
-                    </GroupBox>
-
                 </Grid>
             </TabItem>
+
+
 
             <TabItem Width="120" Height="30">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <Image Width="24" Height="24" Source="icons/icon-reports.png" Margin="2"/>
-                        <TextBlock Text="REPORTS" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
+                        <TextBlock Text="EVENT LOGS" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
                     </StackPanel>
                 </TabItem.Header>
                 <Grid Margin="10">
@@ -1802,46 +2185,46 @@
                     </Grid.RowDefinitions>
 
                     <!-- Logs Header Section -->
-                    <StackPanel Orientation="Vertical" Margin="10" Grid.Row="0">
-                        <TextBlock Text="Logs" FontSize="24" FontWeight="Bold" Margin="5"/>
-                        <TextBlock Text="View, download, and manage system logs for the IPIS." Margin="5"/>
+                    <StackPanel Orientation="Vertical" Grid.Row="0">
+                        <TextBlock Text="Event Logs" FontSize="24" FontWeight="Bold" Margin="5,10"/>
+                        <TextBlock Text="View, download, and manage system logs for the IPIS." Margin="5,0,5,10"/>
 
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Content="Download Logs" Width="100" Height="30" Margin="5" Click="DownloadLogsButton_Click"/>
                             <Button Content="Clear Logs" Width="100" Height="30" Margin="5" Click="ClearLogsButton_Click"/>
                             <Button Content="Archive Logs" Width="100" Height="30" Margin="5" Click="ArchiveLogsButton_Click"/>
                         </StackPanel>
 
-                        <Grid Margin="5">
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Grid.Column="0" Margin="5">
+                            <StackPanel Grid.Column="0">
                                 <TextBlock Text="Select Date" Margin="5"/>
                                 <DatePicker Name="SelectedDatePicker" SelectedDateChanged="SelectedDatePicker_SelectedDateChanged" Margin="5"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="1" Margin="5">
+                            <StackPanel Grid.Column="1">
                                 <Button Content="Yesterday" Width="100" Height="30" Margin="5" Click="YesterdayLogsButton_Click"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="2" Margin="5">
+                            <StackPanel Grid.Column="2">
                                 <Button Content="Download Selected Date" Width="200" Height="30" Margin="5" Click="DownloadSelectedDateLogsButton_Click"/>
                             </StackPanel>
                         </Grid>
 
-                        <Grid Margin="5">
+                        <Grid Margin="10,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Grid.Column="0" Margin="5">
+                            <StackPanel Grid.Column="0">
                                 <TextBlock Text="From Date" Margin="5"/>
                                 <DatePicker Name="FromDatePicker" SelectedDateChanged="FromDatePicker_SelectedDateChanged" Margin="5"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="1" Margin="5">
+                            <StackPanel Grid.Column="1">
                                 <TextBlock Text="To Date" Margin="5"/>
                                 <DatePicker Name="ToDatePicker" SelectedDateChanged="ToDatePicker_SelectedDateChanged" Margin="5"/>
                             </StackPanel>
@@ -1849,16 +2232,19 @@
                         <Button Content="Download Date Range" Width="200" Height="30" Margin="5" Click="DownloadDateRangeLogsButton_Click"/>
                     </StackPanel>
 
-                    <!-- Logs DataGrid Section -->
-                    <DataGrid Name="LogsDataGrid" AutoGenerateColumns="False" Margin="10" Grid.Row="1">
+                    <!-- Event Logs DataGrid Section -->
+                    <DataGrid Name="EventLogsDataGrid" AutoGenerateColumns="False" Margin="10" Grid.Row="1">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" Width="*"/>
-                            <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="*"/>
-                            <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"/>
+                            <DataGridTextColumn Header="Event ID" Binding="{Binding EventID}" Width="*"/>
+                            <DataGridTextColumn Header="Event Type" Binding="{Binding EventType}" Width="*"/>
+                            <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="*"/>
+                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </TabItem>
+
 
             <TabItem Width="120" Height="30">
                 <TabItem.Header>
@@ -2159,6 +2545,8 @@
                         <ListBoxItem Content="displaySettings"/>
                         <ListBoxItem Content="rmsSettings"/>
                         <ListBoxItem Content="audioSettings"/>
+                        <ListBoxItem Content="mediaFiles"/>
+                        <ListBoxItem Content="timelines"/>
                     </ListBox>
 
                     <!-- ScrollViewer for displaying selected setting's content -->

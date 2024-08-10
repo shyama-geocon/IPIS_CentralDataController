@@ -1,0 +1,187 @@
+﻿<Window x:Class="IpisCentralDisplayController.views.AddTextSlideWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:local="clr-namespace:IpisCentralDisplayController.views"
+        mc:Ignorable="d"
+        Title="AddTextSlideWindow" Height="600" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <GroupBox Header="Pixel Dimensions">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Margin="2" Grid.Column="0" Text="Pixel Width" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                            <xctk:IntegerUpDown IsReadOnly="False" x:Name="ud_width" Height="24" Value="800" Grid.Row="1" Grid.Column="1" Margin="2"/>
+                            <TextBlock Margin="2" Grid.Column="2" Text="Pixel Height" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                            <xctk:IntegerUpDown x:Name="ud_height" Height="24" Value="600" Grid.Row="1" Grid.Column="3" Margin="2"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+                <GroupBox Grid.Row="1" Header="Text Artifact">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Margin="2" Grid.Column="0" VerticalAlignment="Center" Text="Enter Text"/>
+                            <TextBox x:Name="tb_text_bmp" Margin="2" Grid.Column="1" Height="24"/>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Margin="2" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Img Width"/>
+                            <TextBlock Margin="2" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Img Height"/>
+                            <TextBlock Margin="2" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Top Adjust"/>
+                            <TextBlock Margin="2" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Left Adjust"/>
+                            <xctk:IntegerUpDown x:Name="ud_txt_w"  Height="24" Grid.Row="1" Grid.Column="0" Value="{Binding ElementName=ud_width, Path=Value}" Margin="2" />
+                            <xctk:IntegerUpDown x:Name="ud_txt_h" Height="24" Grid.Row="1" Grid.Column="1" Value="{Binding ElementName=ud_height, Path=Value}" Margin="2" />
+                            <xctk:IntegerUpDown x:Name="ud_top" Height="24" Grid.Row="1" Grid.Column="2" Value="0" Margin="2" />
+                            <xctk:IntegerUpDown x:Name="ud_left" Height="24" Grid.Row="1" Grid.Column="3" Value="0" Margin="2" />
+
+                            <TextBlock Margin="2" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Background"/>
+                            <TextBlock Margin="2" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Text Color"/>
+                            <TextBlock Margin="2" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Font Size"/>
+                            <TextBlock Margin="2" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Font Family"/>
+                            <TextBlock Margin="2" Grid.Row="2" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Font Weight"/>
+                            <TextBlock Margin="2" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Font Style"/>
+
+                            <Grid Grid.Row="3" Grid.Column="0" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <!--<ColumnDefinition Width="*"/>-->
+                                </Grid.ColumnDefinitions>
+                                <xctk:ColorPicker Margin="2" x:Name="colorPicker_bg" SelectedColor="{Binding BackgroundColorTextSlide.Color, Mode=TwoWay}" Grid.Column="0"/>
+                            </Grid>
+
+                            <Grid Grid.Row="3" Grid.Column="1" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <!--<ColumnDefinition Width="*"/>-->
+                                </Grid.ColumnDefinitions>
+                                <xctk:ColorPicker Margin="2" x:Name="colorPicker_txt" Grid.Column="0" SelectedColor="{Binding TextColorTextSlide.Color, Mode=TwoWay}"/>
+                            </Grid>
+                            <xctk:IntegerUpDown x:Name="ud_fontsize_bmp" Grid.Row="3" Grid.Column="2" Value="12" Margin="2" />
+                            <ComboBox x:Name="cb_font_bmp" SelectionChanged="cb_font_selectionChanged" Margin="2" SelectedIndex="0" Grid.Column="3" Grid.Row="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+                            <ComboBox x:Name="cb_fontweight_bmp" Margin="2" SelectedIndex="1" Grid.Column="4" Grid.Row="3"  VerticalContentAlignment="Center">
+                                <ComboBox.ItemsSource>
+                                    <x:Array Type="{x:Type FontWeight}">
+                                        <FontWeight>Bold</FontWeight>
+                                        <FontWeight>Normal</FontWeight>
+                                        <FontWeight>Thin</FontWeight>
+                                        <FontWeight>ExtraLight</FontWeight>
+                                        <FontWeight>Light</FontWeight>
+                                        <FontWeight>Medium</FontWeight>
+                                        <FontWeight>SemiBold</FontWeight>
+                                        <FontWeight>Black</FontWeight>
+                                        <FontWeight>ExtraBlack</FontWeight>
+                                    </x:Array>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
+                            <ComboBox x:Name="cb_fontstyle_bmp" SelectionChanged="cb_fontStyle_selectionChanged" Margin="2" SelectedIndex="1" Grid.Column="5" Grid.Row="3"  VerticalContentAlignment="Center"/>
+                            <TextBlock Margin="2" Grid.Row="2" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center" Text="H-Alignment"/>
+                            <TextBlock Margin="2" Grid.Row="2" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center" Text="V-Alignment"/>
+                            <ComboBox x:Name="cb_halign_bmp" SelectionChanged="cb_halign_selectionChanged" Margin="2" SelectedIndex="0" Grid.Column="6" Grid.Row="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
+                                <ComboBox.ItemsSource>
+                                    <x:Array Type="{x:Type TextAlignment}">
+                                        <TextAlignment>Left</TextAlignment>
+                                        <TextAlignment>Center</TextAlignment>
+                                        <TextAlignment>Right</TextAlignment>
+                                        <TextAlignment>Justify</TextAlignment>
+                                    </x:Array>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
+                            <ComboBox x:Name="cb_valign_bmp" SelectionChanged="cb_valign_selectionChanged" Margin="2" SelectedIndex="0" Grid.Column="7" Grid.Row="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
+                                <ComboBox.ItemsSource>
+                                    <x:Array Type="{x:Type VerticalAlignment}">
+                                        <VerticalAlignment>Top</VerticalAlignment>
+                                        <VerticalAlignment>Center</VerticalAlignment>
+                                        <VerticalAlignment>Bottom</VerticalAlignment>
+                                    </x:Array>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
+                        </Grid>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </Grid>
+
+        <GroupBox Grid.Row="1" Header="Bitmap Render">
+            <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                <Canvas x:Name="lb_canvas_bmp" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{Binding BackgroundColorTextSlide}" Width="{Binding ElementName=ud_width, Path=Value}" Height="{Binding ElementName=ud_height, Path=Value}">
+                    <Canvas.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                    </Canvas.RenderTransform>
+                    <Canvas.RenderTransformOrigin>
+                        <Point X="0.5" Y="0.5"/>
+                    </Canvas.RenderTransformOrigin>
+                    <TextBlock Grid.Row="0" Grid.Column="0" x:Name="tb_canvas_bmp" HorizontalAlignment="Center"
+       FontSize="{Binding ElementName=ud_fontsize_bmp, Path=Value}" Width="{Binding ElementName=ud_txt_w, Path=Value}"
+       Height="{Binding ElementName=ud_txt_h, Path=Value}" Text="{Binding ElementName=tb_text_bmp, Path=Text}"
+                                   TextWrapping="Wrap" TextAlignment="{Binding ElementName=cb_halign_bmp, Path=SelectedItem}"
+       VerticalAlignment="{Binding ElementName=cb_valign_bmp, Path=SelectedItem}" Background="Transparent" Foreground="{Binding TextColorTextSlide}"
+                                       Canvas.Top="{Binding ElementName=ud_top, Path=Value}" Canvas.Left="{Binding ElementName=ud_left, Path=Value}">
+                        <TextBlock.FontFamily>
+                            <Binding ElementName="cb_font_bmp" Path="SelectedItem" />
+                        </TextBlock.FontFamily>
+
+                        <TextBlock.FontWeight>
+                            <Binding ElementName="cb_fontweight_bmp" Path="SelectedItem" />
+                        </TextBlock.FontWeight>
+
+                    </TextBlock>
+                </Canvas>
+            </ScrollViewer>
+        </GroupBox>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10" Grid.Row="2">
+            <Button Content="Cancel" Width="100" Height="30" Margin="5" Click="CancelButton_Click"/>
+            <Button Content="Add" Width="100" Height="30" Margin="5" Click="AddButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

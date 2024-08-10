@@ -220,6 +220,9 @@ namespace IpisCentralDisplayController
         private Brush _textColor5;
         private Brush _backgroundColor5;
 
+        private Brush _textColorTextSlide;
+        private Brush _backgroundColorTextSlide;
+
         public ColorViewModel()
         {
             // Set default values
@@ -233,6 +236,10 @@ namespace IpisCentralDisplayController
             BackgroundColor4 = new SolidColorBrush(Colors.Black);
             TextColor5 = new SolidColorBrush(Colors.LimeGreen);
             BackgroundColor5 = new SolidColorBrush(Colors.Black);
+
+
+            TextColorTextSlide = new SolidColorBrush(Colors.Red);
+            BackgroundColorTextSlide = new SolidColorBrush(Colors.Black);
         }
 
         public Brush TextColor1
@@ -293,6 +300,18 @@ namespace IpisCentralDisplayController
         {
             get => _backgroundColor5;
             set { _backgroundColor5 = value; OnPropertyChanged(nameof(BackgroundColor5)); }
+        }
+
+        public Brush TextColorTextSlide
+        {
+            get => _textColorTextSlide;
+            set { _textColorTextSlide = value; OnPropertyChanged(nameof(TextColorTextSlide)); }
+        }
+
+        public Brush BackgroundColorTextSlide
+        {
+            get => _backgroundColorTextSlide;
+            set { _backgroundColorTextSlide = value; OnPropertyChanged(nameof(BackgroundColorTextSlide)); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -252,6 +252,289 @@ namespace IpisCentralDisplayController.views
             }
         }
 
+        private ObservableCollection<MediaFile> _mediaFiles;
+        public ObservableCollection<MediaFile> MediaFiles
+        {
+            get { return _mediaFiles; }
+            set
+            {
+                if (_mediaFiles != value)
+                {
+                    _mediaFiles = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableCollection<ImageFile> _imageFiles;
+        public ObservableCollection<ImageFile> ImageFiles
+        {
+            get { return _imageFiles; }
+            set
+            {
+                if (_imageFiles != value)
+                {
+                    _imageFiles = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableCollection<TextSlideFile> _textSlideFiles;
+        public ObservableCollection<TextSlideFile> TextSlideFiles
+        {
+            get { return _textSlideFiles; }
+            set
+            {
+                if (_textSlideFiles != value)
+                {
+                    _textSlideFiles = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableCollection<VideoFile> _videoFiles;
+        public ObservableCollection<VideoFile> VideoFiles
+        {
+            get { return _videoFiles; }
+            set
+            {
+                if (_videoFiles != value)
+                {
+                    _videoFiles = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableCollection<AudioFile> _audioFiles;
+        public ObservableCollection<AudioFile> AudioFiles
+        {
+            get { return _audioFiles; }
+            set
+            {
+                if (_audioFiles != value)
+                {
+                    _audioFiles = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        //public void LoadMediaFiles(List<MediaFile> mediaFiles)
+        //{
+        //    MediaFiles.Clear();
+        //    foreach (var mediaFile in mediaFiles)
+        //    {
+        //        MediaFiles.Add(mediaFile);
+        //    }
+        //}
+
+        public void LoadMediaFiles(List<MediaFile> mediaFiles)
+        {
+            MediaFiles.Clear();
+            ImageFiles.Clear();
+            TextSlideFiles.Clear();
+            VideoFiles.Clear();
+            AudioFiles.Clear();
+
+            foreach (var mediaFile in mediaFiles)
+            {
+                MediaFiles.Add(mediaFile);
+
+                switch (mediaFile)
+                {
+                    case ImageFile imageFile:
+                        ImageFiles.Add(imageFile);
+                        break;
+                    case TextSlideFile textSlideFile:
+                        TextSlideFiles.Add(textSlideFile);
+                        break;
+                    case VideoFile videoFile:
+                        VideoFiles.Add(videoFile);
+                        break;
+                    case AudioFile audioFile:
+                        AudioFiles.Add(audioFile);
+                        break;
+                }
+            }
+        }
+
+        private int _ivdOvdHeight = 256;
+        public int IvdOvdHeight
+        {
+            get => _ivdOvdHeight;
+            set
+            {
+                _ivdOvdHeight = value;
+                OnPropertyChanged();
+                UpdatePixelDimensions();
+            }
+        }
+
+        private ObservableCollection<Timeline> _timelines;
+        public ObservableCollection<Timeline> Timelines
+        {
+            get { return _timelines; }
+            set
+            {
+                if (_timelines != value)
+                {
+                    _timelines = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private Timeline _selectedTimeline;
+        public Timeline SelectedTimeline
+        {
+            get { return _selectedTimeline; }
+            set
+            {
+                if (_selectedTimeline != value)
+                {
+                    _selectedTimeline = value;
+                    OnPropertyChanged();
+                    LoadTimelineItems();
+                }
+            }
+        }
+
+        private TimelineItem _selectedTimelineItem;
+        public TimelineItem SelectedTimelineItem
+        {
+            get { return _selectedTimelineItem; }
+            set
+            {
+                if (_selectedTimelineItem != value)
+                {
+                    _selectedTimelineItem = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        private ObservableCollection<TimelineItem> _timelineItems;
+        public ObservableCollection<TimelineItem> TimelineItems
+        {
+            get { return _timelineItems; }
+            set
+            {
+                if (_timelineItems != value)
+                {
+                    _timelineItems = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public void LoadTimelines(List<Timeline> timelines)
+        {
+            Timelines.Clear();
+            foreach (var timeline in timelines)
+            {
+                Timelines.Add(timeline);
+            }
+
+            if (Timelines.Any())
+            {
+                SelectedTimeline = Timelines.First();
+            }
+        }
+
+        private void LoadTimelineItems()
+        {
+            if (SelectedTimeline != null)
+            {
+                TimelineItems.Clear();
+                foreach (var item in SelectedTimeline.Items)
+                {
+                    TimelineItems.Add(item);
+                }
+            }
+        }
+
+        private int _pixelWidth;
+        public int PixelWidth
+        {
+            get => _pixelWidth;
+            set
+            {
+                if (_pixelWidth != value)
+                {
+                    _pixelWidth = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private int _pixelHeight;
+        public int PixelHeight
+        {
+            get => _pixelHeight;
+            set
+            {
+                if (_pixelHeight != value)
+                {
+                    _pixelHeight = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private void UpdatePixelDimensions()
+        {
+            switch (IvdOvdHeight)
+            {
+                case 0: // 6-line
+                    PixelWidth = 128;
+                    PixelHeight = 64;
+                    break;
+                case 1: // 12-line
+                    PixelWidth = 256;
+                    PixelHeight = 128;
+                    break;
+                case 2: // 18-line
+                    PixelWidth = 384;
+                    PixelHeight = 192;
+                    break;
+                case 3: // LED-TV HD
+                    PixelWidth = 1920;
+                    PixelHeight = 1080;
+                    break;
+                case 4: // Custom
+                        // Keep the current values or set them based on user input.
+                        // PixelWidth and PixelHeight should remain editable in this case.
+                    break;
+                default:
+                    PixelWidth = 128; // Default values (fall-back case)
+                    PixelHeight = 64;
+                    break;
+            }
+
+            //// If the selected option is not "Custom," make sure the values are read-only.
+            //if (IvdOvdHeight != 4)
+            //{
+            //    // Assume PixelWidthControl and PixelHeightControl are your IntegerUpDown controls
+            //    PixelWidthControl.IsReadOnly = true;
+            //    PixelHeightControl.IsReadOnly = true;
+            //}
+            //else
+            //{
+            //    PixelWidthControl.IsReadOnly = false;
+            //    PixelHeightControl.IsReadOnly = false;
+            //}
+        }
+
+        public bool IsCustomResolution
+        {
+            get { return IvdOvdHeight == 4; } // Assuming 4 is the index for Custom
+        }
+
+
 
         public MainViewModel()
         {
@@ -275,6 +558,15 @@ namespace IpisCentralDisplayController.views
             RmsSettings = new RmsSettings();
 
             TrainTemplates = new ObservableCollection<TrainDisplayTemplate>();
+
+            MediaFiles = new ObservableCollection<MediaFile>();
+            ImageFiles = new ObservableCollection<ImageFile>();
+            TextSlideFiles = new ObservableCollection<TextSlideFile>();
+            VideoFiles = new ObservableCollection<VideoFile>();
+            AudioFiles = new ObservableCollection<AudioFile>();
+
+            Timelines = new ObservableCollection<Timeline>();
+            TimelineItems = new ObservableCollection<TimelineItem>();
         }
 
         public void LoadRmsSettings(RmsSettings rmsSettings)

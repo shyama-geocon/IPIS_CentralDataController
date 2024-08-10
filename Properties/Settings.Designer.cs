@@ -118,5 +118,53 @@ namespace IpisCentralDisplayController.Properties {
                 this["trainStatusDisplays"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string capAlerts {
+            get {
+                return ((string)(this["capAlerts"]));
+            }
+            set {
+                this["capAlerts"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string eventLogs {
+            get {
+                return ((string)(this["eventLogs"]));
+            }
+            set {
+                this["eventLogs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string mediaFiles {
+            get {
+                return ((string)(this["mediaFiles"]));
+            }
+            set {
+                this["mediaFiles"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string timelines {
+            get {
+                return ((string)(this["timelines"]));
+            }
+            set {
+                this["timelines"] = value;
+            }
+        }
     }
 }

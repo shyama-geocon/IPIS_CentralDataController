@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="icons\icon-audio.png" />
     <None Remove="icons\icon-auto.png" />
     <None Remove="icons\icon-backup.png" />
     <None Remove="icons\icon-cap.png" />
@@ -24,11 +25,13 @@
     <None Remove="icons\icon-settings.png" />
     <None Remove="icons\icon-speaker.png" />
     <None Remove="icons\icon-train.png" />
+    <None Remove="icons\icon-video.png" />
     <None Remove="images\inrLogo.png" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.1" />
+    <PackageReference Include="MediaToolkit" Version="1.1.0.1" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
     <PackageReference Include="MongoDB.Driver" Version="2.27.0" />
     <PackageReference Include="NAudio" Version="2.2.1" />
@@ -37,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="icons\icon-audio.png" />
     <Resource Include="icons\icon-auto.png" />
     <Resource Include="icons\icon-backup.png" />
     <Resource Include="icons\icon-cap.png" />
@@ -47,6 +51,7 @@
     <Resource Include="icons\icon-settings.png" />
     <Resource Include="icons\icon-speaker.png" />
     <Resource Include="icons\icon-train.png" />
+    <Resource Include="icons\icon-video.png" />
     <Resource Include="images\inrLogo.png" />
   </ItemGroup>
 

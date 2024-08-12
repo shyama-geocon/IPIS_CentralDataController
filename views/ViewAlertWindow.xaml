@@ -7,7 +7,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="View Alert" Height="600" Width="800">
-    <Grid Margin="10">
+    <Grid Margin="2">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -15,11 +15,11 @@
         </Grid.RowDefinitions>
 
         <!-- Heading -->
-        <TextBlock Text="Alert Details" FontSize="24" FontWeight="Bold" Grid.Row="0" Margin="10"/>
+        <TextBlock Text="Alert Details" FontSize="24" FontWeight="Bold" Grid.Row="0" Margin="2"/>
 
         <!-- ScrollViewer with Grid for Alert Details -->
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="1">
-            <Grid Margin="10">
+            <Grid Margin="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -58,62 +58,62 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Alert Details -->
-                <TextBlock Text="Identifier:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="IdentifierText" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Identifier:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="IdentifierText" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Sender:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="SenderText" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Sender:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="SenderText" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Sent:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="SentText" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Sent:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="SentText" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Status:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="StatusText" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Status:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="StatusText" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Message Type:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="MsgTypeText" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Message Type:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="MsgTypeText" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Source:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="SourceText" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Source:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="SourceText" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Scope:" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="ScopeText" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Scope:" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="ScopeText" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Category:" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="CategoryText" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Category:" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="CategoryText" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Event:" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="EventText" Grid.Row="8" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Event:" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="EventText" Grid.Row="8" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Urgency:" Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="UrgencyText" Grid.Row="9" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Urgency:" Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="UrgencyText" Grid.Row="9" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Severity:" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="SeverityText" Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Severity:" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="SeverityText" Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Certainty:" Grid.Row="11" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="CertaintyText" Grid.Row="11" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Certainty:" Grid.Row="11" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="CertaintyText" Grid.Row="11" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Description:" Grid.Row="12" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="DescriptionText" Grid.Row="12" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Description:" Grid.Row="12" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="DescriptionText" Grid.Row="12" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Effective:" Grid.Row="13" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="EffectiveText" Grid.Row="13" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Effective:" Grid.Row="13" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="EffectiveText" Grid.Row="13" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Expires:" Grid.Row="14" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="ExpiresText" Grid.Row="14" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Expires:" Grid.Row="14" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="ExpiresText" Grid.Row="14" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
 
-                <TextBlock Text="Area Description:" Grid.Row="15" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock Name="AreaDescText" Grid.Row="15" Grid.Column="1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="Area Description:" Grid.Row="15" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                <TextBlock Name="AreaDescText" Grid.Row="15" Grid.Column="1" VerticalAlignment="Center" Margin="2"/>
             </Grid>
         </ScrollViewer>
 
         <!-- Buttons Section -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10" Grid.Row="2">
-            <Button Content="Send" Width="100" Height="30" Margin="5" Click="SendAlertButton_Click"/>
-            <Button Name="PauseResumeAlertButton" Content="Pause Alert" Width="100" Height="30" Margin="5" Click="PauseResumeAlertButton_Click"/>
-            <TextBlock Text="Duration (sec):" VerticalAlignment="Center" Margin="5"/>
-            <xctk:IntegerUpDown Name="PauseResumeDuration" Value="600" Minimum="0" Width="100" Height="30" Margin="5"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="2" Grid.Row="2">
+            <Button Content="Send" Width="100" Height="30" Margin="2" Click="SendAlertButton_Click"/>
+            <Button Name="PauseResumeAlertButton" Content="Pause Alert" Width="100" Height="30" Margin="2" Click="PauseResumeAlertButton_Click"/>
+            <TextBlock Text="Duration (sec):" VerticalAlignment="Center" Margin="2"/>
+            <xctk:IntegerUpDown Name="PauseResumeDuration" Value="600" Minimum="0" Width="100" Height="30" Margin="2"/>
         </StackPanel>
     </Grid>
 </Window>

@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:models="clr-namespace:IpisCentralDisplayController.models"
         Title="Device Dialog" Height="320" Width="400" WindowStartupLocation="CenterScreen">
-    <StackPanel Orientation="Vertical" Margin="5">
-        <TextBlock Text="Device Details" FontWeight="Bold" FontSize="16" Margin="5"/>
+    <StackPanel Orientation="Vertical" Margin="2">
+        <TextBlock Text="Device Details" FontWeight="Bold" FontSize="16" Margin="2"/>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -18,11 +18,11 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Platform Number:" VerticalAlignment="Center" Margin="5"/>
-            <TextBox Grid.Row="0" Grid.Column="1" Height="24" Margin="5" x:Name="PlatformNumberTextBox" IsReadOnly="True"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Platform Number:" VerticalAlignment="Center" Margin="2"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Height="24" Margin="2" x:Name="PlatformNumberTextBox" IsReadOnly="True"/>
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Device Type:" VerticalAlignment="Center" Margin="5"/>
-            <ComboBox Grid.Row="1" Grid.Column="1" Height="24" Margin="5" x:Name="DeviceTypeComboBox" SelectionChanged="DeviceTypeComboBox_SelectionChanged">
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Device Type:" VerticalAlignment="Center" Margin="2"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" Height="24" Margin="2" x:Name="DeviceTypeComboBox" SelectionChanged="DeviceTypeComboBox_SelectionChanged">
                 <ComboBox.ItemsSource>
                     <x:Array Type="{x:Type models:DeviceType}">
                         <models:DeviceType>CDS</models:DeviceType>
@@ -42,18 +42,18 @@
                 </ComboBox.ItemsSource>
             </ComboBox>
 
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="IP Address:" VerticalAlignment="Center" Margin="5"/>
-            <TextBox Grid.Row="2" Grid.Column="1" Height="24" Margin="5" x:Name="IpAddressTextBox"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="IP Address:" VerticalAlignment="Center" Margin="2"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Height="24" Margin="2" x:Name="IpAddressTextBox"/>
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Description:" VerticalAlignment="Center" Margin="5"/>
-            <TextBox Grid.Row="3" Grid.Column="1" Height="24" Margin="5" x:Name="DescriptionTextBox"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Description:" VerticalAlignment="Center" Margin="2"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Height="24" Margin="2" x:Name="DescriptionTextBox"/>
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Enabled:" VerticalAlignment="Center" Margin="5"/>
-            <CheckBox Grid.Row="4" Grid.Column="1" Height="24" Margin="5" x:Name="EnabledCheckBox"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Enabled:" VerticalAlignment="Center" Margin="2"/>
+            <CheckBox Grid.Row="4" Grid.Column="1" Height="24" Margin="2" x:Name="EnabledCheckBox"/>
         </Grid>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-            <Button Content="Save" Height="30" Width="100" Margin="5" Click="SaveButton_Click"/>
-            <Button Content="Cancel" Height="30" Width="100" Margin="5" Click="CancelButton_Click"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="2">
+            <Button Content="Save" Height="30" Width="100" Margin="2" Click="SaveButton_Click"/>
+            <Button Content="Cancel" Height="30" Width="100" Margin="2" Click="CancelButton_Click"/>
         </StackPanel>
     </StackPanel>
 </Window>

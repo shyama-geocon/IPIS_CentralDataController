@@ -1,6 +1,7 @@
 ﻿using IpisCentralDisplayController.Helpers;
 using IpisCentralDisplayController.managers;
 using IpisCentralDisplayController.models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -12,6 +13,69 @@ namespace IpisCentralDisplayController.views
     {
         private TrainMaster _selectedTrain;
         private TrainMasterManager _trainMasterManager;
+        public ObservableCollection<string> CoachList { get; set; }
+
+        // Properties for STA Hours and Minutes
+        public int STA_Hours
+        {
+            get => SelectedTrain?.STA?.Hours ?? 0;
+            set
+            {
+                if (SelectedTrain != null)
+                {
+                    var currentMinutes = SelectedTrain.STA?.Minutes ?? 0;
+                    SelectedTrain.STA = new TimeSpan(value, currentMinutes, 0);
+                    OnPropertyChanged(nameof(STA_Hours));
+                    OnPropertyChanged(nameof(SelectedTrain.STA));
+                }
+            }
+        }
+
+        public int STA_Minutes
+        {
+            get => SelectedTrain?.STA?.Minutes ?? 0;
+            set
+            {
+                if (SelectedTrain != null)
+                {
+                    var currentHours = SelectedTrain.STA?.Hours ?? 0;
+                    SelectedTrain.STA = new TimeSpan(currentHours, value, 0);
+                    OnPropertyChanged(nameof(STA_Minutes));
+                    OnPropertyChanged(nameof(SelectedTrain.STA));
+                }
+            }
+        }
+
+        // Properties for STD Hours and Minutes
+        public int STD_Hours
+        {
+            get => SelectedTrain?.STD?.Hours ?? 0;
+            set
+            {
+                if (SelectedTrain != null)
+                {
+                    var currentMinutes = SelectedTrain.STD?.Minutes ?? 0;
+                    SelectedTrain.STD = new TimeSpan(value, currentMinutes, 0);
+                    OnPropertyChanged(nameof(STD_Hours));
+                    OnPropertyChanged(nameof(SelectedTrain.STD));
+                }
+            }
+        }
+
+        public int STD_Minutes
+        {
+            get => SelectedTrain?.STD?.Minutes ?? 0;
+            set
+            {
+                if (SelectedTrain != null)
+                {
+                    var currentHours = SelectedTrain.STD?.Hours ?? 0;
+                    SelectedTrain.STD = new TimeSpan(currentHours, value, 0);
+                    OnPropertyChanged(nameof(STD_Minutes));
+                    OnPropertyChanged(nameof(SelectedTrain.STD));
+                }
+            }
+        }
 
         public TrainMasterViewModel()
         {
@@ -31,10 +95,26 @@ namespace IpisCentralDisplayController.views
                 if (_selectedTrain != value)
                 {
                     _selectedTrain = value;
+                    CoachList = new ObservableCollection<string>(_selectedTrain?.CoachList ?? new List<string>());
                     OnPropertyChanged(nameof(SelectedTrain));
+                    OnPropertyChanged(nameof(CoachList));
+                    OnPropertyChanged(nameof(STA_Hours));
+                    OnPropertyChanged(nameof(STA_Minutes));
+                    OnPropertyChanged(nameof(STD_Hours));
+                    OnPropertyChanged(nameof(STD_Minutes));
                 }
             }
         }
+
+        //public void LoadTrains()
+        //{
+        //    var trains = _trainMasterManager.LoadTrainMasters();
+        //    Trains.Clear();
+        //    foreach (var train in trains)
+        //    {
+        //        Trains.Add(train);
+        //    }
+        //}
 
         public void LoadTrains()
         {
@@ -44,6 +124,33 @@ namespace IpisCentralDisplayController.views
             {
                 Trains.Add(train);
             }
+
+            if (SelectedTrain != null)
+            {
+                // Find the train that was previously selected (if still present in the list)
+                SelectedTrain = Trains.FirstOrDefault(t => t.TrainNumber == SelectedTrain.TrainNumber);
+
+                // If the selected train is found, update the CoachList
+                if (SelectedTrain != null)
+                {
+                    CoachList = new ObservableCollection<string>(SelectedTrain.CoachList ?? new List<string>());
+                }
+                else
+                {
+                    CoachList.Clear();
+                }
+
+                OnPropertyChanged(nameof(CoachList));
+            }
+            else if (Trains.Any())
+            {
+                // If no train is selected, select the first one in the list
+                SelectedTrain = Trains.First();
+                CoachList = new ObservableCollection<string>(SelectedTrain.CoachList ?? new List<string>());
+                OnPropertyChanged(nameof(CoachList));
+            }
+
+            OnPropertyChanged(nameof(Trains));
         }
 
         public void AddTrain(TrainMaster train)
@@ -52,7 +159,9 @@ namespace IpisCentralDisplayController.views
             {
                 _trainMasterManager.AddTrainMaster(train);
                 Trains.Add(train);
-                SelectedTrain = null;
+                SelectedTrain = train;
+                CoachList = new ObservableCollection<string>(train.CoachList);
+                OnPropertyChanged(nameof(CoachList));
             }
         }
 
@@ -60,10 +169,31 @@ namespace IpisCentralDisplayController.views
         {
             if (train != null && !string.IsNullOrEmpty(train.TrainNumber))
             {
+                // Update the train in the TrainMasterManager
                 _trainMasterManager.UpdateTrainMaster(train);
-                LoadTrains(); // Refresh the list
+
+                // Find the existing train in the collection
+                var existingTrain = Trains.FirstOrDefault(t => t.TrainNumber == train.TrainNumber);
+                if (existingTrain != null)
+                {
+                    // Update the existing train in the collection
+                    var index = Trains.IndexOf(existingTrain);
+                    Trains[index] = train;
+                }
+                else
+                {
+                    // Add the train if it wasn't found
+                    Trains.Add(train);
+                }
+
+                // Set the selected train to the updated one
+                SelectedTrain = train;
+                CoachList = new ObservableCollection<string>(train.CoachList);
+                OnPropertyChanged(nameof(CoachList));
+                OnPropertyChanged(nameof(Trains)); // Notify that the trains list has changed
             }
         }
+
 
         public void DeleteTrain(TrainMaster train)
         {

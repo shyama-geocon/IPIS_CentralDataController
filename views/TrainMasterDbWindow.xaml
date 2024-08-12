@@ -17,8 +17,8 @@
             </Grid.ColumnDefinitions>
 
             <!-- Train List on the Left -->
-            <GroupBox x:Name="gb_header" Grid.Column="0" Margin="5">
-                <ListView Name="TrainListView" ItemsSource="{Binding Trains}" SelectedItem="{Binding SelectedTrain}" Margin="5" SelectionMode="Extended">
+            <GroupBox x:Name="gb_header" Grid.Column="0" Margin="2">
+                <ListView Name="TrainListView" ItemsSource="{Binding Trains}" SelectedItem="{Binding SelectedTrain}" Margin="2" SelectionMode="Extended">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Train Number" DisplayMemberBinding="{Binding TrainNumber}" Width="100"/>
@@ -30,7 +30,7 @@
 
 
             <!-- Train Information Section on the Right -->
-            <GroupBox Header="Train Information" Grid.Column="1" Margin="5">
+            <GroupBox Header="Train Information" Grid.Column="1" Margin="2">
                 <ScrollViewer>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -61,55 +61,55 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Train Number -->
-                        <TextBlock Text="Train Number:" VerticalAlignment="Center" Margin="5" Grid.Row="0"/>
-                        <TextBox Text="{Binding SelectedTrain.TrainNumber}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="0" Grid.Column="1"/>
+                        <TextBlock Text="Train Number:" VerticalAlignment="Center" Margin="2" Grid.Row="0"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.TrainNumber}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="0" Grid.Column="1"/>
 
                         <!-- Train Name (English) -->
-                        <TextBlock Text="Train Name (English):" VerticalAlignment="Center" Margin="5" Grid.Row="1"/>
-                        <TextBox Text="{Binding SelectedTrain.TrainNameEnglish}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="1" Grid.Column="1"/>
+                        <TextBlock Text="Train Name (English):" VerticalAlignment="Center" Margin="2" Grid.Row="1"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.TrainNameEnglish}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="1" Grid.Column="1"/>
 
                         <!-- Train Name (Hindi) -->
-                        <TextBlock Text="Train Name (Hindi):" VerticalAlignment="Center" Margin="5" Grid.Row="2"/>
-                        <TextBox Text="{Binding SelectedTrain.TrainNameHindi}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="2" Grid.Column="1"/>
+                        <TextBlock Text="Train Name (Hindi):" VerticalAlignment="Center" Margin="2" Grid.Row="2"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.TrainNameHindi}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="2" Grid.Column="1"/>
 
                         <!-- Train Name (Regional) -->
-                        <TextBlock Text="Train Name (Regional):" VerticalAlignment="Center" Margin="5" Grid.Row="3"/>
-                        <TextBox Text="{Binding SelectedTrain.TrainNameRegional}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="3" Grid.Column="1"/>
+                        <TextBlock Text="Train Name (Regional):" VerticalAlignment="Center" Margin="2" Grid.Row="3"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.TrainNameRegional}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="3" Grid.Column="1"/>
 
                         <!-- Source Station Code -->
-                        <TextBlock Text="Source Code:" VerticalAlignment="Center" Margin="5" Grid.Row="4"/>
-                        <TextBox Text="{Binding SelectedTrain.SrcCode}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="4" Grid.Column="1"/>
+                        <TextBlock Text="Source Stn Code:" VerticalAlignment="Center" Margin="2" Grid.Row="4"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.SrcCode}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="4" Grid.Column="1"/>
 
                         <!-- Source Station Name (English) -->
-                        <TextBlock Text="Source Name (English):" VerticalAlignment="Center" Margin="5" Grid.Row="5"/>
-                        <TextBox Text="{Binding SelectedTrain.SrcNameEnglish}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="5" Grid.Column="1"/>
+                        <TextBlock Text="Source Stn Name (English):" VerticalAlignment="Center" Margin="2" Grid.Row="5"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.SrcNameEnglish}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="5" Grid.Column="1"/>
 
                         <!-- Source Station Name (Hindi) -->
-                        <TextBlock Text="Source Name (Hindi):" VerticalAlignment="Center" Margin="5" Grid.Row="6"/>
-                        <TextBox Text="{Binding SelectedTrain.SrcNameHindi}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="6" Grid.Column="1"/>
+                        <TextBlock Text="Source Stn Name (Hindi):" VerticalAlignment="Center" Margin="2" Grid.Row="6"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.SrcNameHindi}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="6" Grid.Column="1"/>
 
                         <!-- Source Station Name (Regional) -->
-                        <TextBlock Text="Source Name (Regional):" VerticalAlignment="Center" Margin="5" Grid.Row="7"/>
-                        <TextBox Text="{Binding SelectedTrain.SrcNameRegional}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="7" Grid.Column="1"/>
+                        <TextBlock Text="Source Stn Name (Regional):" VerticalAlignment="Center" Margin="2" Grid.Row="7"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.SrcNameRegional}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="7" Grid.Column="1"/>
 
                         <!-- Destination Station Code -->
-                        <TextBlock Text="Destination Code:" VerticalAlignment="Center" Margin="5" Grid.Row="8"/>
-                        <TextBox Text="{Binding SelectedTrain.DestCode}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="8" Grid.Column="1"/>
+                        <TextBlock Text="Destination Stn Code:" VerticalAlignment="Center" Margin="2" Grid.Row="8"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.DestCode}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="8" Grid.Column="1"/>
 
                         <!-- Destination Station Name (English) -->
-                        <TextBlock Text="Destination Name (English):" VerticalAlignment="Center" Margin="5" Grid.Row="9"/>
-                        <TextBox Text="{Binding SelectedTrain.DestNameEnglish}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="9" Grid.Column="1"/>
+                        <TextBlock Text="Destination Name (English):" VerticalAlignment="Center" Margin="2" Grid.Row="9"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.DestNameEnglish}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="9" Grid.Column="1"/>
 
                         <!-- Destination Station Name (Hindi) -->
-                        <TextBlock Text="Destination Name (Hindi):" VerticalAlignment="Center" Margin="5" Grid.Row="10"/>
-                        <TextBox Text="{Binding SelectedTrain.DestNameHindi}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="10" Grid.Column="1"/>
+                        <TextBlock Text="Destination Name (Hindi):" VerticalAlignment="Center" Margin="2" Grid.Row="10"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.DestNameHindi}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="10" Grid.Column="1"/>
 
                         <!-- Destination Station Name (Regional) -->
-                        <TextBlock Text="Destination Name (Regional):" VerticalAlignment="Center" Margin="5" Grid.Row="11"/>
-                        <TextBox Text="{Binding SelectedTrain.DestNameRegional}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="11" Grid.Column="1"/>
+                        <TextBlock Text="Destination Name (Regional):" VerticalAlignment="Center" Margin="2" Grid.Row="11"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.DestNameRegional}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="11" Grid.Column="1"/>
 
                         <!-- Scheduled Time of Arrival -->
-                        <TextBlock Text="Scheduled Arrival Time (STA):" VerticalAlignment="Center" Margin="5" Grid.Row="12"/>
+                        <TextBlock Text="Scheduled Arrival Time (STA):" VerticalAlignment="Center" Margin="2" Grid.Row="12"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="12" Grid.Column="1">
                             <!-- Hours -->
                             <xctk:IntegerUpDown Height="30"
@@ -117,7 +117,7 @@
                                 Minimum="0" 
                                 Maximum="23" 
                                 Width="50" 
-                                Margin="5"
+                                Margin="2"
                                 VerticalAlignment="Center"/>
                             <TextBlock Text=":" VerticalAlignment="Center" Margin="2"/>
                             <!-- Minutes -->
@@ -127,7 +127,7 @@
                                 Maximum="59" 
                                 Increment="1"
                                 Width="50" 
-                                Margin="5"
+                                Margin="2"
                                 VerticalAlignment="Center"/>
                             <!-- Display Selected Time -->
                             <TextBlock Text="{Binding SelectedTrain.STA, StringFormat='{}{0:hh\\:mm}', TargetNullValue='--:--'}" 
@@ -136,7 +136,7 @@
                                FontWeight="Bold"/>
                         </StackPanel>
                         <!-- Scheduled Time of Departure -->
-                        <TextBlock Text="Scheduled Departure Time (STD):" VerticalAlignment="Center" Margin="5" Grid.Row="13"/>
+                        <TextBlock Text="Scheduled Departure Time (STD):" VerticalAlignment="Center" Margin="2" Grid.Row="13"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="13" Grid.Column="1">
                             <!-- Hours -->
                             <xctk:IntegerUpDown Height="30" 
@@ -144,7 +144,7 @@
                             Minimum="0" 
                             Maximum="23" 
                             Width="50" 
-                            Margin="5"
+                            Margin="2"
                             VerticalAlignment="Center"/>
                             <TextBlock Text=":" VerticalAlignment="Center" Margin="2"/>
                             <!-- Minutes -->
@@ -154,7 +154,7 @@
                                 Maximum="59" 
                                 Increment="1"
                                 Width="50" 
-                                Margin="5"
+                                Margin="2"
                                 VerticalAlignment="Center"/>
                             <!-- Display Selected Time -->
                             <TextBlock Text="{Binding SelectedTrain.STD, StringFormat='{}{0:hh\\:mm}', TargetNullValue='--:--'}" 
@@ -163,37 +163,61 @@
                                FontWeight="Bold"/>
                         </StackPanel>
                         <!-- Days of Departure -->
-                        <TextBlock Text="Days of Departure:" VerticalAlignment="Center" Margin="5" Grid.Row="14"/>
-                        <TextBox Text="{Binding SelectedTrain.DaysOfDeparture}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="14" Grid.Column="1"/>
+                        <TextBlock Text="Days of Departure:" VerticalAlignment="Center" Margin="2" Grid.Row="14"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.DaysOfDeparture}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="14" Grid.Column="1"/>
 
                         <!-- Days of Arrival -->
-                        <TextBlock Text="Days of Arrival:" VerticalAlignment="Center" Margin="5" Grid.Row="15"/>
-                        <TextBox Text="{Binding SelectedTrain.DaysOfArrival}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="15" Grid.Column="1"/>
+                        <TextBlock Text="Days of Arrival:" VerticalAlignment="Center" Margin="2" Grid.Row="15"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.DaysOfArrival}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="15" Grid.Column="1"/>
 
                         <!-- Platform -->
-                        <TextBlock Text="Platform:" VerticalAlignment="Center" Margin="5" Grid.Row="16"/>
-                        <TextBox Text="{Binding SelectedTrain.Platform}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="16" Grid.Column="1"/>
+                        <TextBlock Text="Platform:" VerticalAlignment="Center" Margin="2" Grid.Row="16"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.Platform}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="16" Grid.Column="1"/>
 
                         <!-- Coach Sequence -->
-                        <TextBlock Text="Coach Sequence:" VerticalAlignment="Center" Margin="5" Grid.Row="17"/>
-                        <TextBox Text="{Binding SelectedTrain.CoachSequence}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="17" Grid.Column="1"/>
+                        <!--<TextBlock Text="Coach Sequence:" VerticalAlignment="Center" Margin="2" Grid.Row="17"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.CoachSequence}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="17" Grid.Column="1"/>-->
+
+
+                        <!-- Coach Sequence with dynamic TextBoxes -->
+                        <TextBlock Text="Coach Sequence:" VerticalAlignment="Top" Margin="2" Grid.Row="18"/>
+                        <StackPanel Grid.Row="18" Grid.Column="1">
+                            <ItemsControl Name="CoachListItemsControl" ItemsSource="{Binding SelectedTrain.CoachList}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding ., UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" 
+                             Width="60" Height="24" Margin="2" Grid.Column="0"/>
+                                            <Button Content="X" Width="25" Height="25" Margin="2" Grid.Column="1"
+                            Click="DeleteCoachButton_Click"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button HorizontalAlignment="Left" Content="Add" Width="100" Height="30" Margin="2" Click="AddCoachButton_Click"/>
+                        </StackPanel>
 
                         <!-- Train Type -->
-                        <TextBlock Text="Train Type:" VerticalAlignment="Center" Margin="5" Grid.Row="18"/>
-                        <TextBox Text="{Binding SelectedTrain.TrainType}" VerticalAlignment="Center" Height="30" Margin="5" Grid.Row="18" Grid.Column="1"/>
+                        <TextBlock Text="Train Type:" VerticalAlignment="Center" Margin="2" Grid.Row="17"/>
+                        <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedTrain.TrainType}" VerticalAlignment="Center" Height="30" Margin="2" Grid.Row="17" Grid.Column="1"/>
                     </Grid>
                 </ScrollViewer>
             </GroupBox>
         </Grid>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Grid.Row="1">
-            <Button Content="Fetch from NTES" Width="100" Height="30" Margin="5" Click="FetchFromNTESButton_Click"/>
-            <Button Content="Add Train" Width="100" Height="30" Margin="5" Click="AddTrainButton_Click"/>
-            <Button Content="Edit Train" Width="100" Height="30" Margin="5" Click="UpdateTrainButton_Click"/>
-            <Button Content="Delete Selected" Width="100" Height="30" Margin="5" Click="DeleteTrainButton_Click"/>
-            <Button Content="Delete All" Width="100" Height="30" Margin="5" Click="DeleteAllTrainsButton_Click"/>
-            <Button Content="Import" Width="100" Height="30" Margin="5" Click="ImportButton_Click"/>
-            <Button Content="Export" Width="100" Height="30" Margin="5" Click="ExportButton_Click"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="2" Grid.Row="1">
+            <Button Content="Fetch from NTES" Width="100" Height="30" Margin="2" Click="FetchFromNTESButton_Click"/>
+            <Button Content="Add Train" Width="100" Height="30" Margin="2" Click="AddTrainButton_Click"/>
+            <Button Content="Delete Selected" Width="100" Height="30" Margin="2" Click="DeleteTrainButton_Click"/>
+            <Button Content="Delete All" Width="100" Height="30" Margin="2" Click="DeleteAllTrainsButton_Click"/>
+            <Button Content="Import" Width="100" Height="30" Margin="2" Click="ImportButton_Click"/>
+            <Button Content="Export" Width="100" Height="30" Margin="2" Click="ExportButton_Click"/>
+            <Button Content="Save Train" Width="100" Height="30" Margin="2" Click="UpdateTrainButton_Click"/>
         </StackPanel>
 
         <TextBlock Grid.Row="2" x:Name="tb_status" Height="24" HorizontalAlignment="Center"/>

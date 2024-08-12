@@ -5,6 +5,7 @@ using IpisCentralDisplayController.ntes;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -27,21 +28,9 @@ namespace IpisCentralDisplayController.views
     /// </summary>
     public partial class TrainMasterDbWindow : Window, INotifyPropertyChanged
     {
-        private StationInfoManager _stationInfoManager;
         private StationInfo _stationInfo;
-        private string _trainGroupBoxHeader;
         public event PropertyChangedEventHandler PropertyChanged;
         private TrainMasterViewModel _viewModel;
-
-        public string TrainGroupBoxHeader
-        {
-            get => _trainGroupBoxHeader;
-            set
-            {
-                _trainGroupBoxHeader = value;
-                OnPropertyChanged(nameof(TrainGroupBoxHeader));
-            }
-        }
 
         public TrainMasterDbWindow()
         {
@@ -364,5 +353,37 @@ namespace IpisCentralDisplayController.views
             }
             return null; // Handle invalid or empty time strings
         }
+
+        private void AddCoachButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel.SelectedTrain != null)
+            {
+                _viewModel.SelectedTrain.CoachList.Add("New Coach");  // You can customize the initial value as needed
+                _viewModel.CoachList = new ObservableCollection<string>(_viewModel.SelectedTrain.CoachList);
+                CoachListItemsControl.ItemsSource = _viewModel.CoachList;  // Refresh the list
+            }
+            else
+            {
+                MessageBox.Show("Please select a train before adding a coach.", "No Train Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void DeleteCoachButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var coach = button?.DataContext as string;
+
+            if (coach != null && _viewModel.SelectedTrain != null)
+            {
+                _viewModel.SelectedTrain.CoachList.Remove(coach);
+                _viewModel.CoachList = new ObservableCollection<string>(_viewModel.SelectedTrain.CoachList);
+                CoachListItemsControl.ItemsSource = _viewModel.CoachList;  // Refresh the list
+            }
+            else
+            {
+                MessageBox.Show("Error while deleting the coach.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
     }
 }

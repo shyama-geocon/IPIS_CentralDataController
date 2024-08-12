@@ -1091,7 +1091,7 @@ namespace IpisCentralDisplayController
             var stationInfo = _stationInfoManager.CurrentStationInfo;
             if (stationInfo != null)
             {
-                StationInfoTextBlock.Text = $"{stationInfo.StationCode} - {stationInfo.StationNameEnglish}";
+                //StationInfoTextBlock.Text = $"{stationInfo.StationCode} - {stationInfo.StationNameEnglish}";
 
                 StationCodeTextBox.Text = stationInfo.StationCode;
                 RegLanguageComboBox.SelectedItem = stationInfo.RegionalLanguage;
@@ -1336,12 +1336,12 @@ namespace IpisCentralDisplayController
             try
             {
                 // Mock implementation for loading train data
-                trainList.Clear();
+                //trainList.Clear();
                 //trainList.Add(new Train { TrainNumber = "12345", TrainName = "Express Train", ArrivalTime = "10:30", DepartureTime = "10:40" });
                 //trainList.Add(new Train { TrainNumber = "67890", TrainName = "Local Train", ArrivalTime = "11:00", DepartureTime = "11:10" });
 
                 // Update UI with new data
-                TrainListBox.ItemsSource = trainList;
+                ActiveTrainListBox.ItemsSource = trainList;
             }
             catch (Exception ex)
             {

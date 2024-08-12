@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:models="clr-namespace:IpisCentralDisplayController.models"
         Title="Platform Dialog" Height="300" Width="400" WindowStartupLocation="CenterScreen">
-    <StackPanel Orientation="Vertical" Margin="5">
-        <TextBlock Text="Platform Details" FontWeight="Bold" FontSize="16" Margin="5"/>
-        <Grid Margin="5">
+    <StackPanel Orientation="Vertical" Margin="2">
+        <TextBlock Text="Platform Details" FontWeight="Bold" FontSize="16" Margin="2"/>
+        <Grid Margin="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -17,18 +17,18 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Platform Number:" VerticalAlignment="Center" Margin="5"/>
-            <TextBox Name="PlatformNumberTextBox" VerticalContentAlignment="Center" Grid.Column="1" Height="24" Margin="5" TextChanged="PlatformNumberTextBox_TextChanged"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Platform Number:" VerticalAlignment="Center" Margin="2"/>
+            <TextBox Name="PlatformNumberTextBox" VerticalContentAlignment="Center" Grid.Column="1" Height="24" Margin="2" TextChanged="PlatformNumberTextBox_TextChanged"/>
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Platform Type:" VerticalAlignment="Center" Margin="5"/>
-            <!--<ComboBox Grid.Row="1" Grid.Column="1" Height="24" Margin="5" x:Name="PlatformTypeComboBox">
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Platform Type:" VerticalAlignment="Center" Margin="2"/>
+            <!--<ComboBox Grid.Row="1" Grid.Column="1" Height="24" Margin="2" x:Name="PlatformTypeComboBox">
                 <ComboBoxItem Content="Platform"/>
                 <ComboBoxItem Content="Bridge"/>
                 <ComboBoxItem Content="SpecialPlatform1A"/>
                 <ComboBoxItem Content="SpecialPlatform10A"/>
                 <ComboBoxItem Content="Concourse"/>
             </ComboBox>-->
-            <ComboBox Name="PlatformTypeComboBox" VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="1" Height="24" Margin="5" SelectedItem="{Binding PlatformType}">
+            <ComboBox Name="PlatformTypeComboBox" VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="1" Height="24" Margin="2" SelectedItem="{Binding PlatformType}">
                 <ComboBox.ItemsSource>
                     <x:Array Type="{x:Type models:PlatformType}">
                         <models:PlatformType>Platform</models:PlatformType>
@@ -40,15 +40,15 @@
                 </ComboBox.ItemsSource>
             </ComboBox>
 
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Description:" VerticalAlignment="Center" Margin="5"/>
-            <TextBox Grid.Row="2" Grid.Column="1" Height="24" Margin="5" x:Name="DescriptionTextBox"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Description:" VerticalAlignment="Center" Margin="2"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Height="24" Margin="2" x:Name="DescriptionTextBox"/>
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Subnet:" VerticalAlignment="Center" Margin="5"/>
-            <TextBox Grid.Row="3" Grid.Column="1" Height="24" Margin="5" x:Name="SubnetTextBox"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Subnet:" VerticalAlignment="Center" Margin="2"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Height="24" Margin="2" x:Name="SubnetTextBox"/>
         </Grid>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-            <Button Content="Save" Height="30" Width="100" Margin="5" Click="SaveButton_Click"/>
-            <Button Content="Cancel" Height="30" Width="100" Margin="5" Click="CancelButton_Click"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="2">
+            <Button Content="Save" Height="30" Width="100" Margin="2" Click="SaveButton_Click"/>
+            <Button Content="Cancel" Height="30" Width="100" Margin="2" Click="CancelButton_Click"/>
         </StackPanel>
     </StackPanel>
 </Window>

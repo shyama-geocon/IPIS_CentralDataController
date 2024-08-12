@@ -98,22 +98,6 @@
                 <MenuItem Header="About"/>
             </MenuItem>
         </Menu>
-        <ToolBar Grid.Row="1" Height="60">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <!--<StackPanel Orientation="Horizontal" Grid.Column="0">
-                    <Button Content="Button1" Width="100" Height="30"/>
-                    <Button Content="Button2" Width="100" Height="30"/>
-                </StackPanel>-->
-                <StackPanel Orientation="Horizontal" Grid.Column="0" >
-                    <TextBlock Name="StationInfoTextBlock" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Margin="5"/>
-                </StackPanel>
-            </Grid>
-        </ToolBar>
-
         <Grid Grid.Row="2" Margin="2" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="160"/>
@@ -131,22 +115,22 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock HorizontalAlignment="Center" Text="USER" Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Text="USER-NAME" Grid.Row="0" Grid.Column="1" FontWeight="Bold" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Text="USER-TYPE" Grid.Row="0" Grid.Column="2" FontWeight="Bold" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Text="IP-STATUS" Grid.Row="0" Grid.Column="3" FontWeight="Bold" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Text="CONNECTED DEVICES" Grid.Row="0" Grid.Column="4" FontWeight="Bold" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Text="NTES-STATUS" Grid.Row="0" Grid.Column="5" FontWeight="Bold" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Text="CAP-SERVER" Grid.Row="0" Grid.Column="6" FontWeight="Bold" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Text="RMS-SERVER" Grid.Row="0" Grid.Column="7" FontWeight="Bold" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Text="DATE-TIME" Grid.Row="0" Grid.Column="8" FontWeight="Bold" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Name="UserEmailStatus" Grid.Row="1" Grid.Column="0" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Name="UsernameStatus" Grid.Row="1" Grid.Column="1" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Name="UsertypeStatus" Grid.Row="1" Grid.Column="2" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Name="IpStatus" Grid.Row="1" Grid.Column="3" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Name="ConnectedDevicesStatus" Grid.Row="1" Grid.Column="4" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Name="NtesStatus" Grid.Row="1" Grid.Column="5" Margin="5"/>
-            <TextBlock HorizontalAlignment="Center" Name="DateTimeStatus" Grid.Row="1" Grid.Column="8" Margin="5"/>
+            <TextBlock HorizontalAlignment="Center" Text="USER" Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Text="USER-NAME" Grid.Row="0" Grid.Column="1" FontWeight="Bold" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Text="USER-TYPE" Grid.Row="0" Grid.Column="2" FontWeight="Bold" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Text="IP-STATUS" Grid.Row="0" Grid.Column="3" FontWeight="Bold" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Text="CONNECTED DEVICES" Grid.Row="0" Grid.Column="4" FontWeight="Bold" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Text="NTES-STATUS" Grid.Row="0" Grid.Column="5" FontWeight="Bold" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Text="CAP-SERVER" Grid.Row="0" Grid.Column="6" FontWeight="Bold" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Text="RMS-SERVER" Grid.Row="0" Grid.Column="7" FontWeight="Bold" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Text="DATE-TIME" Grid.Row="0" Grid.Column="8" FontWeight="Bold" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Name="UserEmailStatus" Grid.Row="1" Grid.Column="0" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Name="UsernameStatus" Grid.Row="1" Grid.Column="1" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Name="UsertypeStatus" Grid.Row="1" Grid.Column="2" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Name="IpStatus" Grid.Row="1" Grid.Column="3" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Name="ConnectedDevicesStatus" Grid.Row="1" Grid.Column="4" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Name="NtesStatus" Grid.Row="1" Grid.Column="5" Margin="2"/>
+            <TextBlock HorizontalAlignment="Center" Name="DateTimeStatus" Grid.Row="1" Grid.Column="8" Margin="2"/>
         </Grid>
         <TabControl x:Name="tc_main" Grid.Row="3">
             <TabControl.Resources>
@@ -173,24 +157,35 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <GroupBox Header="Train List" Grid.Row="0" Margin="5">
-                            <TabControl>
-                                <TabItem Header="Active Trains" Height="24">
-                                    <ListBox Name="ActiveTrainListBox" Margin="0"/>
-                                </TabItem>
-                                <TabItem Header="Today Trains" Height="24">
-                                    <ListBox Name="TodayTrainListBox" Margin="0"/>
-                                </TabItem>
-                            </TabControl>
-                        </GroupBox>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Header="Active Trains" Grid.Column="0" Margin="2">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <ListBox Name="ActiveTrainListBox" Margin="0" Grid.Row="0"/>
+                                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                        <Button  Content="Start Recording" Width="100" Height="30" Click="StartRecordingButton_Click" Margin="2"/>
+                                    </StackPanel>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Header="Controls" Grid.Column="1" Margin="2">
+                                
+                            </GroupBox>
+                        </Grid>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <GroupBox Header="Coach Sequence / TADDB" Grid.Column="0" Height="200" Margin="5">
+                            <GroupBox Header="Coach Sequence / TADDB" Grid.Column="0" Height="200" Margin="2">
                             </GroupBox>
-                            <GroupBox Header="Controls" Grid.Column="1" Margin="5">
+                            <GroupBox Header="Activity Log" Grid.Column="1" Margin="2">
                             </GroupBox>
                         </Grid>
                     </Grid>
@@ -200,32 +195,32 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <GroupBox Header="Voice Recorder and Media Player" Grid.Row="0" Margin="5">
-                            <StackPanel Margin="5">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                                    <Button Name="StartRecordingButton" Content="Start Recording" Width="100" Height="30" Click="StartRecordingButton_Click" Margin="5"/>
-                                    <Button Name="PauseRecordingButton" Content="Pause Recording" Width="100" Height="30" Click="PauseRecordingButton_Click" Margin="5" IsEnabled="False"/>
-                                    <Button Name="StopRecordingButton" Content="Stop Recording" Width="100" Height="30" Click="StopRecordingButton_Click" Margin="5" IsEnabled="False"/>
-                                    <Button Name="ResumeRecordingButton" Content="Resume Recording" Width="100" Height="30" Click="ResumeRecordingButton_Click" Margin="5" IsEnabled="False"/>
+                        <GroupBox Header="Voice Recorder and Media Player" Grid.Row="0" Margin="2">
+                            <StackPanel Margin="2">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="2">
+                                    <Button Name="StartRecordingButton" Content="Start Recording" Width="100" Height="30" Click="StartRecordingButton_Click" Margin="2"/>
+                                    <Button Name="PauseRecordingButton" Content="Pause Recording" Width="100" Height="30" Click="PauseRecordingButton_Click" Margin="2" IsEnabled="False"/>
+                                    <Button Name="StopRecordingButton" Content="Stop Recording" Width="100" Height="30" Click="StopRecordingButton_Click" Margin="2" IsEnabled="False"/>
+                                    <Button Name="ResumeRecordingButton" Content="Resume Recording" Width="100" Height="30" Click="ResumeRecordingButton_Click" Margin="2" IsEnabled="False"/>
                                 </StackPanel>
-                                <TextBlock Name="ElapsedTimeTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="5"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                                    <Button Name="PlayAudioButton" Content="Play" Width="100" Height="30" Click="PlayAudioButton_Click" Margin="5" IsEnabled="False"/>
-                                    <Button Name="PauseAudioButton" Content="Pause" Width="100" Height="30" Click="PauseAudioButton_Click" Margin="5" IsEnabled="False"/>
-                                    <Button Name="StopAudioButton" Content="Stop" Width="100" Height="30" Click="StopAudioButton_Click" Margin="5" IsEnabled="False"/>
-                                    <Button Name="SaveAudioButton" Content="Save" Width="100" Height="30" Click="SaveAudioButton_Click" Margin="5" IsEnabled="False"/>
+                                <TextBlock Name="ElapsedTimeTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="2"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="2">
+                                    <Button Name="PlayAudioButton" Content="Play" Width="100" Height="30" Click="PlayAudioButton_Click" Margin="2" IsEnabled="False"/>
+                                    <Button Name="PauseAudioButton" Content="Pause" Width="100" Height="30" Click="PauseAudioButton_Click" Margin="2" IsEnabled="False"/>
+                                    <Button Name="StopAudioButton" Content="Stop" Width="100" Height="30" Click="StopAudioButton_Click" Margin="2" IsEnabled="False"/>
+                                    <Button Name="SaveAudioButton" Content="Save" Width="100" Height="30" Click="SaveAudioButton_Click" Margin="2" IsEnabled="False"/>
                                 </StackPanel>
-                                <Slider Name="AudioSlider" Minimum="0" Maximum="100" TickFrequency="1" Margin="5" ValueChanged="AudioSlider_ValueChanged"/>
-                                <TextBlock Name="CurrentTimeTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="5"/>
-                                <TextBlock Name="DurationTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="5"/>
+                                <Slider Name="AudioSlider" Minimum="0" Maximum="100" TickFrequency="1" Margin="2" ValueChanged="AudioSlider_ValueChanged"/>
+                                <TextBlock Name="CurrentTimeTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="2"/>
+                                <TextBlock Name="DurationTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="2"/>
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox Header="Playlist" Grid.Row="1" Margin="5">
-                            <ListBox Name="PlaylistListBox" Margin="5"/>
+                        <GroupBox Header="Playlist" Grid.Row="1" Margin="2">
+                            <ListBox Name="PlaylistListBox" Margin="2"/>
                         </GroupBox>
 
-                        <GroupBox Header="Audio Files" Grid.Row="2" Margin="5">
-                            <ListBox Name="AudioFilesListBox" Margin="5"/>
+                        <GroupBox Header="Audio Files" Grid.Row="2" Margin="2">
+                            <ListBox Name="AudioFilesListBox" Margin="2"/>
                         </GroupBox>
                     </Grid>
                 </Grid>
@@ -243,11 +238,11 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Header="Timeline Bank" Width="240" Margin="5">
+                    <GroupBox Header="Timeline Bank" Width="240" Margin="2">
                         <ListView Name="TimelineListView" ItemsSource="{Binding Timelines}" SelectedItem="{Binding SelectedTimeline}">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="2"/>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                             <ListView.ContextMenu>
@@ -271,11 +266,11 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <GroupBox Margin="5" Header="Display Configuration">
+                            <GroupBox Margin="2" Header="Display Configuration">
                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                     <!-- IVD/OVD Type Selection -->
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Text="Display Type:" VerticalAlignment="Center" Margin="5"/>
+                                        <TextBlock Text="Display Type:" VerticalAlignment="Center" Margin="2"/>
                                         <ComboBox x:Name="cb_ivd_ovd_lines" Width="120" Height="30" SelectionChanged="cb_ivd_ovd_selection_changed"
           SelectedIndex="{Binding IvdOvdHeight, Converter={StaticResource LineToIntegerConverter}}">
                                             <ComboBoxItem Content="6-line"/>
@@ -284,22 +279,22 @@
                                             <ComboBoxItem Content="LED-TV HD"/>
                                             <ComboBoxItem Content="Custom"/>
                                         </ComboBox>
-                                        <TextBlock Text="Pixel Width:" VerticalAlignment="Center" Margin="5"/>
+                                        <TextBlock Text="Pixel Width:" VerticalAlignment="Center" Margin="2"/>
                                         <xctk:IntegerUpDown Width="60" Value="{Binding PixelWidth, Mode=TwoWay}" 
                     IsReadOnly="{Binding IsCustomResolution, Converter={StaticResource BooleanToReadOnlyConverter}}" 
-                    VerticalAlignment="Center" Margin="5"/>
-                                        <TextBlock Text="Pixel Height:" VerticalAlignment="Center" Margin="5"/>
+                    VerticalAlignment="Center" Margin="2"/>
+                                        <TextBlock Text="Pixel Height:" VerticalAlignment="Center" Margin="2"/>
                                         <xctk:IntegerUpDown Width="60" Value="{Binding PixelHeight, Mode=TwoWay}" 
                     IsReadOnly="{Binding IsCustomResolution, Converter={StaticResource BooleanToReadOnlyConverter}}" 
-                    VerticalAlignment="Center" Margin="5"/>
+                    VerticalAlignment="Center" Margin="2"/>
                                     </StackPanel>
                                 </StackPanel>
                             </GroupBox>
-                            <GroupBox Margin="5" Grid.Column="1" Header="Timeline">
+                            <GroupBox Margin="2" Grid.Column="1" Header="Timeline">
                                 <TextBlock x:Name="tb_timeline" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </GroupBox>
                         </Grid>
-                        <GroupBox Header="Timeline" Grid.Row="1" Margin="5">
+                        <GroupBox Header="Timeline" Grid.Row="1" Margin="2">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -307,7 +302,7 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="0">
-                                    <TextBlock Text="Display Mode:" VerticalAlignment="Center" Margin="5"/>
+                                    <TextBlock Text="Display Mode:" VerticalAlignment="Center" Margin="2"/>
                                     <ComboBox Width="100" Height="30" SelectedValue="{Binding SelectedTimelineItem.DisplayMode, Mode=TwoWay}">
                                         <ComboBoxItem Content="Center"/>
                                         <ComboBoxItem Content="Fit"/>
@@ -315,33 +310,33 @@
                                         <ComboBoxItem Content="Stretch"/>
                                     </ComboBox>
                                     <!-- Offset Time Control -->
-                                    <TextBlock Text="Offset Time:" VerticalAlignment="Center" Margin="5"/>
-                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding TimelineLength}" Value="{Binding SelectedTimelineItem.Offset, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="5" 
+                                    <TextBlock Text="Offset Time:" VerticalAlignment="Center" Margin="2"/>
+                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding TimelineLength}" Value="{Binding SelectedTimelineItem.Offset, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="2" 
                     ToolTip="Adjust to set offset time"/>
-                                    <TextBlock Text="{Binding SelectedTimelineItem.Offset, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="5"/>
+                                    <TextBlock Text="{Binding SelectedTimelineItem.Offset, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="2"/>
 
                                     <!-- Duration Control -->
-                                    <TextBlock Text="Duration:" VerticalAlignment="Center" Margin="5"/>
-                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding SelectedTimelineItem.MaxDuration.TotalSeconds}" Value="{Binding SelectedTimelineItem.Duration, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="5" 
+                                    <TextBlock Text="Duration:" VerticalAlignment="Center" Margin="2"/>
+                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding SelectedTimelineItem.MaxDuration.TotalSeconds}" Value="{Binding SelectedTimelineItem.Duration, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="2" 
                     ToolTip="Adjust to set duration"/>
-                                    <TextBlock Text="{Binding SelectedTimelineItem.Duration, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="5"/>
+                                    <TextBlock Text="{Binding SelectedTimelineItem.Duration, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="2"/>
 
                                     <!-- Start-Stop Time Control for Videos -->
-                                    <TextBlock Text="Start Time:" VerticalAlignment="Center" Margin="5" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding SelectedTimelineItem.VideoDuration.TotalSeconds}" Value="{Binding SelectedTimelineItem.StartTime, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="5" 
+                                    <TextBlock Text="Start Time:" VerticalAlignment="Center" Margin="2" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding SelectedTimelineItem.VideoDuration.TotalSeconds}" Value="{Binding SelectedTimelineItem.StartTime, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="2" 
                     ToolTip="Adjust to set start time" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    <TextBlock Text="{Binding SelectedTimelineItem.StartTime, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="5" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <TextBlock Text="{Binding SelectedTimelineItem.StartTime, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="2" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
-                                    <TextBlock Text="Stop Time:" VerticalAlignment="Center" Margin="5" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding SelectedTimelineItem.VideoDuration.TotalSeconds}" Value="{Binding SelectedTimelineItem.StopTime, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="5" 
+                                    <TextBlock Text="Stop Time:" VerticalAlignment="Center" Margin="2" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <xctk:IntegerUpDown Height="30" Width="60" Minimum="0" Maximum="{Binding SelectedTimelineItem.VideoDuration.TotalSeconds}" Value="{Binding SelectedTimelineItem.StopTime, Mode=TwoWay, Converter={StaticResource TimeSpanToDoubleConverter}}" Margin="2" 
                     ToolTip="Adjust to set stop time" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    <TextBlock Text="{Binding SelectedTimelineItem.StopTime, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="5" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <TextBlock Text="{Binding SelectedTimelineItem.StopTime, StringFormat=\{0:hh\\:mm\\:ss\}}" VerticalAlignment="Center" Margin="2" Visibility="{Binding SelectedTimelineItem.IsVideo, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                 </StackPanel>
 
 
 
-                                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5"  Grid.Row="1">
-                                    <ListBox Name="TimelineListBox" Margin="5" ItemsSource="{Binding TimelineItems}" SelectionChanged="TimelineListBox_SelectionChanged" SelectionMode="Single"
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="2"  Grid.Row="1">
+                                    <ListBox Name="TimelineListBox" Margin="2" ItemsSource="{Binding TimelineItems}" SelectionChanged="TimelineListBox_SelectionChanged" SelectionMode="Single"
                                         DragEnter="TimelineListBox_DragEnter" DragOver="TimelineListBox_DragOver" Drop="TimelineListBox_Drop">
                                         <ListBox.ItemsPanel>
                                             <ItemsPanelTemplate>
@@ -351,10 +346,10 @@
 
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
-                                                <StackPanel Orientation="Vertical" Margin="5" Width="160">
-                                                    <Image Source="{Binding ThumbnailPath}" Width="150" Height="100" Margin="5"/>
-                                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5" TextAlignment="Center"/>
-                                                    <TextBlock Text="{Binding MediaType}" VerticalAlignment="Center" Margin="5" TextAlignment="Center"/>
+                                                <StackPanel Orientation="Vertical" Margin="2" Width="160">
+                                                    <Image Source="{Binding ThumbnailPath}" Width="150" Height="100" Margin="2"/>
+                                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="2" TextAlignment="Center"/>
+                                                    <TextBlock Text="{Binding MediaType}" VerticalAlignment="Center" Margin="2" TextAlignment="Center"/>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
@@ -362,14 +357,14 @@
 
                                 </ScrollViewer>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0" Grid.Row="2">
-                                    <Button Content="Move Left" Click="MoveLeftButton_Click" Width="100" Height="30" Margin="5"/>
-                                    <Button Content="Move Right" Click="MoveRightButton_Click" Width="100" Height="30" Margin="5"/>
-                                    <Button Content="Remove Item" Click="RemoveButton_Click" Width="100" Height="30" Margin="5"/>
-                                    <Button Content="Duplicate Item" Click="DuplicateButton_Click" Width="100" Height="30" Margin="5"/>
-                                    <Button Content="Play from Here" Click="PlayFromHereButton_Click" Width="100" Height="30" Margin="5"/>
-                                    <Button Content="Clear Timeline" Click="ClearTimelineButton_Click" Width="100" Height="30" Margin="5"/>
-                                    <Button Content="Save" Click="SaveTimelineButton_Click" Width="100" Height="30" Margin="5"/>
-                                    <Button Content="Save As" Click="SaveAsTimelineButton_Click" Width="100" Height="30" Margin="5"/>
+                                    <Button Content="Move Left" Click="MoveLeftButton_Click" Width="100" Height="30" Margin="2"/>
+                                    <Button Content="Move Right" Click="MoveRightButton_Click" Width="100" Height="30" Margin="2"/>
+                                    <Button Content="Remove Item" Click="RemoveButton_Click" Width="100" Height="30" Margin="2"/>
+                                    <Button Content="Duplicate Item" Click="DuplicateButton_Click" Width="100" Height="30" Margin="2"/>
+                                    <Button Content="Play from Here" Click="PlayFromHereButton_Click" Width="100" Height="30" Margin="2"/>
+                                    <Button Content="Clear Timeline" Click="ClearTimelineButton_Click" Width="100" Height="30" Margin="2"/>
+                                    <Button Content="Save" Click="SaveTimelineButton_Click" Width="100" Height="30" Margin="2"/>
+                                    <Button Content="Save As" Click="SaveAsTimelineButton_Click" Width="100" Height="30" Margin="2"/>
                                 </StackPanel>
                             </Grid>
                         </GroupBox>
@@ -380,21 +375,21 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- Media Management Tabs -->
-                            <GroupBox Header="Media Management" Margin="5" Grid.Column="0">
+                            <GroupBox Header="Media Management" Margin="2" Grid.Column="0">
                                 <TabControl Name="MediaTabControl" Grid.Row="0">
                                     <TabItem Header="Overlay" Width="80" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="2">
 
                                         </ScrollViewer>
                                     </TabItem>
                                     <TabItem Header="Text Slides" Width="80" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
-                                            <ListView Name="TextSlideListView" Margin="5" ItemsSource="{Binding TextSlideFiles}" AllowDrop="True" SelectionChanged="TextSlideListView_SelectionChanged">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="2">
+                                            <ListView Name="TextSlideListView" Margin="2" ItemsSource="{Binding TextSlideFiles}" AllowDrop="True" SelectionChanged="TextSlideListView_SelectionChanged">
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" Margin="5">
-                                                            <Image Source="{Binding FilePath}" Width="100" Height="100" Margin="5"/>
-                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
+                                                        <StackPanel Orientation="Horizontal" Margin="2">
+                                                            <Image Source="{Binding FilePath}" Width="100" Height="100" Margin="2"/>
+                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="2"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </ListView.ItemTemplate>
@@ -409,13 +404,13 @@
                                         </ScrollViewer>
                                     </TabItem>
                                     <TabItem Header="Images" Width="80" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
-                                            <ListView Name="ImageListView" Margin="5" ItemsSource="{Binding ImageFiles}" AllowDrop="True" Drop="ImageListView_Drop" SelectionChanged="ImageListView_SelectionChanged">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="2">
+                                            <ListView Name="ImageListView" Margin="2" ItemsSource="{Binding ImageFiles}" AllowDrop="True" Drop="ImageListView_Drop" SelectionChanged="ImageListView_SelectionChanged">
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" Margin="5">
-                                                            <Image Source="{Binding FilePath}" Width="100" Height="100" Margin="5"/>
-                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
+                                                        <StackPanel Orientation="Horizontal" Margin="2">
+                                                            <Image Source="{Binding FilePath}" Width="100" Height="100" Margin="2"/>
+                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="2"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </ListView.ItemTemplate>
@@ -430,15 +425,15 @@
                                         </ScrollViewer>
                                     </TabItem>
                                     <TabItem Header="Videos" Width="80" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
-                                            <ListView Name="VideoListView" Margin="5" ItemsSource="{Binding VideoFiles}" AllowDrop="True" Drop="VideoListView_Drop" SelectionChanged="VideoListView_SelectionChanged">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="2">
+                                            <ListView Name="VideoListView" Margin="2" ItemsSource="{Binding VideoFiles}" AllowDrop="True" Drop="VideoListView_Drop" SelectionChanged="VideoListView_SelectionChanged">
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" Margin="5">
-                                                            <Image Source="{Binding ThumbnailPath}" Width="160" Height="120" Margin="5"/>
-                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
-                                                            <TextBlock Text="{Binding Resolution}" VerticalAlignment="Center" Margin="5"/>
-                                                            <TextBlock Text="{Binding Duration}" VerticalAlignment="Center" Margin="5"/>
+                                                        <StackPanel Orientation="Horizontal" Margin="2">
+                                                            <Image Source="{Binding ThumbnailPath}" Width="160" Height="120" Margin="2"/>
+                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="2"/>
+                                                            <TextBlock Text="{Binding Resolution}" VerticalAlignment="Center" Margin="2"/>
+                                                            <TextBlock Text="{Binding Duration}" VerticalAlignment="Center" Margin="2"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </ListView.ItemTemplate>
@@ -453,15 +448,15 @@
                                         </ScrollViewer>
                                     </TabItem>
                                     <TabItem Header="Audio" Width="80" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
-                                            <ListView Name="AudioListView" Margin="5" ItemsSource="{Binding AudioFiles}" SelectionChanged="AudioListView_SelectionChanged">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="2">
+                                            <ListView Name="AudioListView" Margin="2" ItemsSource="{Binding AudioFiles}" SelectionChanged="AudioListView_SelectionChanged">
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" Margin="5">
-                                                            <Image Source="icons/icon-audio.png" Width="48" Height="48" Margin="5"/>
-                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
-                                                            <TextBlock Text="{Binding BitRate}" VerticalAlignment="Center" Margin="5"/>
-                                                            <TextBlock Text="{Binding Duration}" VerticalAlignment="Center" Margin="5"/>
+                                                        <StackPanel Orientation="Horizontal" Margin="2">
+                                                            <Image Source="icons/icon-audio.png" Width="48" Height="48" Margin="2"/>
+                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="2"/>
+                                                            <TextBlock Text="{Binding BitRate}" VerticalAlignment="Center" Margin="2"/>
+                                                            <TextBlock Text="{Binding Duration}" VerticalAlignment="Center" Margin="2"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </ListView.ItemTemplate>
@@ -476,12 +471,12 @@
                                         </ScrollViewer>
                                     </TabItem>
                                     <TabItem Header="Effects" Width="80" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
-                                            <ListView Name="EffectsListView" Margin="5">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="2">
+                                            <ListView Name="EffectsListView" Margin="2">
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" Margin="5">
-                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5"/>
+                                                        <StackPanel Orientation="Horizontal" Margin="2">
+                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="2"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </ListView.ItemTemplate>
@@ -489,7 +484,7 @@
                                         </ScrollViewer>
                                     </TabItem>
                                     <TabItem Header="Transitions" Width="80" Height="30">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="2">
 
                                         </ScrollViewer>
                                     </TabItem>
@@ -498,23 +493,23 @@
                             </GroupBox>
 
                             <!-- Preview Window -->
-                            <GroupBox Header="Preview Window" Margin="5" Grid.Column="1">
-                                <StackPanel Margin="5" Background="Black" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <GroupBox Header="Preview Window" Margin="2" Grid.Column="1">
+                                <StackPanel Margin="2" Background="Black" HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                                    <MediaElement Name="PreviewMediaElement" Width="400" Height="300" Stretch="Uniform" Visibility="Collapsed" Margin="5"/>
-                                    <StackPanel Name="MediaControlsPanel" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Visibility="Collapsed">
-                                        <Button Content="Play" Click="PlayButton_Click" Width="80" Height="30" Margin="5"/>
-                                        <Button Content="Pause" Click="PauseButton_Click" Width="80" Height="30" Margin="5"/>
-                                        <Button Content="Stop" Click="StopButton_Click" Width="80" Height="30" Margin="5"/>
-                                        <Slider Name="MediaSlider" Width="200" Margin="5" ValueChanged="MediaSlider_ValueChanged"/>
-                                        <TextBlock Name="PlayedDurationText" Margin="5" Foreground="White"/>
-                                        <TextBlock Text="/" Margin="5" Foreground="White"/>
-                                        <TextBlock Name="TotalDurationText" Margin="5" Foreground="White"/>
+                                    <MediaElement Name="PreviewMediaElement" Width="400" Height="300" Stretch="Uniform" Visibility="Collapsed" Margin="2"/>
+                                    <StackPanel Name="MediaControlsPanel" Orientation="Horizontal" HorizontalAlignment="Center" Margin="2" Visibility="Collapsed">
+                                        <Button Content="Play" Click="PlayButton_Click" Width="80" Height="30" Margin="2"/>
+                                        <Button Content="Pause" Click="PauseButton_Click" Width="80" Height="30" Margin="2"/>
+                                        <Button Content="Stop" Click="StopButton_Click" Width="80" Height="30" Margin="2"/>
+                                        <Slider Name="MediaSlider" Width="200" Margin="2" ValueChanged="MediaSlider_ValueChanged"/>
+                                        <TextBlock Name="PlayedDurationText" Margin="2" Foreground="White"/>
+                                        <TextBlock Text="/" Margin="2" Foreground="White"/>
+                                        <TextBlock Name="TotalDurationText" Margin="2" Foreground="White"/>
                                     </StackPanel>
 
-                                    <StackPanel Name="ImageControlsPanel" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Visibility="Collapsed">
-                                        <Button Content="Zoom In" Click="ZoomInButton_Click" Width="80" Height="30" Margin="5"/>
-                                        <Button Content="Zoom Out" Click="ZoomOutButton_Click" Width="80" Height="30" Margin="5"/>
+                                    <StackPanel Name="ImageControlsPanel" Orientation="Horizontal" HorizontalAlignment="Center" Margin="2" Visibility="Collapsed">
+                                        <Button Content="Zoom In" Click="ZoomInButton_Click" Width="80" Height="30" Margin="2"/>
+                                        <Button Content="Zoom Out" Click="ZoomOutButton_Click" Width="80" Height="30" Margin="2"/>
                                     </StackPanel>
                                 </StackPanel>
                             </GroupBox>
@@ -523,7 +518,7 @@
 
                         </Grid>
                     </Grid>
-                    <GroupBox Grid.Column="2" Header="Timeline Assignment" Width="320" Margin="5">
+                    <GroupBox Grid.Column="2" Header="Timeline Assignment" Width="320" Margin="2">
 
                     </GroupBox>
                 </Grid>
@@ -552,7 +547,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <GroupBox Header="Display List" Grid.Column="0">
-                        <DataGrid Name="DisplaysDataGrid" AutoGenerateColumns="False" Margin="5">
+                        <DataGrid Name="DisplaysDataGrid" AutoGenerateColumns="False" Margin="2">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Platform" Binding="{Binding PlatformNumber}" Width="*"/>
                                 <DataGridTextColumn Header="Device Type" Binding="{Binding DeviceType}" Width="*"/>
@@ -600,16 +595,16 @@
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Train No" Grid.Row="0" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Train Name" Grid.Row="1" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Expected Time" Grid.Row="2" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Arrival/Departure" Grid.Row="3" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Platform Number" Grid.Row="4" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Coach Sequence" Grid.Row="5" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="CGDB Text" Grid.Row="9" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Brightness" Grid.Row="10" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Transition" Grid.Row="11" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Effect" Grid.Row="12" Grid.Column="0" Margin="5"/>
+                                            <TextBlock Text="Train No" Grid.Row="0" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Train Name" Grid.Row="1" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Expected Time" Grid.Row="2" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Arrival/Departure" Grid.Row="3" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Platform Number" Grid.Row="4" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Coach Sequence" Grid.Row="5" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="CGDB Text" Grid.Row="9" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Brightness" Grid.Row="10" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Transition" Grid.Row="11" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Effect" Grid.Row="12" Grid.Column="0" Margin="2"/>
                                             <xctk:IntegerUpDown x:Name="ud_train_no" Grid.Row="0" Grid.Column="1" Width="200" Margin="2"/>
                                             <TextBox x:Name="tb_train_name" Grid.Row="1" Grid.Column="1" Width="200" Margin="2" />
                                             <TextBox x:Name="tb_exp_time" Grid.Row="2" Grid.Column="1" Width="200" Margin="2"/>
@@ -676,8 +671,8 @@
                                                 <GroupBox x:Name="gb_sldb" Grid.Row="0" Grid.Column="0" Margin="2">
                                                     <GroupBox.Header>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="SLDB/MLDB" Margin="5"/>
-                                                            <CheckBox x:Name="cb_sldb" Content="" Margin="5" Checked="cb_sldb_checked"/>
+                                                            <TextBlock Text="SLDB/MLDB" Margin="2"/>
+                                                            <CheckBox x:Name="cb_sldb" Content="" Margin="2" Checked="cb_sldb_checked"/>
                                                         </StackPanel>
                                                     </GroupBox.Header>
                                                     <Canvas TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"  RenderOptions.EdgeMode="Aliased" x:Name="lb_canvas_sldb" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Black" Width="336" Height="16">
@@ -713,8 +708,8 @@
                                                 <GroupBox x:Name="gb_agdb" Grid.Row="1" Grid.Column="0" Margin="2">
                                                     <GroupBox.Header>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="AGDB-1" Margin="5"/>
-                                                            <CheckBox x:Name="cb_agdb" Content="" Margin="5" Checked="cb_agdb_checked"/>
+                                                            <TextBlock Text="AGDB-1" Margin="2"/>
+                                                            <CheckBox x:Name="cb_agdb" Content="" Margin="2" Checked="cb_agdb_checked"/>
                                                         </StackPanel>
                                                     </GroupBox.Header>
                                                     <Canvas TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"  RenderOptions.EdgeMode="Aliased" x:Name="lb_canvas_agdb" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Black" Width="192" Height="32">
@@ -744,8 +739,8 @@
                                                 <GroupBox x:Name="gb_pfdb" Grid.Row="2" Grid.Column="0" Margin="2">
                                                     <GroupBox.Header>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="AGDB-2" Margin="5"/>
-                                                            <CheckBox x:Name="cb_pfdb" Content="" Margin="5" Checked="cb_pfdb_checked"/>
+                                                            <TextBlock Text="AGDB-2" Margin="2"/>
+                                                            <CheckBox x:Name="cb_pfdb" Content="" Margin="2" Checked="cb_pfdb_checked"/>
                                                         </StackPanel>
                                                     </GroupBox.Header>
                                                     <Canvas TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"  RenderOptions.EdgeMode="Aliased" x:Name="lb_canvas_pfdb" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Black" Width="192" Height="32">
@@ -775,8 +770,8 @@
                                                 <GroupBox x:Name="gb_cgdb" Grid.Row="3" Grid.Column="1" Margin="2">
                                                     <GroupBox.Header>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="CGDB" Margin="5"/>
-                                                            <CheckBox x:Name="cb_cgdb" Content="" Margin="5" Checked="cb_cgdb_checked"/>
+                                                            <TextBlock Text="CGDB" Margin="2"/>
+                                                            <CheckBox x:Name="cb_cgdb" Content="" Margin="2" Checked="cb_cgdb_checked"/>
                                                         </StackPanel>
                                                     </GroupBox.Header>
                                                     <Canvas TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased"  RenderOptions.EdgeMode="Aliased" x:Name="lb_canvas_cgdb" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Black" Width="96" Height="16">
@@ -833,20 +828,20 @@
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Train No" Grid.Row="0" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Train Name" Grid.Row="1" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Expected Time" Grid.Row="2" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Arrival/Departure" Grid.Row="3" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Platform Number" Grid.Row="4" Grid.Column="0" Margin="5"/>
-                                            <TextBlock Text="Brightness" Grid.Row="10" Grid.Column="0" Margin="5"/>
+                                            <TextBlock Text="Train No" Grid.Row="0" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Train Name" Grid.Row="1" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Expected Time" Grid.Row="2" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Arrival/Departure" Grid.Row="3" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Platform Number" Grid.Row="4" Grid.Column="0" Margin="2"/>
+                                            <TextBlock Text="Brightness" Grid.Row="10" Grid.Column="0" Margin="2"/>
                                             <xctk:IntegerUpDown x:Name="ud_train_no_rgb" Grid.Row="0" Grid.Column="1" Width="200" Margin="2"/>
-                                            <TextBlock Text="Text Clr" Grid.Row="0" Grid.Column="2" Margin="5"/>
+                                            <TextBlock Text="Text Clr" Grid.Row="0" Grid.Column="2" Margin="2"/>
                                             <xctk:ColorPicker Grid.Row="0" Grid.Column="3" Width="50"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Top"
                           SelectedColor="{Binding TextColor1.Color, Mode=TwoWay}"
                           Margin="2"/>
-                                            <TextBlock Text="Back Clr" Grid.Row="0" Grid.Column="4" Margin="5"/>
+                                            <TextBlock Text="Back Clr" Grid.Row="0" Grid.Column="4" Margin="2"/>
                                             <xctk:ColorPicker Grid.Row="0" Grid.Column="6" Width="50"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Top"
@@ -854,26 +849,26 @@
                           Margin="2"/>
 
                                             <TextBox x:Name="tb_train_name_rgb" Grid.Row="1" Grid.Column="1" Width="200" Margin="2" />
-                                            <TextBlock Text="Text Clr" Grid.Row="1" Grid.Column="2" Margin="5"/>
+                                            <TextBlock Text="Text Clr" Grid.Row="1" Grid.Column="2" Margin="2"/>
                                             <xctk:ColorPicker Grid.Row="1" Grid.Column="3" Width="50"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Top"
                           SelectedColor="{Binding TextColor2.Color, Mode=TwoWay}"
                           Margin="2"/>
-                                            <TextBlock Text="Back Clr" Grid.Row="1" Grid.Column="4" Margin="5"/>
+                                            <TextBlock Text="Back Clr" Grid.Row="1" Grid.Column="4" Margin="2"/>
                                             <xctk:ColorPicker Grid.Row="1" Grid.Column="6" Width="50"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Top"
                           SelectedColor="{Binding BackgroundColor2.Color, Mode=TwoWay}"
                           Margin="2"/>
                                             <TextBox x:Name="tb_exp_time_rgb" Grid.Row="2" Grid.Column="1" Width="200" Margin="2"/>
-                                            <TextBlock Text="Text Clr" Grid.Row="2" Grid.Column="2" Margin="5"/>
+                                            <TextBlock Text="Text Clr" Grid.Row="2" Grid.Column="2" Margin="2"/>
                                             <xctk:ColorPicker Grid.Row="2" Grid.Column="3" Width="50"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Top"
                           SelectedColor="{Binding TextColor3.Color, Mode=TwoWay}"
                           Margin="2"/>
-                                            <TextBlock Text="Back Clr" Grid.Row="2" Grid.Column="4" Margin="5"/>
+                                            <TextBlock Text="Back Clr" Grid.Row="2" Grid.Column="4" Margin="2"/>
                                             <xctk:ColorPicker Grid.Row="2" Grid.Column="6" Width="50"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Top"
@@ -884,13 +879,13 @@
                                                 <ComboBoxItem Content="A"/>
                                                 <ComboBoxItem Content="D"/>
                                             </ComboBox>
-                                            <TextBlock Text="Text Clr" Grid.Row="3" Grid.Column="2" Margin="5"/>
+                                            <TextBlock Text="Text Clr" Grid.Row="3" Grid.Column="2" Margin="2"/>
                                             <xctk:ColorPicker Grid.Row="3" Grid.Column="3" Width="50"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Top"
                           SelectedColor="{Binding TextColor4.Color, Mode=TwoWay}"
                           Margin="2"/>
-                                            <TextBlock Text="Back Clr" Grid.Row="3" Grid.Column="4" Margin="5"/>
+                                            <TextBlock Text="Back Clr" Grid.Row="3" Grid.Column="4" Margin="2"/>
                                             <xctk:ColorPicker Grid.Row="3" Grid.Column="6" Width="50"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Top"
@@ -898,13 +893,13 @@
                           Margin="2"/>
 
                                             <xctk:IntegerUpDown x:Name="ud_pf_no_rgb" Value="1" Grid.Row="4" Grid.Column="1" Width="200" Margin="2"/>
-                                            <TextBlock Text="Text Clr" Grid.Row="4" Grid.Column="2" Margin="5"/>
+                                            <TextBlock Text="Text Clr" Grid.Row="4" Grid.Column="2" Margin="2"/>
                                             <xctk:ColorPicker Grid.Row="4" Grid.Column="3" Width="50"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Top"
                           SelectedColor="{Binding TextColor5.Color, Mode=TwoWay}"
                           Margin="2"/>
-                                            <TextBlock Text="Back Clr" Grid.Row="4" Grid.Column="4" Margin="5"/>
+                                            <TextBlock Text="Back Clr" Grid.Row="4" Grid.Column="4" Margin="2"/>
                                             <xctk:ColorPicker Grid.Row="4" Grid.Column="6" Width="50"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Top"
@@ -928,8 +923,8 @@
                                                 <GroupBox x:Name="gb_sldb_rgb" Grid.Row="0" Grid.Column="0" Margin="2">
                                                     <GroupBox.Header>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="RGB SLDB/MLDB" Margin="5"/>
-                                                            <CheckBox x:Name="cb_sldb_rgb" Content="" Margin="5" Checked="cb_sldb_rgb_checked"/>
+                                                            <TextBlock Text="RGB SLDB/MLDB" Margin="2"/>
+                                                            <CheckBox x:Name="cb_sldb_rgb" Content="" Margin="2" Checked="cb_sldb_rgb_checked"/>
                                                         </StackPanel>
                                                     </GroupBox.Header>
                                                     <Canvas x:Name="lb_canvas_sldb_rgb" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Black" Width="336" Height="16">
@@ -1037,15 +1032,15 @@
                                                         <ColumnDefinition Width="Auto"/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="5" Text="MAC Address" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="5" Text="Hex-Value" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="5" Text="IP Mode" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="5" Text="IP Address" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="5" Text="Net Mask" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="5" Text="Gateway" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Row="6" Grid.Column="0" Margin="5" Text="Domain" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Row="7" Grid.Column="0" Margin="5" Text="TCP Port" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Row="8" Grid.Column="0" Margin="5" Text="Device ID" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" Text="MAC Address" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="2" Text="Hex-Value" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="2" Text="IP Mode" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="2" Text="IP Address" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="2" Text="Net Mask" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="2" Text="Gateway" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Row="6" Grid.Column="0" Margin="2" Text="Domain" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Row="7" Grid.Column="0" Margin="2" Text="TCP Port" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Row="8" Grid.Column="0" Margin="2" Text="Device ID" HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                                                     <TextBlock x:Name="tb_mac_hex" Grid.Row="1" Grid.Column="1" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center">
                                                         <TextBlock.Text>
@@ -1092,7 +1087,7 @@
                                     </Grid>
                                 </TabItem>
                             </TabControl>
-                            <Grid Grid.Row="1" Margin="10" HorizontalAlignment="Center">
+                            <Grid Grid.Row="1" Margin="2" HorizontalAlignment="Center">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="Auto"/>
@@ -1134,7 +1129,7 @@
                     </StackPanel>
                 </TabItem.Header>
 
-                <Grid Margin="10">
+                <Grid Margin="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -1142,10 +1137,10 @@
                     </Grid.RowDefinitions>
 
                     <!-- Heading -->
-                    <TextBlock Text="Automation Logs" FontSize="24" FontWeight="Bold" Grid.Row="0" Margin="10"/>
+                    <TextBlock Text="Automation Logs" FontSize="24" FontWeight="Bold" Grid.Row="0" Margin="2"/>
 
                     <!-- DataGrid for Automation Logs -->
-                    <DataGrid Name="AutomationLogsDataGrid" AutoGenerateColumns="False" Margin="10" Grid.Row="1">
+                    <DataGrid Name="AutomationLogsDataGrid" AutoGenerateColumns="False" Margin="2" Grid.Row="1">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" Width="*"/>
                             <DataGridTextColumn Header="Log" Binding="{Binding Log}" Width="*"/>
@@ -1153,8 +1148,8 @@
                     </DataGrid>
 
                     <!-- Toggle Button for Automation -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10" Grid.Row="2">
-                        <ToggleButton Name="AutomationToggleButton" Content="Turn Automation On" Width="150" Height="30" Margin="5" Checked="AutomationToggleButton_Checked" Unchecked="AutomationToggleButton_Unchecked"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="2" Grid.Row="2">
+                        <ToggleButton Name="AutomationToggleButton" Content="Turn Automation On" Width="150" Height="30" Margin="2" Checked="AutomationToggleButton_Checked" Unchecked="AutomationToggleButton_Unchecked"/>
                     </StackPanel>
                 </Grid>
             </TabItem>
@@ -1166,7 +1161,7 @@
                         <TextBlock Text="SETTINGS" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
                     </StackPanel>
                 </TabItem.Header>
-                <Grid Margin="10">
+                <Grid Margin="2">
                     <TabControl TabStripPlacement="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                         <TabItem Header="User Categories" Name="UserCategoriesTab" Width="160" Height="30">
                             <Grid>
@@ -1175,14 +1170,14 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="User Categories" FontWeight="Bold" FontSize="18" Margin="10"/>
+                                <TextBlock Text="User Categories" FontWeight="Bold" FontSize="18" Margin="2"/>
 
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="2">
-                                    <Button Content="Add" Width="100" Height="30" Margin="10" Click="AddCategory_Click"/>
-                                    <Button Content="Edit" Width="100" Height="30" Margin="10" Click="EditCategory_Click"/>
-                                    <Button Content="Delete" Width="100" Height="30" Margin="10" Click="DeleteCategory_Click"/>
+                                    <Button Content="Add" Width="100" Height="30" Margin="2" Click="AddCategory_Click"/>
+                                    <Button Content="Edit" Width="100" Height="30" Margin="2" Click="EditCategory_Click"/>
+                                    <Button Content="Delete" Width="100" Height="30" Margin="2" Click="DeleteCategory_Click"/>
                                 </StackPanel>
-                                <DataGrid Name="UserCategoriesDataGrid" AutoGenerateColumns="False" Grid.Row="1" Margin="10" ItemsSource="{Binding UserCategories}">
+                                <DataGrid Name="UserCategoriesDataGrid" AutoGenerateColumns="False" Grid.Row="1" Margin="2" ItemsSource="{Binding UserCategories}">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto" IsReadOnly="True"/>
                                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="Auto" IsReadOnly="True"/>
@@ -1199,15 +1194,15 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="User Management" FontWeight="Bold" FontSize="18" Margin="10"/>
+                                <TextBlock Text="User Management" FontWeight="Bold" FontSize="18" Margin="2"/>
 
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="2">
-                                    <Button Content="Add" Width="100" Height="30" Margin="10" Click="AddUser_Click"/>
-                                    <Button Content="Edit" Width="100" Height="30" Margin="10" Click="EditUser_Click"/>
-                                    <Button Content="Delete" Width="100" Height="30" Margin="10" Click="DeleteUser_Click"/>
+                                    <Button Content="Add" Width="100" Height="30" Margin="2" Click="AddUser_Click"/>
+                                    <Button Content="Edit" Width="100" Height="30" Margin="2" Click="EditUser_Click"/>
+                                    <Button Content="Delete" Width="100" Height="30" Margin="2" Click="DeleteUser_Click"/>
                                 </StackPanel>
 
-                                <DataGrid Name="UsersDataGrid" AutoGenerateColumns="False" Grid.Row="1" Margin="10" ItemsSource="{Binding Users}">
+                                <DataGrid Name="UsersDataGrid" AutoGenerateColumns="False" Grid.Row="1" Margin="2" ItemsSource="{Binding Users}">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" IsReadOnly="True"/>
                                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True"/>
@@ -1228,10 +1223,10 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="Station Information" Grid.Row="0" FontWeight="Bold" FontSize="18" Margin="10"/>
+                                <TextBlock Text="Station Information" Grid.Row="0" FontWeight="Bold" FontSize="18" Margin="2"/>
 
                                 <!-- Station Info Form -->
-                                <Grid Margin="5" Grid.Row="1">
+                                <Grid Margin="2" Grid.Row="1">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
@@ -1250,12 +1245,12 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Station Code -->
-                                    <TextBlock Text="Station Code:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="0" Grid.Column="0"/>
-                                    <TextBox Name="StationCodeTextBox" Height="30" Margin="5" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="Station Code:" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="0" Grid.Column="0"/>
+                                    <TextBox Name="StationCodeTextBox" Height="30" Margin="2" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center"/>
 
                                     <!-- Regional Language -->
-                                    <TextBlock Text="Regional Language:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="0" Grid.Column="2"/>
-                                    <ComboBox Name="RegLanguageComboBox" Height="30" Margin="5" Grid.Row="0" Grid.Column="3" VerticalContentAlignment="Center">
+                                    <TextBlock Text="Regional Language:" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="0" Grid.Column="2"/>
+                                    <ComboBox Name="RegLanguageComboBox" Height="30" Margin="2" Grid.Row="0" Grid.Column="3" VerticalContentAlignment="Center">
                                         <ComboBoxItem Content="HINDI"/>
                                         <ComboBoxItem Content="BANGLA"/>
                                         <ComboBoxItem Content="GUJARATI"/>
@@ -1269,48 +1264,48 @@
                                     </ComboBox>
 
                                     <!-- Station Name in English -->
-                                    <TextBlock Text="Station Name (English):" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="0"/>
-                                    <TextBox Name="StationNameEnTextBox" Height="30" Margin="5" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="Station Name (English):" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="1" Grid.Column="0"/>
+                                    <TextBox Name="StationNameEnTextBox" Height="30" Margin="2" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
 
                                     <!-- Station Name in Hindi -->
-                                    <TextBlock Text="Station Name (Hindi):" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="2"/>
-                                    <TextBox Name="StationNameHiTextBox" Height="30" Margin="5" Grid.Row="1" Grid.Column="3" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="Station Name (Hindi):" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="1" Grid.Column="2"/>
+                                    <TextBox Name="StationNameHiTextBox" Height="30" Margin="2" Grid.Row="1" Grid.Column="3" VerticalContentAlignment="Center"/>
 
                                     <!-- Station Name in Regional Language -->
-                                    <TextBlock Text="Station Name (Regional Language):" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="2" Grid.Column="0"/>
-                                    <TextBox Name="StationNameRLTextBox" Height="30" Margin="5" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="Station Name (Regional Language):" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="2" Grid.Column="0"/>
+                                    <TextBox Name="StationNameRLTextBox" Height="30" Margin="2" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
 
                                     <!-- Station Latitude -->
-                                    <TextBlock Text="Station Latitude:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="2" Grid.Column="2"/>
-                                    <xctk:DecimalUpDown Name="StationLatTextBox" Height="30" Margin="5" Grid.Row="2" Grid.Column="3" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="Station Latitude:" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="2" Grid.Column="2"/>
+                                    <xctk:DecimalUpDown Name="StationLatTextBox" Height="30" Margin="2" Grid.Row="2" Grid.Column="3" VerticalContentAlignment="Center"/>
 
                                     <!-- Station Longitude -->
-                                    <TextBlock Text="Station Longitude:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="3" Grid.Column="0"/>
-                                    <xctk:DecimalUpDown Name="StationLongTextBox" Height="30" Margin="5" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="Station Longitude:" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="3" Grid.Column="0"/>
+                                    <xctk:DecimalUpDown Name="StationLongTextBox" Height="30" Margin="2" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Center"/>
 
                                     <!-- Station Altitude -->
-                                    <TextBlock Text="Station Altitude:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="3" Grid.Column="2"/>
-                                    <xctk:DecimalUpDown Name="StationAltTextBox" Height="30" Margin="5" Grid.Row="3" Grid.Column="3" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="Station Altitude:" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="3" Grid.Column="2"/>
+                                    <xctk:DecimalUpDown Name="StationAltTextBox" Height="30" Margin="2" Grid.Row="3" Grid.Column="3" VerticalContentAlignment="Center"/>
 
                                     <!-- Number of Platforms -->
-                                    <TextBlock Text="Number of Platforms:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="4" Grid.Column="0"/>
-                                    <xctk:IntegerUpDown Name="StationPlatformsTextBox" Height="30" Margin="5" Grid.Row="4" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="Number of Platforms:" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="4" Grid.Column="0"/>
+                                    <xctk:IntegerUpDown Name="StationPlatformsTextBox" Height="30" Margin="2" Grid.Row="4" Grid.Column="1" VerticalContentAlignment="Center"/>
 
                                     <!-- Number of Spl Platforms -->
-                                    <TextBlock Text="Number of Spl Platforms:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="4" Grid.Column="2"/>
-                                    <xctk:IntegerUpDown Name="NumberOfSplPlatformsTextBox" Height="30" Margin="5" Grid.Row="4" Grid.Column="3" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="Number of Spl Platforms:" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="4" Grid.Column="2"/>
+                                    <xctk:IntegerUpDown Name="NumberOfSplPlatformsTextBox" Height="30" Margin="2" Grid.Row="4" Grid.Column="3" VerticalContentAlignment="Center"/>
 
                                     <!-- Number of Station Entrances -->
-                                    <TextBlock Text="Number of Station Entrances:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="5" Grid.Column="0"/>
-                                    <xctk:IntegerUpDown Name="NumberOfStationEntrancesTextBox" Height="30" Margin="5" Grid.Row="5" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="Number of Station Entrances:" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="5" Grid.Column="0"/>
+                                    <xctk:IntegerUpDown Name="NumberOfStationEntrancesTextBox" Height="30" Margin="2" Grid.Row="5" Grid.Column="1" VerticalContentAlignment="Center"/>
 
                                     <!-- Number of Platform Bridges -->
-                                    <TextBlock Text="Number of Platform Bridges:" Height="30" VerticalAlignment="Center" Margin="5" Grid.Row="5" Grid.Column="2"/>
-                                    <xctk:IntegerUpDown Name="NumberOfPlatformBridgesTextBox" Height="30" Margin="5" Grid.Row="5" Grid.Column="3" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="Number of Platform Bridges:" Height="30" VerticalAlignment="Center" Margin="2" Grid.Row="5" Grid.Column="2"/>
+                                    <xctk:IntegerUpDown Name="NumberOfPlatformBridgesTextBox" Height="30" Margin="2" Grid.Row="5" Grid.Column="3" VerticalContentAlignment="Center"/>
 
                                     <!-- Update Button -->
-                                    <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="6" Grid.ColumnSpan="4" HorizontalAlignment="Center">
-                                        <Button Content="Update" Width="100" Height="30" Margin="5" Click="UpdateStationInfoButton_Click"/>
+                                    <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="6" Grid.ColumnSpan="4" HorizontalAlignment="Center">
+                                        <Button Content="Update" Width="100" Height="30" Margin="2" Click="UpdateStationInfoButton_Click"/>
                                     </StackPanel>
                                 </Grid>
                             </Grid>
@@ -1323,14 +1318,14 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="Platform and Device Management" FontWeight="Bold" FontSize="18" Margin="10" Grid.Row="0"/>
-                                <Grid Grid.Row="1" Margin="10">
+                                <TextBlock Text="Platform and Device Management" FontWeight="Bold" FontSize="18" Margin="2" Grid.Row="0"/>
+                                <Grid Grid.Row="1" Margin="2">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <GroupBox Header="Platforms" Grid.Column="0" Margin="5">
-                                        <DataGrid Name="PlatformDataGrid" AutoGenerateColumns="False" Margin="5"
+                                    <GroupBox Header="Platforms" Grid.Column="0" Margin="2">
+                                        <DataGrid Name="PlatformDataGrid" AutoGenerateColumns="False" Margin="2"
                                               ItemsSource="{Binding Platforms}"
                                               SelectedItem="{Binding SelectedPlatform}">
                                             <DataGrid.Columns>
@@ -1341,8 +1336,8 @@
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </GroupBox>
-                                    <GroupBox Header="Platform-Devices" Grid.Column="1" Margin="5">
-                                        <DataGrid Name="DeviceDataGrid" AutoGenerateColumns="False" Margin="5"
+                                    <GroupBox Header="Platform-Devices" Grid.Column="1" Margin="2">
+                                        <DataGrid Name="DeviceDataGrid" AutoGenerateColumns="False" Margin="2"
                                               ItemsSource="{Binding Devices}"
                                               SelectedItem="{Binding SelectedDevice}">
                                             <DataGrid.Columns>
@@ -1354,20 +1349,20 @@
                                         </DataGrid>
                                     </GroupBox>
                                 </Grid>
-                                <Grid Grid.Row="2" Margin="10">
+                                <Grid Grid.Row="2" Margin="2">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                        <Button Name="AddPlatformButton" Content="Add Platform" Height="30" Width="100" Margin="5" Click="AddPlatformButton_Click"/>
-                                        <Button Name="EditPlatformButton" Content="Edit Platform" Height="30" Width="100" Margin="5" Click="EditPlatformButton_Click"/>
-                                        <Button Name="DeletePlatformButton" Content="Delete Platform" Height="30" Width="100" Margin="5" Click="DeletePlatformButton_Click"/>
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="2">
+                                        <Button Name="AddPlatformButton" Content="Add Platform" Height="30" Width="100" Margin="2" Click="AddPlatformButton_Click"/>
+                                        <Button Name="EditPlatformButton" Content="Edit Platform" Height="30" Width="100" Margin="2" Click="EditPlatformButton_Click"/>
+                                        <Button Name="DeletePlatformButton" Content="Delete Platform" Height="30" Width="100" Margin="2" Click="DeletePlatformButton_Click"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                        <Button Name="AddDeviceButton" Content="Add Device" Height="30" Width="100" Margin="5" Click="AddDeviceButton_Click"/>
-                                        <Button Name="EditDeviceButton" Content="Edit Device" Height="30" Width="100" Margin="5" Click="EditDeviceButton_Click"/>
-                                        <Button Name="DeleteDeviceButton" Content="Delete Device" Height="30" Width="100" Margin="5" Click="DeleteDeviceButton_Click"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="2">
+                                        <Button Name="AddDeviceButton" Content="Add Device" Height="30" Width="100" Margin="2" Click="AddDeviceButton_Click"/>
+                                        <Button Name="EditDeviceButton" Content="Edit Device" Height="30" Width="100" Margin="2" Click="EditDeviceButton_Click"/>
+                                        <Button Name="DeleteDeviceButton" Content="Delete Device" Height="30" Width="100" Margin="2" Click="DeleteDeviceButton_Click"/>
                                     </StackPanel>
                                 </Grid>
                             </Grid>
@@ -1383,9 +1378,9 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Display Styles Management" FontWeight="Bold" FontSize="18" Margin="10"/>
+                                <TextBlock Text="Display Styles Management" FontWeight="Bold" FontSize="18" Margin="2"/>
                                 <GroupBox Grid.Row="1" Margin="2" Header="Display Styles">
-                                    <DataGrid Name="DisplayStylesDataGrid" AutoGenerateColumns="False" Margin="5" ItemsSource="{Binding DisplayStyles}" SelectedItem="{Binding SelectedStyle}">
+                                    <DataGrid Name="DisplayStylesDataGrid" AutoGenerateColumns="False" Margin="2" ItemsSource="{Binding DisplayStyles}" SelectedItem="{Binding SelectedStyle}">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Style Name" Binding="{Binding StyleName}" Width="100"/>
                                             <DataGridComboBoxColumn Header="Language" SelectedItemBinding="{Binding Language}" 
@@ -1556,7 +1551,7 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="Display Styles for Color Display" FontWeight="Bold" FontSize="18" Margin="10" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"/>
+                                <TextBlock Text="Display Styles for Color Display" FontWeight="Bold" FontSize="18" Margin="2" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"/>
                                 <Grid Grid.Row="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -1564,7 +1559,7 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <GroupBox Header="Background Theme" Grid.Column="0" Margin="2">
-                                        <Grid Margin="5">
+                                        <Grid Margin="2">
                                             <!-- Column Definitions -->
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" />
@@ -1580,24 +1575,24 @@
                                             </Grid.RowDefinitions>
 
                                             <!-- Background Color -->
-                                            <TextBlock Text="Background Color:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="5" />
-                                            <xctk:ColorPicker SelectedColor="{Binding Theme.BackgroundColor, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" Width="150" Margin="5"/>
-                                            <TextBlock Text="{Binding Theme.BackgroundColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+                                            <TextBlock Text="Background Color:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2" />
+                                            <xctk:ColorPicker SelectedColor="{Binding Theme.BackgroundColor, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" Width="150" Margin="2"/>
+                                            <TextBlock Text="{Binding Theme.BackgroundColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="2" />
 
                                             <!-- Horizontal Line Color -->
-                                            <TextBlock Text="Horizontal Line Color:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="5" />
-                                            <xctk:ColorPicker SelectedColor="{Binding Theme.HorizontalLineColor, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" Width="150" Margin="5"/>
-                                            <TextBlock Text="{Binding Theme.HorizontalLineColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+                                            <TextBlock Text="Horizontal Line Color:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2" />
+                                            <xctk:ColorPicker SelectedColor="{Binding Theme.HorizontalLineColor, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" Width="150" Margin="2"/>
+                                            <TextBlock Text="{Binding Theme.HorizontalLineColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Margin="2" />
 
                                             <!-- Vertical Line Color -->
-                                            <TextBlock Text="Vertical Line Color:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="5" />
-                                            <xctk:ColorPicker SelectedColor="{Binding Theme.VerticalLineColor, Mode=TwoWay}" Grid.Row="2" Grid.Column="1" Width="150" Margin="5"/>
-                                            <TextBlock Text="{Binding Theme.VerticalLineColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+                                            <TextBlock Text="Vertical Line Color:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="2" />
+                                            <xctk:ColorPicker SelectedColor="{Binding Theme.VerticalLineColor, Mode=TwoWay}" Grid.Row="2" Grid.Column="1" Width="150" Margin="2"/>
+                                            <TextBlock Text="{Binding Theme.VerticalLineColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Margin="2" />
 
                                             <!-- Message Line Color -->
-                                            <TextBlock Text="Message Line Color:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="5" />
-                                            <xctk:ColorPicker SelectedColor="{Binding Theme.MessageLineColor, Mode=TwoWay}" Grid.Row="3" Grid.Column="1" Width="150" Margin="5"/>
-                                            <TextBlock Text="{Binding Theme.MessageLineColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+                                            <TextBlock Text="Message Line Color:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="2" />
+                                            <xctk:ColorPicker SelectedColor="{Binding Theme.MessageLineColor, Mode=TwoWay}" Grid.Row="3" Grid.Column="1" Width="150" Margin="2"/>
+                                            <TextBlock Text="{Binding Theme.MessageLineColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="2" />
                                         </Grid>
                                     </GroupBox>
                                     <GroupBox Header="Train Status List" Grid.Column="1" Margin="2">
@@ -1666,7 +1661,7 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Text="Audio Management" FontWeight="Bold" FontSize="18" Margin="10" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"/>
+                                <TextBlock Text="Audio Management" FontWeight="Bold" FontSize="18" Margin="2" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"/>
 
                                 <Grid Grid.Row="1" Grid.ColumnSpan="3">
                                     <Grid.ColumnDefinitions>
@@ -1676,38 +1671,38 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Microphone Settings -->
-                                    <GroupBox Header="Microphone" Margin="10" Grid.Column="0">
-                                        <StackPanel Margin="10">
-                                            <TextBlock Text="Select Mic Interface" Margin="5"/>
-                                            <ComboBox Name="MicInterfaceComboBox" Margin="5" ItemsSource="{Binding MicInterfaces}" SelectedItem="{Binding SelectedMicInterface}"/>
+                                    <GroupBox Header="Microphone" Margin="2" Grid.Column="0">
+                                        <StackPanel Margin="2">
+                                            <TextBlock Text="Select Mic Interface" Margin="2"/>
+                                            <ComboBox Name="MicInterfaceComboBox" Margin="2" ItemsSource="{Binding MicInterfaces}" SelectedItem="{Binding SelectedMicInterface}"/>
 
-                                            <TextBlock Text="Set Volume" Margin="5"/>
-                                            <StackPanel Orientation="Horizontal" Margin="5">
+                                            <TextBlock Text="Set Volume" Margin="2"/>
+                                            <StackPanel Orientation="Horizontal" Margin="2">
                                                 <Slider Name="MicVolumeSlider" Orientation="Horizontal" Minimum="0" Maximum="100" TickFrequency="1" Width="150" Value="{Binding MicVolume, UpdateSourceTrigger=PropertyChanged}"/>
-                                                <TextBlock Text="{Binding MicVolume, StringFormat=F0}" Margin="5" Width="50" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding MicVolume, StringFormat=F0}" Margin="2" Width="50" VerticalAlignment="Center"/>
                                             </StackPanel>
 
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
-                                                <Button Name="MicRefreshButton" Content="Refresh" Margin="5" Width="100" Height="30" Click="RefreshButton_Click"/>
-                                                <Button Name="MicSaveButton" Content="Save" Margin="5" Width="100" Height="30" Click="SaveButton_Click"/>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="2">
+                                                <Button Name="MicRefreshButton" Content="Refresh" Margin="2" Width="100" Height="30" Click="RefreshButton_Click"/>
+                                                <Button Name="MicSaveButton" Content="Save" Margin="2" Width="100" Height="30" Click="SaveButton_Click"/>
                                             </StackPanel>
                                         </StackPanel>
                                     </GroupBox>
 
                                     <!-- Audio Monitor Settings -->
-                                    <GroupBox Header="Audio Monitor" Margin="10" Grid.Column="1">
-                                        <StackPanel Margin="10">
-                                            <TextBlock Text="Select Monitor Audio Interface" Margin="5"/>
-                                            <ComboBox Name="MonitorInterfaceComboBox" Margin="5" ItemsSource="{Binding MonitorInterfaces}" SelectedItem="{Binding SelectedMonitorInterface}"/>
+                                    <GroupBox Header="Audio Monitor" Margin="2" Grid.Column="1">
+                                        <StackPanel Margin="2">
+                                            <TextBlock Text="Select Monitor Audio Interface" Margin="2"/>
+                                            <ComboBox Name="MonitorInterfaceComboBox" Margin="2" ItemsSource="{Binding MonitorInterfaces}" SelectedItem="{Binding SelectedMonitorInterface}"/>
 
-                                            <TextBlock Text="Set Volume" Margin="5"/>
-                                            <StackPanel Orientation="Horizontal" Margin="5">
+                                            <TextBlock Text="Set Volume" Margin="2"/>
+                                            <StackPanel Orientation="Horizontal" Margin="2">
                                                 <Slider Name="MonitorVolumeSlider" Orientation="Horizontal" Minimum="0" Maximum="100" TickFrequency="1" Width="150" Value="{Binding MonitorVolume, UpdateSourceTrigger=PropertyChanged}"/>
-                                                <TextBlock Text="{Binding MonitorVolume, StringFormat=F0}" Margin="5" Width="50" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding MonitorVolume, StringFormat=F0}" Margin="2" Width="50" VerticalAlignment="Center"/>
                                             </StackPanel>
 
-                                            <TextBlock Text="Equalizer" FontWeight="Bold" Margin="5"/>
-                                            <Grid Margin="5">
+                                            <TextBlock Text="Equalizer" FontWeight="Bold" Margin="2"/>
+                                            <Grid Margin="2">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="*"/>
@@ -1715,45 +1710,45 @@
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding MonitorEqualizerSlider1, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="0" Margin="5"/>
-                                                <TextBlock Text="{Binding MonitorEqualizerSlider2, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="1" Margin="5"/>
-                                                <TextBlock Text="{Binding MonitorEqualizerSlider3, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="2" Margin="5"/>
-                                                <TextBlock Text="{Binding MonitorEqualizerSlider4, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="3" Margin="5"/>
-                                                <TextBlock Text="{Binding MonitorEqualizerSlider5, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="4" Margin="5"/>
+                                                <TextBlock Text="{Binding MonitorEqualizerSlider1, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="0" Margin="2"/>
+                                                <TextBlock Text="{Binding MonitorEqualizerSlider2, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="1" Margin="2"/>
+                                                <TextBlock Text="{Binding MonitorEqualizerSlider3, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="2" Margin="2"/>
+                                                <TextBlock Text="{Binding MonitorEqualizerSlider4, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="3" Margin="2"/>
+                                                <TextBlock Text="{Binding MonitorEqualizerSlider5, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="4" Margin="2"/>
                                                 <Slider Name="MonitorEqualizerSlider1" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="0" Height="100" Value="{Binding MonitorEqualizerSlider1, UpdateSourceTrigger=PropertyChanged}"/>
                                                 <Slider Name="MonitorEqualizerSlider2" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="1" Height="100" Value="{Binding MonitorEqualizerSlider2, UpdateSourceTrigger=PropertyChanged}"/>
                                                 <Slider Name="MonitorEqualizerSlider3" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="2" Height="100" Value="{Binding MonitorEqualizerSlider3, UpdateSourceTrigger=PropertyChanged}"/>
                                                 <Slider Name="MonitorEqualizerSlider4" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="3" Height="100" Value="{Binding MonitorEqualizerSlider4, UpdateSourceTrigger=PropertyChanged}"/>
                                                 <Slider Name="MonitorEqualizerSlider5" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="4" Height="100" Value="{Binding MonitorEqualizerSlider5, UpdateSourceTrigger=PropertyChanged}"/>
-                                                <TextBlock Text="Bass" HorizontalAlignment="Center" Grid.Column="0" Margin="5"/>
-                                                <TextBlock Text="Mid" HorizontalAlignment="Center" Grid.Column="1" Margin="5"/>
-                                                <TextBlock Text="Treble" HorizontalAlignment="Center" Grid.Column="2" Margin="5"/>
-                                                <TextBlock Text="Highs" HorizontalAlignment="Center" Grid.Column="3" Margin="5"/>
-                                                <TextBlock Text="Lows" HorizontalAlignment="Center" Grid.Column="4" Margin="5"/>
+                                                <TextBlock Text="Bass" HorizontalAlignment="Center" Grid.Column="0" Margin="2"/>
+                                                <TextBlock Text="Mid" HorizontalAlignment="Center" Grid.Column="1" Margin="2"/>
+                                                <TextBlock Text="Treble" HorizontalAlignment="Center" Grid.Column="2" Margin="2"/>
+                                                <TextBlock Text="Highs" HorizontalAlignment="Center" Grid.Column="3" Margin="2"/>
+                                                <TextBlock Text="Lows" HorizontalAlignment="Center" Grid.Column="4" Margin="2"/>
                                             </Grid>
 
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
-                                                <Button Name="MonitorRefreshButton" Content="Refresh" Margin="5" Width="100" Height="30" Click="RefreshButton_Click"/>
-                                                <Button Name="MonitorSaveButton" Content="Save" Margin="5" Width="100" Height="30" Click="SaveButton_Click"/>
-                                                <ToggleButton Name="MonitorTestAudioToggleButton" Content="Test Audio" Margin="5" Width="100" Height="30" Click="TestAudioToggleButton_Click"/>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="2">
+                                                <Button Name="MonitorRefreshButton" Content="Refresh" Margin="2" Width="100" Height="30" Click="RefreshButton_Click"/>
+                                                <Button Name="MonitorSaveButton" Content="Save" Margin="2" Width="100" Height="30" Click="SaveButton_Click"/>
+                                                <ToggleButton Name="MonitorTestAudioToggleButton" Content="Test Audio" Margin="2" Width="100" Height="30" Click="TestAudioToggleButton_Click"/>
                                             </StackPanel>
                                         </StackPanel>
                                     </GroupBox>
 
                                     <!-- Audio Out Settings -->
-                                    <GroupBox Header="Audio Out" Margin="10" Grid.Column="2">
-                                        <StackPanel Margin="10">
-                                            <TextBlock Text="Select Audio Out Interface" Margin="5"/>
-                                            <ComboBox Name="AudioOutInterfaceComboBox" Margin="5" ItemsSource="{Binding AudioOutInterfaces}" SelectedItem="{Binding SelectedAudioOutInterface}"/>
+                                    <GroupBox Header="Audio Out" Margin="2" Grid.Column="2">
+                                        <StackPanel Margin="2">
+                                            <TextBlock Text="Select Audio Out Interface" Margin="2"/>
+                                            <ComboBox Name="AudioOutInterfaceComboBox" Margin="2" ItemsSource="{Binding AudioOutInterfaces}" SelectedItem="{Binding SelectedAudioOutInterface}"/>
 
-                                            <TextBlock Text="Set Volume" Margin="5"/>
-                                            <StackPanel Orientation="Horizontal" Margin="5">
+                                            <TextBlock Text="Set Volume" Margin="2"/>
+                                            <StackPanel Orientation="Horizontal" Margin="2">
                                                 <Slider Name="AudioOutVolumeSlider" Orientation="Horizontal" Minimum="0" Maximum="100" TickFrequency="1" Width="150" Value="{Binding AudioOutVolume, UpdateSourceTrigger=PropertyChanged}"/>
-                                                <TextBlock Text="{Binding AudioOutVolume, StringFormat=F0}" Margin="5" Width="50" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding AudioOutVolume, StringFormat=F0}" Margin="2" Width="50" VerticalAlignment="Center"/>
                                             </StackPanel>
 
-                                            <TextBlock Text="Equalizer" FontWeight="Bold" Margin="5"/>
-                                            <Grid Margin="5">
+                                            <TextBlock Text="Equalizer" FontWeight="Bold" Margin="2"/>
+                                            <Grid Margin="2">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="*"/>
@@ -1761,27 +1756,27 @@
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding AudioOutEqualizerSlider1, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="0" Margin="5"/>
-                                                <TextBlock Text="{Binding AudioOutEqualizerSlider2, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="1" Margin="5"/>
-                                                <TextBlock Text="{Binding AudioOutEqualizerSlider3, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="2" Margin="5"/>
-                                                <TextBlock Text="{Binding AudioOutEqualizerSlider4, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="3" Margin="5"/>
-                                                <TextBlock Text="{Binding AudioOutEqualizerSlider5, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="4" Margin="5"/>
+                                                <TextBlock Text="{Binding AudioOutEqualizerSlider1, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="0" Margin="2"/>
+                                                <TextBlock Text="{Binding AudioOutEqualizerSlider2, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="1" Margin="2"/>
+                                                <TextBlock Text="{Binding AudioOutEqualizerSlider3, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="2" Margin="2"/>
+                                                <TextBlock Text="{Binding AudioOutEqualizerSlider4, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="3" Margin="2"/>
+                                                <TextBlock Text="{Binding AudioOutEqualizerSlider5, StringFormat=F2}" HorizontalAlignment="Center" Grid.Column="4" Margin="2"/>
                                                 <Slider Name="AudioOutEqualizerSlider1" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="0" Height="100" Value="{Binding AudioOutEqualizerSlider1, UpdateSourceTrigger=PropertyChanged}"/>
                                                 <Slider Name="AudioOutEqualizerSlider2" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="1" Height="100" Value="{Binding AudioOutEqualizerSlider2, UpdateSourceTrigger=PropertyChanged}"/>
                                                 <Slider Name="AudioOutEqualizerSlider3" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="2" Height="100" Value="{Binding AudioOutEqualizerSlider3, UpdateSourceTrigger=PropertyChanged}"/>
                                                 <Slider Name="AudioOutEqualizerSlider4" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="3" Height="100" Value="{Binding AudioOutEqualizerSlider4, UpdateSourceTrigger=PropertyChanged}"/>
                                                 <Slider Name="AudioOutEqualizerSlider5" Orientation="Vertical" Minimum="-10" Maximum="10" TickFrequency="1" Grid.Column="4" Height="100" Value="{Binding AudioOutEqualizerSlider5, UpdateSourceTrigger=PropertyChanged}"/>
-                                                <TextBlock Text="Bass" HorizontalAlignment="Center" Grid.Column="0" Margin="5"/>
-                                                <TextBlock Text="Mid" HorizontalAlignment="Center" Grid.Column="1" Margin="5"/>
-                                                <TextBlock Text="Treble" HorizontalAlignment="Center" Grid.Column="2" Margin="5"/>
-                                                <TextBlock Text="Highs" HorizontalAlignment="Center" Grid.Column="3" Margin="5"/>
-                                                <TextBlock Text="Lows" HorizontalAlignment="Center" Grid.Column="4" Margin="5"/>
+                                                <TextBlock Text="Bass" HorizontalAlignment="Center" Grid.Column="0" Margin="2"/>
+                                                <TextBlock Text="Mid" HorizontalAlignment="Center" Grid.Column="1" Margin="2"/>
+                                                <TextBlock Text="Treble" HorizontalAlignment="Center" Grid.Column="2" Margin="2"/>
+                                                <TextBlock Text="Highs" HorizontalAlignment="Center" Grid.Column="3" Margin="2"/>
+                                                <TextBlock Text="Lows" HorizontalAlignment="Center" Grid.Column="4" Margin="2"/>
                                             </Grid>
 
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
-                                                <Button Name="AudioOutRefreshButton" Content="Refresh" Margin="5" Width="100" Height="30" Click="RefreshButton_Click"/>
-                                                <Button Name="AudioOutSaveButton" Content="Save" Margin="5" Width="100" Height="30" Click="SaveButton_Click"/>
-                                                <ToggleButton Name="AudioOutTestAudioToggleButton" Content="Test Audio" Margin="5" Width="100" Height="30" Click="TestAudioToggleButton_Click"/>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="2">
+                                                <Button Name="AudioOutRefreshButton" Content="Refresh" Margin="2" Width="100" Height="30" Click="RefreshButton_Click"/>
+                                                <Button Name="AudioOutSaveButton" Content="Save" Margin="2" Width="100" Height="30" Click="SaveButton_Click"/>
+                                                <ToggleButton Name="AudioOutTestAudioToggleButton" Content="Test Audio" Margin="2" Width="100" Height="30" Click="TestAudioToggleButton_Click"/>
                                             </StackPanel>
                                         </StackPanel>
                                     </GroupBox>
@@ -1789,7 +1784,7 @@
                             </Grid>
                         </TabItem>
                         <TabItem Header="RMS Server" Name="RMSServerTab" Width="160" Height="30">
-                            <Grid Margin="10">
+                            <Grid Margin="2">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
@@ -1799,7 +1794,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <!-- RMS Server 1 -->
-                                <GroupBox Header="RMS Server 1" Grid.Row="0" Grid.Column="0" Margin="10">
+                                <GroupBox Header="RMS Server 1" Grid.Row="0" Grid.Column="0" Margin="2">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
@@ -1848,7 +1843,7 @@
                                 </GroupBox>
 
                                 <!-- RMS Server 2 -->
-                                <GroupBox Header="RMS Server 2" Grid.Row="0" Grid.Column="1" Margin="10">
+                                <GroupBox Header="RMS Server 2" Grid.Row="0" Grid.Column="1" Margin="2">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
@@ -1899,7 +1894,7 @@
                         </TabItem>
                         <!-- CAP Server Tab -->
                         <TabItem Header="CAP Server" Name="CAPServerTab" Width="160" Height="30">
-                            <Grid Margin="10">
+                            <Grid Margin="2">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
@@ -1934,7 +1929,7 @@
 
                                 <!-- Authentication Stuff -->
                                 <GroupBox Header="Authentication" Grid.Row="3" Grid.ColumnSpan="2" Margin="2">
-                                    <Grid Margin="10">
+                                    <Grid Margin="2">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto"/>
@@ -1980,15 +1975,15 @@
                                 <xctk:IntegerUpDown Name="AlertRepetitionTime" Width="160" HorizontalAlignment="Left" Grid.Row="6" Grid.Column="1" Margin="0,10,0,0"/>
 
                                 <!-- Save Button -->
-                                <StackPanel Grid.Row="7" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                                    <Button Content="Save" Width="100" Height="30" Margin="10"/>
-                                    <Button Content="Test Connection" Width="100" Height="30" Margin="10"/>
+                                <StackPanel Grid.Row="7" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="2">
+                                    <Button Content="Save" Width="100" Height="30" Margin="2"/>
+                                    <Button Content="Test Connection" Width="100" Height="30" Margin="2"/>
                                 </StackPanel>
                             </Grid>
                         </TabItem>
 
                         <TabItem Header="Automation" Name="AutomationSettingsTab" Width="160" Height="30">
-                            <Grid Margin="10">
+                            <Grid Margin="2">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
@@ -2050,7 +2045,7 @@
                                 </StackPanel>
 
                                 <!-- Save Button -->
-                                <Button Content="Save" Width="100" Height="30" Grid.Row="8" Grid.Column="0" Margin="5" HorizontalAlignment="Center" Click="SaveSettingsButton_Click"/>
+                                <Button Content="Save" Width="100" Height="30" Grid.Row="8" Grid.Column="0" Margin="2" HorizontalAlignment="Center" Click="SaveSettingsButton_Click"/>
                             </Grid>
                         </TabItem>
 
@@ -2065,14 +2060,14 @@
                         <TextBlock Text="CAP" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
                     </StackPanel>
                 </TabItem.Header>
-                <Grid Margin="10">
+                <Grid Margin="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- CAP Status Section -->
-                    <GroupBox Header="CAP Status" Grid.Column="0" Margin="10">
-                        <Grid Margin="10">
+                    <GroupBox Header="CAP Status" Grid.Column="0" Margin="2">
+                        <Grid Margin="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -2081,14 +2076,14 @@
                             </Grid.RowDefinitions>
 
                             <!-- Toggle Button for Auto/Manual Mode -->
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5" Grid.Row="0">
-                                <TextBlock Text="Mode:" VerticalAlignment="Center" Margin="5"/>
-                                <ToggleButton Name="AutoManualToggle" Content="Auto" Width="100" Height="30" Margin="5" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="2" Grid.Row="0">
+                                <TextBlock Text="Mode:" VerticalAlignment="Center" Margin="2"/>
+                                <ToggleButton Name="AutoManualToggle" Content="Auto" Width="100" Height="30" Margin="2" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked"/>
                             </StackPanel>
 
                             <!-- Alerts DataGrid Section -->
-                            <TextBlock Text="Alerts" FontSize="16" FontWeight="Bold" Margin="5" Grid.Row="1"/>
-                            <DataGrid Name="AlertsDataGrid" AutoGenerateColumns="False" Margin="5" VerticalAlignment="Stretch" Grid.Row="2">
+                            <TextBlock Text="Alerts" FontSize="16" FontWeight="Bold" Margin="2" Grid.Row="1"/>
+                            <DataGrid Name="AlertsDataGrid" AutoGenerateColumns="False" Margin="2" VerticalAlignment="Stretch" Grid.Row="2">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Identifier" Binding="{Binding Identifier}" Width="*"/>
                                     <DataGridTextColumn Header="Sender" Binding="{Binding Sender}" Width="*"/>
@@ -2102,13 +2097,13 @@
                             </DataGrid>
 
                             <!-- Buttons Section -->
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5" Grid.Row="3">
-                                <Button Content="View" Width="100" Height="30" Margin="5" Click="ViewAlertButton_Click"/>
-                                <Button Content="Override Alert" Width="100" Height="30" Margin="5" Click="OverrideAlertButton_Click"/>
-                                <Button Name="PauseResumeAlertButton" Content="Pause Alert" Width="100" Height="30" Margin="5" Click="PauseResumeAlertButton_Click"/>
-                                <TextBlock Text="Duration (sec):" VerticalAlignment="Center" Margin="5"/>
-                                <xctk:IntegerUpDown Name="PauseResumeDuration" Value="600" Minimum="0" Width="100" Height="30" Margin="5"/>
-                                <!--<Button Content="Send" Width="100" Height="30" Margin="5" Click="SendAlertButton_Click"/>-->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="2" Grid.Row="3">
+                                <Button Content="View" Width="100" Height="30" Margin="2" Click="ViewAlertButton_Click"/>
+                                <Button Content="Override Alert" Width="100" Height="30" Margin="2" Click="OverrideAlertButton_Click"/>
+                                <Button Name="PauseResumeAlertButton" Content="Pause Alert" Width="100" Height="30" Margin="2" Click="PauseResumeAlertButton_Click"/>
+                                <TextBlock Text="Duration (sec):" VerticalAlignment="Center" Margin="2"/>
+                                <xctk:IntegerUpDown Name="PauseResumeDuration" Value="600" Minimum="0" Width="100" Height="30" Margin="2"/>
+                                <!--<Button Content="Send" Width="100" Height="30" Margin="2" Click="SendAlertButton_Click"/>-->
                             </StackPanel>
                         </Grid>
                     </GroupBox>
@@ -2124,7 +2119,7 @@
                         <TextBlock Text="EVENT LOGS" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
                     </StackPanel>
                 </TabItem.Header>
-                <Grid Margin="10">
+                <Grid Margin="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -2136,9 +2131,9 @@
                         <TextBlock Text="View, download, and manage system logs for the IPIS." Margin="5,0,5,10"/>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="Download Logs" Width="100" Height="30" Margin="5" Click="DownloadLogsButton_Click"/>
-                            <Button Content="Clear Logs" Width="100" Height="30" Margin="5" Click="ClearLogsButton_Click"/>
-                            <Button Content="Archive Logs" Width="100" Height="30" Margin="5" Click="ArchiveLogsButton_Click"/>
+                            <Button Content="Download Logs" Width="100" Height="30" Margin="2" Click="DownloadLogsButton_Click"/>
+                            <Button Content="Clear Logs" Width="100" Height="30" Margin="2" Click="ClearLogsButton_Click"/>
+                            <Button Content="Archive Logs" Width="100" Height="30" Margin="2" Click="ArchiveLogsButton_Click"/>
                         </StackPanel>
 
                         <Grid>
@@ -2149,14 +2144,14 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Select Date" Margin="5"/>
-                                <DatePicker Name="SelectedDatePicker" SelectedDateChanged="SelectedDatePicker_SelectedDateChanged" Margin="5"/>
+                                <TextBlock Text="Select Date" Margin="2"/>
+                                <DatePicker Name="SelectedDatePicker" SelectedDateChanged="SelectedDatePicker_SelectedDateChanged" Margin="2"/>
                             </StackPanel>
                             <StackPanel Grid.Column="1">
-                                <Button Content="Yesterday" Width="100" Height="30" Margin="5" Click="YesterdayLogsButton_Click"/>
+                                <Button Content="Yesterday" Width="100" Height="30" Margin="2" Click="YesterdayLogsButton_Click"/>
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <Button Content="Download Selected Date" Width="200" Height="30" Margin="5" Click="DownloadSelectedDateLogsButton_Click"/>
+                                <Button Content="Download Selected Date" Width="200" Height="30" Margin="2" Click="DownloadSelectedDateLogsButton_Click"/>
                             </StackPanel>
                         </Grid>
 
@@ -2167,19 +2162,19 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="From Date" Margin="5"/>
-                                <DatePicker Name="FromDatePicker" SelectedDateChanged="FromDatePicker_SelectedDateChanged" Margin="5"/>
+                                <TextBlock Text="From Date" Margin="2"/>
+                                <DatePicker Name="FromDatePicker" SelectedDateChanged="FromDatePicker_SelectedDateChanged" Margin="2"/>
                             </StackPanel>
                             <StackPanel Grid.Column="1">
-                                <TextBlock Text="To Date" Margin="5"/>
-                                <DatePicker Name="ToDatePicker" SelectedDateChanged="ToDatePicker_SelectedDateChanged" Margin="5"/>
+                                <TextBlock Text="To Date" Margin="2"/>
+                                <DatePicker Name="ToDatePicker" SelectedDateChanged="ToDatePicker_SelectedDateChanged" Margin="2"/>
                             </StackPanel>
                         </Grid>
-                        <Button Content="Download Date Range" Width="200" Height="30" Margin="5" Click="DownloadDateRangeLogsButton_Click"/>
+                        <Button Content="Download Date Range" Width="200" Height="30" Margin="2" Click="DownloadDateRangeLogsButton_Click"/>
                     </StackPanel>
 
                     <!-- Event Logs DataGrid Section -->
-                    <DataGrid Name="EventLogsDataGrid" AutoGenerateColumns="False" Margin="10" Grid.Row="1">
+                    <DataGrid Name="EventLogsDataGrid" AutoGenerateColumns="False" Margin="2" Grid.Row="1">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" Width="*"/>
                             <DataGridTextColumn Header="Event ID" Binding="{Binding EventID}" Width="*"/>
@@ -2199,65 +2194,65 @@
                         <TextBlock Text="BACKUP" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
                     </StackPanel>
                 </TabItem.Header>
-                <Grid Margin="10">
+                <Grid Margin="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Backup Section -->
-                    <GroupBox Header="Backup" Grid.Column="0" Margin="10">
-                        <StackPanel Margin="10">
+                    <GroupBox Header="Backup" Grid.Column="0" Margin="2">
+                        <StackPanel Margin="2">
                             <!-- Description -->
-                            <TextBlock VerticalAlignment="Center" Text="Manage your backups and set up scheduled backups" TextWrapping="Wrap" Margin="5"/>
+                            <TextBlock VerticalAlignment="Center" Text="Manage your backups and set up scheduled backups" TextWrapping="Wrap" Margin="2"/>
 
                             <!-- Backup Now Section -->
-                            <TextBlock VerticalAlignment="Center" Text="Backup Now" FontWeight="Bold" Margin="5"/>
-                            <StackPanel Orientation="Vertical" Margin="5">
-                                <TextBlock Text="Backup Location:" VerticalAlignment="Center" Margin="5"/>
-                                <RadioButton Content="Local Storage" GroupName="BackupLocation" Margin="5" Checked="BackupLocationRadioButton_Checked"/>
-                                <StackPanel Orientation="Horizontal" Margin="5">
-                                    <TextBlock Text="Path:" VerticalAlignment="Center" Margin="5"/>
-                                    <TextBox VerticalContentAlignment="Center" Name="BackupPathTextBox" Height="30" Width="200" Margin="5" IsReadOnly="True"/>
-                                    <Button Content="Browse" Width="100" Height="30" Margin="5" Click="BrowseBackupLocationButton_Click"/>
+                            <TextBlock VerticalAlignment="Center" Text="Backup Now" FontWeight="Bold" Margin="2"/>
+                            <StackPanel Orientation="Vertical" Margin="2">
+                                <TextBlock Text="Backup Location:" VerticalAlignment="Center" Margin="2"/>
+                                <RadioButton Content="Local Storage" GroupName="BackupLocation" Margin="2" Checked="BackupLocationRadioButton_Checked"/>
+                                <StackPanel Orientation="Horizontal" Margin="2">
+                                    <TextBlock Text="Path:" VerticalAlignment="Center" Margin="2"/>
+                                    <TextBox VerticalContentAlignment="Center" Name="BackupPathTextBox" Height="30" Width="200" Margin="2" IsReadOnly="True"/>
+                                    <Button Content="Browse" Width="100" Height="30" Margin="2" Click="BrowseBackupLocationButton_Click"/>
                                 </StackPanel>
 
-                                <RadioButton Content="Cloud Storage" GroupName="BackupLocation" Margin="5" Checked="BackupLocationRadioButton_Checked"/>
-                                <StackPanel Orientation="Horizontal" Margin="5">
-                                    <TextBlock Text="URL:" VerticalAlignment="Center" Margin="5"/>
-                                    <TextBox VerticalContentAlignment="Center" Name="BackupUrlTextBox" Width="200" Height="30" Margin="5"/>
+                                <RadioButton Content="Cloud Storage" GroupName="BackupLocation" Margin="2" Checked="BackupLocationRadioButton_Checked"/>
+                                <StackPanel Orientation="Horizontal" Margin="2">
+                                    <TextBlock Text="URL:" VerticalAlignment="Center" Margin="2"/>
+                                    <TextBox VerticalContentAlignment="Center" Name="BackupUrlTextBox" Width="200" Height="30" Margin="2"/>
                                 </StackPanel>
                             </StackPanel>
-                            <Button Content="Backup Now" Width="100" Height="30" Margin="5" HorizontalAlignment="Left" Click="BackupNowButton_Click"/>
+                            <Button Content="Backup Now" Width="100" Height="30" Margin="2" HorizontalAlignment="Left" Click="BackupNowButton_Click"/>
 
                             <!-- Schedule Backup Section -->
-                            <TextBlock VerticalAlignment="Center" Text="Schedule Backup" FontWeight="Bold" Margin="5"/>
-                            <StackPanel Orientation="Horizontal" Margin="5">
-                                <TextBlock Text="Frequency:" VerticalAlignment="Center" Margin="5"/>
-                                <ComboBox Name="FrequencyComboBox" Width="100" Height="30" Margin="5">
+                            <TextBlock VerticalAlignment="Center" Text="Schedule Backup" FontWeight="Bold" Margin="2"/>
+                            <StackPanel Orientation="Horizontal" Margin="2">
+                                <TextBlock Text="Frequency:" VerticalAlignment="Center" Margin="2"/>
+                                <ComboBox Name="FrequencyComboBox" Width="100" Height="30" Margin="2">
                                     <ComboBoxItem Content="Daily"/>
                                     <ComboBoxItem Content="Weekly"/>
                                     <ComboBoxItem Content="Monthly"/>
                                 </ComboBox>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="5">
-                                <TextBlock Text="Backup Time:" VerticalAlignment="Center" Margin="5"/>
-                                <xctk:TimePicker Name="BackupTimePicker" Width="100" Margin="5"/>
+                            <StackPanel Orientation="Horizontal" Margin="2">
+                                <TextBlock Text="Backup Time:" VerticalAlignment="Center" Margin="2"/>
+                                <xctk:TimePicker Name="BackupTimePicker" Width="100" Margin="2"/>
                             </StackPanel>
-                            <Button Content="Set Schedule" Width="100" Height="30" Margin="5" HorizontalAlignment="Left" Click="SetScheduleButton_Click"/>
+                            <Button Content="Set Schedule" Width="100" Height="30" Margin="2" HorizontalAlignment="Left" Click="SetScheduleButton_Click"/>
 
                             <!-- Notification Settings Section -->
-                            <TextBlock VerticalAlignment="Center" Text="Notification Settings" FontWeight="Bold" Margin="5"/>
-                            <StackPanel Orientation="Horizontal" Margin="5">
-                                <TextBlock Text="Email:" VerticalAlignment="Center" Margin="5"/>
-                                <TextBox VerticalContentAlignment="Center" Name="NotificationEmailTextBox2" Width="200" Height="30" Margin="5"/>
+                            <TextBlock VerticalAlignment="Center" Text="Notification Settings" FontWeight="Bold" Margin="2"/>
+                            <StackPanel Orientation="Horizontal" Margin="2">
+                                <TextBlock Text="Email:" VerticalAlignment="Center" Margin="2"/>
+                                <TextBox VerticalContentAlignment="Center" Name="NotificationEmailTextBox2" Width="200" Height="30" Margin="2"/>
                             </StackPanel>
-                            <Button Content="Save Settings" Width="100" Height="30" Margin="5" HorizontalAlignment="Left" Click="SaveSettingsButton_Click"/>
+                            <Button Content="Save Settings" Width="100" Height="30" Margin="2" HorizontalAlignment="Left" Click="SaveSettingsButton_Click"/>
                         </StackPanel>
                     </GroupBox>
 
-                    <GroupBox Header="Restore" Grid.Column="1" Margin="10">
-                        <Grid Margin="10">
+                    <GroupBox Header="Restore" Grid.Column="1" Margin="2">
+                        <Grid Margin="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -2268,19 +2263,19 @@
                             </Grid.RowDefinitions>
 
                             <!-- Description -->
-                            <TextBlock VerticalAlignment="Center" Text="Restore data from available backup points" TextWrapping="Wrap" Margin="5" Grid.Row="0"/>
+                            <TextBlock VerticalAlignment="Center" Text="Restore data from available backup points" TextWrapping="Wrap" Margin="2" Grid.Row="0"/>
 
                             <!-- Restore Now Section -->
-                            <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="1">
-                                <TextBlock Text="Restore Point:" VerticalAlignment="Center" Margin="5"/>
-                                <ComboBox Name="RestorePointComboBox" Width="200" Height="30" Margin="5"/>
-                                <Button Content="Restore Now" Width="100" Height="30" Margin="5" HorizontalAlignment="Left" Click="RestoreNowButton_Click"/>
+                            <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="1">
+                                <TextBlock Text="Restore Point:" VerticalAlignment="Center" Margin="2"/>
+                                <ComboBox Name="RestorePointComboBox" Width="200" Height="30" Margin="2"/>
+                                <Button Content="Restore Now" Width="100" Height="30" Margin="2" HorizontalAlignment="Left" Click="RestoreNowButton_Click"/>
                             </StackPanel>
 
                             <!-- Local Backup History -->
-                            <TextBlock VerticalAlignment="Center" Text="Local Backup History" FontWeight="Bold" Margin="5" Grid.Row="2"/>
-                            <ScrollViewer VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" Margin="5" Grid.Row="3">
-                                <DataGrid Name="LocalBackupHistoryDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="5" VerticalAlignment="Stretch">
+                            <TextBlock VerticalAlignment="Center" Text="Local Backup History" FontWeight="Bold" Margin="2" Grid.Row="2"/>
+                            <ScrollViewer VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" Margin="2" Grid.Row="3">
+                                <DataGrid Name="LocalBackupHistoryDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="2" VerticalAlignment="Stretch">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Backup Date" Binding="{Binding BackupDate}" Width="*"/>
                                         <DataGridTextColumn Header="Details" Binding="{Binding Details}" Width="*"/>
@@ -2288,8 +2283,8 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal">
-                                                        <Button Content="Download" Width="100" Height="30" Margin="5" Click="DownloadLocalBackupButton_Click"/>
-                                                        <Button Content="Delete" Width="100" Height="30" Margin="5" Click="DeleteLocalBackupButton_Click"/>
+                                                        <Button Content="Download" Width="100" Height="30" Margin="2" Click="DownloadLocalBackupButton_Click"/>
+                                                        <Button Content="Delete" Width="100" Height="30" Margin="2" Click="DeleteLocalBackupButton_Click"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -2299,9 +2294,9 @@
                             </ScrollViewer>
 
                             <!-- Cloud Backup History -->
-                            <TextBlock VerticalAlignment="Center" Text="Cloud Backup History" FontWeight="Bold" Height="30" Margin="5" Grid.Row="4"/>
-                            <ScrollViewer VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" Margin="5" Grid.Row="5">
-                                <DataGrid Name="CloudBackupHistoryDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="5" VerticalAlignment="Stretch">
+                            <TextBlock VerticalAlignment="Center" Text="Cloud Backup History" FontWeight="Bold" Height="30" Margin="2" Grid.Row="4"/>
+                            <ScrollViewer VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" Margin="2" Grid.Row="5">
+                                <DataGrid Name="CloudBackupHistoryDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="2" VerticalAlignment="Stretch">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Backup Date" Binding="{Binding BackupDate}" Width="*"/>
                                         <DataGridTextColumn Header="Details" Binding="{Binding Details}" Width="*"/>
@@ -2309,8 +2304,8 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal">
-                                                        <Button Content="Download" Width="100" Height="30" Margin="5" Click="DownloadCloudBackupButton_Click"/>
-                                                        <Button Content="Delete" Width="100" Height="30" Margin="5" Click="DeleteCloudBackupButton_Click"/>
+                                                        <Button Content="Download" Width="100" Height="30" Margin="2" Click="DownloadCloudBackupButton_Click"/>
+                                                        <Button Content="Delete" Width="100" Height="30" Margin="2" Click="DeleteCloudBackupButton_Click"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -2331,85 +2326,85 @@
                         <TextBlock Text="HELP" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
                     </StackPanel>
                 </TabItem.Header>
-                <Grid Margin="5">
+                <Grid Margin="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- User Manual GroupBox -->
-                    <GroupBox Header="User Manual" Grid.Column="0" Margin="10">
+                    <GroupBox Header="User Manual" Grid.Column="0" Margin="2">
                         <StackPanel>
                             <!-- Getting Started -->
-                            <Expander Header="Getting Started" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="This section covers the basics of getting started with the CDC software..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="Getting Started" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="This section covers the basics of getting started with the CDC software..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- Installation -->
-                            <Expander Header="Installation" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Instructions on how to install the CDC software..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="Installation" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Instructions on how to install the CDC software..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- Dashboard -->
-                            <Expander Header="Dashboard" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Overview of the dashboard features and functionalities..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="Dashboard" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Overview of the dashboard features and functionalities..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- PA System -->
-                            <Expander Header="PA System" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Details on how to configure and use the PA system..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="PA System" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Details on how to configure and use the PA system..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- Multimedia -->
-                            <Expander Header="Multimedia" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Guide to managing multimedia files and settings..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="Multimedia" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Guide to managing multimedia files and settings..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- User Management -->
-                            <Expander Header="User Management" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Learn how to manage users, roles, and permissions in the CDC software..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="User Management" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Learn how to manage users, roles, and permissions in the CDC software..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- Station Setup -->
-                            <Expander Header="Station Setup" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Steps to set up station information and settings..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="Station Setup" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Steps to set up station information and settings..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- Platforms and Devices -->
-                            <Expander Header="Platforms and Devices" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Configuration of platforms and connected devices..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="Platforms and Devices" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Configuration of platforms and connected devices..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- RMS Server -->
-                            <Expander Header="RMS Server" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Managing the RMS server and its settings..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="RMS Server" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Managing the RMS server and its settings..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- Local Settings -->
-                            <Expander Header="Local Settings" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Configuring local settings for the CDC..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="Local Settings" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Configuring local settings for the CDC..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- New Setup -->
-                            <Expander Header="New Setup" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Guidelines for setting up a new installation..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="New Setup" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Guidelines for setting up a new installation..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- Logs -->
-                            <Expander Header="Logs" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Accessing and managing system logs..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="Logs" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Accessing and managing system logs..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
 
                             <!-- Backup and Restore -->
-                            <Expander Header="Backup and Restore" IsExpanded="False" Margin="5">
-                                <TextBlock VerticalAlignment="Center" Text="Procedures for backing up and restoring data..." TextWrapping="Wrap" Margin="5"/>
+                            <Expander Header="Backup and Restore" IsExpanded="False" Margin="2">
+                                <TextBlock VerticalAlignment="Center" Text="Procedures for backing up and restoring data..." TextWrapping="Wrap" Margin="2"/>
                             </Expander>
                         </StackPanel>
                     </GroupBox>
 
 
-                    <GroupBox Header="Ticketing System" Grid.Column="1" Margin="10">
-                        <GroupBox Header="Ticketing System" Grid.Column="1" Margin="10">
+                    <GroupBox Header="Ticketing System" Grid.Column="1" Margin="2">
+                        <GroupBox Header="Ticketing System" Grid.Column="1" Margin="2">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -2417,14 +2412,14 @@
                                 </Grid.RowDefinitions>
 
                                 <!-- Ticketing Form -->
-                                <StackPanel Grid.Row="0" Margin="5">
-                                    <TextBlock VerticalAlignment="Center" Text="Submit a Ticket" FontWeight="Bold" Margin="5"/>
+                                <StackPanel Grid.Row="0" Margin="2">
+                                    <TextBlock VerticalAlignment="Center" Text="Submit a Ticket" FontWeight="Bold" Margin="2"/>
 
-                                    <TextBlock VerticalAlignment="Center" Text="Title:" Margin="5"/>
-                                    <TextBox VerticalContentAlignment="Center" Name="TitleTextBox" Margin="5" Height="30"/>
+                                    <TextBlock VerticalAlignment="Center" Text="Title:" Margin="2"/>
+                                    <TextBox VerticalContentAlignment="Center" Name="TitleTextBox" Margin="2" Height="30"/>
 
-                                    <TextBlock VerticalAlignment="Center" Text="Description:" Margin="5"/>
-                                    <TextBox VerticalContentAlignment="Center" Name="DescriptionTextBox" Height="100" TextWrapping="Wrap" AcceptsReturn="True" Margin="5"/>
+                                    <TextBlock VerticalAlignment="Center" Text="Description:" Margin="2"/>
+                                    <TextBox VerticalContentAlignment="Center" Name="DescriptionTextBox" Height="100" TextWrapping="Wrap" AcceptsReturn="True" Margin="2"/>
 
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -2432,27 +2427,27 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Orientation="Horizontal" Grid.Column="0">
-                                            <TextBlock VerticalAlignment="Center" Text="Category:" Margin="5"/>
-                                            <ComboBox Name="CategoryComboBox" Width="100" Height="30" Margin="5">
+                                            <TextBlock VerticalAlignment="Center" Text="Category:" Margin="2"/>
+                                            <ComboBox Name="CategoryComboBox" Width="100" Height="30" Margin="2">
                                                 <ComboBoxItem Content="Technical Issue"/>
                                                 <ComboBoxItem Content="Account Issue"/>
                                                 <ComboBoxItem Content="Other"/>
                                             </ComboBox>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Grid.Column="1">
-                                            <TextBlock VerticalAlignment="Center" Text="Attach File:" Margin="5"/>
-                                            <Button Content="Browse" Width="100" Height="30" Margin="5" Click="BrowseFileButton_Click"/>
+                                            <TextBlock VerticalAlignment="Center" Text="Attach File:" Margin="2"/>
+                                            <Button Content="Browse" Width="100" Height="30" Margin="2" Click="BrowseFileButton_Click"/>
                                         </StackPanel>
                                     </Grid>
 
-                                    <Button Content="Submit Ticket" Width="100" Height="30" Margin="10" HorizontalAlignment="Left" Click="SubmitTicketButton_Click"/>
+                                    <Button Content="Submit Ticket" Width="100" Height="30" Margin="2" HorizontalAlignment="Left" Click="SubmitTicketButton_Click"/>
                                 </StackPanel>
 
                                 <!-- Ticket List -->
-                                <StackPanel Grid.Row="1" Margin="5">
+                                <StackPanel Grid.Row="1" Margin="2">
                                     <TextBlock VerticalAlignment="Center" Text="Submitted Tickets" FontWeight="Bold" Margin="10,5,5,5"/>
-                                    <ScrollViewer VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" Margin="5">
-                                        <DataGrid Name="TicketsDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="5" VerticalAlignment="Stretch">
+                                    <ScrollViewer VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" Margin="2">
+                                        <DataGrid Name="TicketsDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="2" VerticalAlignment="Stretch">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
                                                 <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
@@ -2474,14 +2469,14 @@
                         <TextBlock Text="DEBUG" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
                     </StackPanel>
                 </TabItem.Header>
-                <Grid Margin="10">
+                <Grid Margin="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- ListBox for selecting setting -->
-                    <ListBox Name="SettingsListBox" Grid.Column="0" Margin="5" SelectionChanged="SettingsListBox_SelectionChanged">
+                    <ListBox Name="SettingsListBox" Grid.Column="0" Margin="2" SelectionChanged="SettingsListBox_SelectionChanged">
                         <ListBoxItem Content="workspacePath"/>
                         <ListBoxItem Content="userCategories"/>
                         <ListBoxItem Content="users"/>
@@ -2497,7 +2492,7 @@
                     </ListBox>
 
                     <!-- ScrollViewer for displaying selected setting's content -->
-                    <ScrollViewer Grid.Column="1" Margin="5">
+                    <ScrollViewer Grid.Column="1" Margin="2">
                         <TextBox Name="SettingsContentTextBox" VerticalScrollBarVisibility="Auto" IsReadOnly="True" TextWrapping="Wrap"/>
                     </ScrollViewer>
                 </Grid>

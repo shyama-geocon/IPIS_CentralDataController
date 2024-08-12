@@ -19,13 +19,13 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="Category Name" VerticalAlignment="Center" Margin="10"/>
-            <TextBox Name="CategoryNameTextBox" VerticalContentAlignment="Center" Grid.Column="1" Height="30" Margin="10" />
+            <TextBlock Text="Category Name" VerticalAlignment="Center" Margin="2"/>
+            <TextBox Name="CategoryNameTextBox" VerticalContentAlignment="Center" Grid.Column="1" Height="30" Margin="2" />
         </Grid>
 
-        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="10">
-            <CheckBox Name="SelectAllCheckBox" Content="Select All" VerticalAlignment="Center" Margin="5" Checked="SelectAllCheckBox_Checked" Unchecked="SelectAllCheckBox_Unchecked"/>
-            <ComboBox Name="PredefinedConfigComboBox" VerticalAlignment="Center" Width="150" Margin="5" SelectionChanged="PredefinedConfigComboBox_SelectionChanged">
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="2">
+            <CheckBox Name="SelectAllCheckBox" Content="Select All" VerticalAlignment="Center" Margin="2" Checked="SelectAllCheckBox_Checked" Unchecked="SelectAllCheckBox_Unchecked"/>
+            <ComboBox Name="PredefinedConfigComboBox" VerticalAlignment="Center" Width="150" Margin="2" SelectionChanged="PredefinedConfigComboBox_SelectionChanged">
                 <ComboBoxItem Content="Select Preset" IsSelected="True"/>
                 <ComboBoxItem Content="Admin"/>
                 <ComboBoxItem Content="Guest"/>
@@ -33,8 +33,8 @@
             </ComboBox>
         </StackPanel>
 
-        <TextBlock Text="User Rights" Grid.Row="2" Grid.Column="0" Margin="10"/>
-        <ListBox Name="RightsListBox" Grid.Row="2" Grid.Column="0" Margin="10" SelectionMode="Multiple">
+        <TextBlock Text="User Rights" Grid.Row="2" Grid.Column="0" Margin="2"/>
+        <ListBox Name="RightsListBox" Grid.Row="2" Grid.Column="0" Margin="2" SelectionMode="Multiple">
             <ListBox.ItemsSource>
                 <x:Array Type="{x:Type models:UserRights}">
                     <models:UserRights>WorkspaceCreate</models:UserRights>
@@ -88,9 +88,9 @@
             </ListBox.ItemsSource>
         </ListBox>
 
-        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
-            <Button Content="Save" Width="100" Height="30" Margin="5" Click="SaveButton_Click"/>
-            <Button Content="Cancel" Width="100" Height="30" Margin="5" Click="CancelButton_Click"/>
+        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="2">
+            <Button Content="Save" Width="100" Height="30" Margin="2" Click="SaveButton_Click"/>
+            <Button Content="Cancel" Width="100" Height="30" Margin="2" Click="CancelButton_Click"/>
         </StackPanel>
     </Grid>
 </Window>

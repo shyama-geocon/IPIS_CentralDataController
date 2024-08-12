@@ -25,8 +25,8 @@
             </Grid.ColumnDefinitions>
 
             <!-- Station List on the Left -->
-            <GroupBox Header="Stations" Grid.Column="0" Margin="5">
-                <ListView Name="StationListView" ItemsSource="{Binding Stations}" SelectedItem="{Binding SelectedStation}" Margin="5" SelectionMode="Extended">
+            <GroupBox Header="Stations" Grid.Column="0" Margin="2">
+                <ListView Name="StationListView" ItemsSource="{Binding Stations}" SelectedItem="{Binding SelectedStation}" Margin="2" SelectionMode="Extended">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Code" DisplayMemberBinding="{Binding StationCode}" Width="100"/>
@@ -37,7 +37,7 @@
             </GroupBox>
 
             <!-- Station Information Section on the Right -->
-            <GroupBox Header="Station Information" Grid.Column="1" Margin="5">
+            <GroupBox Header="Station Information" Grid.Column="1" Margin="2">
                 <ScrollViewer>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -68,167 +68,167 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- English -->
-                        <TextBlock Text="Station Name (English):" VerticalAlignment="Center" Margin="5" Grid.Row="0"/>
+                        <TextBlock Text="Station Name (English):" VerticalAlignment="Center" Margin="2" Grid.Row="0"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameEnglish}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5" Click="PlayEnglishSoundButton_Click"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5" Click="BrowseEnglishSoundButton_Click"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameEnglish}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2" Click="PlayEnglishSoundButton_Click"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2" Click="BrowseEnglishSoundButton_Click"/>
                         </StackPanel>
 
                         <!-- Hindi -->
-                        <TextBlock Text="Station Name (Hindi):" VerticalAlignment="Center" Margin="5" Grid.Row="1"/>
+                        <TextBlock Text="Station Name (Hindi):" VerticalAlignment="Center" Margin="2" Grid.Row="1"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameHindi}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5" Click="PlayHindiSoundButton_Click"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5" Click="BrowseHindiSoundButton_Click"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameHindi}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2" Click="PlayHindiSoundButton_Click"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2" Click="BrowseHindiSoundButton_Click"/>
                         </StackPanel>
 
                         <!-- Assamese -->
-                        <TextBlock Text="Station Name (Assamese):" VerticalAlignment="Center" Margin="5" Grid.Row="2"/>
+                        <TextBlock Text="Station Name (Assamese):" VerticalAlignment="Center" Margin="2" Grid.Row="2"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameAssamese}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameAssamese}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Bangla -->
-                        <TextBlock Text="Station Name (Bangla):" VerticalAlignment="Center" Margin="5" Grid.Row="3"/>
+                        <TextBlock Text="Station Name (Bangla):" VerticalAlignment="Center" Margin="2" Grid.Row="3"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameBangla}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameBangla}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Dogri -->
-                        <TextBlock Text="Station Name (Dogri):" VerticalAlignment="Center" Margin="5" Grid.Row="4"/>
+                        <TextBlock Text="Station Name (Dogri):" VerticalAlignment="Center" Margin="2" Grid.Row="4"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameDogri}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameDogri}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Gujarati -->
-                        <TextBlock Text="Station Name (Gujarati):" VerticalAlignment="Center" Margin="5" Grid.Row="5"/>
+                        <TextBlock Text="Station Name (Gujarati):" VerticalAlignment="Center" Margin="2" Grid.Row="5"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameGujarati}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameGujarati}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Kannada -->
-                        <TextBlock Text="Station Name (Kannada):" VerticalAlignment="Center" Margin="5" Grid.Row="6"/>
+                        <TextBlock Text="Station Name (Kannada):" VerticalAlignment="Center" Margin="2" Grid.Row="6"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="6" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameKannada}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameKannada}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Konkani -->
-                        <TextBlock Text="Station Name (Konkani):" VerticalAlignment="Center" Margin="5" Grid.Row="7"/>
+                        <TextBlock Text="Station Name (Konkani):" VerticalAlignment="Center" Margin="2" Grid.Row="7"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameKonkani}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameKonkani}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Malayalam -->
-                        <TextBlock Text="Station Name (Malayalam):" VerticalAlignment="Center" Margin="5" Grid.Row="8"/>
+                        <TextBlock Text="Station Name (Malayalam):" VerticalAlignment="Center" Margin="2" Grid.Row="8"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="8" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameMalayalam}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameMalayalam}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Marathi -->
-                        <TextBlock Text="Station Name (Marathi):" VerticalAlignment="Center" Margin="5" Grid.Row="9"/>
+                        <TextBlock Text="Station Name (Marathi):" VerticalAlignment="Center" Margin="2" Grid.Row="9"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="9" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameMarathi}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameMarathi}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Manipuri -->
-                        <TextBlock Text="Station Name (Manipuri):" VerticalAlignment="Center" Margin="5" Grid.Row="10"/>
+                        <TextBlock Text="Station Name (Manipuri):" VerticalAlignment="Center" Margin="2" Grid.Row="10"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameManipuri}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameManipuri}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Nepali -->
-                        <TextBlock Text="Station Name (Nepali):" VerticalAlignment="Center" Margin="5" Grid.Row="11"/>
+                        <TextBlock Text="Station Name (Nepali):" VerticalAlignment="Center" Margin="2" Grid.Row="11"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="11" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameNepali}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameNepali}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Odia -->
-                        <TextBlock Text="Station Name (Odia):" VerticalAlignment="Center" Margin="5" Grid.Row="12"/>
+                        <TextBlock Text="Station Name (Odia):" VerticalAlignment="Center" Margin="2" Grid.Row="12"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="12" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameOdia}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameOdia}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Punjabi -->
-                        <TextBlock Text="Station Name (Punjabi):" VerticalAlignment="Center" Margin="5" Grid.Row="13"/>
+                        <TextBlock Text="Station Name (Punjabi):" VerticalAlignment="Center" Margin="2" Grid.Row="13"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="13" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNamePunjabi}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNamePunjabi}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Sanskrit -->
-                        <TextBlock Text="Station Name (Sanskrit):" VerticalAlignment="Center" Margin="5" Grid.Row="14"/>
+                        <TextBlock Text="Station Name (Sanskrit):" VerticalAlignment="Center" Margin="2" Grid.Row="14"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="14" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameSanskrit}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameSanskrit}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Sindhi -->
-                        <TextBlock Text="Station Name (Sindhi):" VerticalAlignment="Center" Margin="5" Grid.Row="15"/>
+                        <TextBlock Text="Station Name (Sindhi):" VerticalAlignment="Center" Margin="2" Grid.Row="15"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="15" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameSindhi}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameSindhi}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Tamil -->
-                        <TextBlock Text="Station Name (Tamil):" VerticalAlignment="Center" Margin="5" Grid.Row="16"/>
+                        <TextBlock Text="Station Name (Tamil):" VerticalAlignment="Center" Margin="2" Grid.Row="16"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="16" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameTamil}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameTamil}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Telugu -->
-                        <TextBlock Text="Station Name (Telugu):" VerticalAlignment="Center" Margin="5" Grid.Row="17"/>
+                        <TextBlock Text="Station Name (Telugu):" VerticalAlignment="Center" Margin="2" Grid.Row="17"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="17" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameTelugu}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameTelugu}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
 
                         <!-- Urdu -->
-                        <TextBlock Text="Station Name (Urdu):" VerticalAlignment="Center" Margin="5" Grid.Row="18"/>
+                        <TextBlock Text="Station Name (Urdu):" VerticalAlignment="Center" Margin="2" Grid.Row="18"/>
                         <StackPanel Orientation="Horizontal" Grid.Row="18" Grid.Column="1">
-                            <TextBox Text="{Binding SelectedStation.StationNameUrdu}" VerticalAlignment="Center" Height="30" Margin="5" Width="200"/>
-                            <Button Content="Play" Width="80" Height="30" Margin="5"/>
-                            <Button Content="Browse" Width="80" Height="30" Margin="5"/>
+                            <TextBox VerticalContentAlignment="Center" Text="{Binding SelectedStation.StationNameUrdu}" VerticalAlignment="Center" Height="30" Margin="2" Width="200"/>
+                            <Button Content="Play" Width="80" Height="30" Margin="2"/>
+                            <Button Content="Browse" Width="80" Height="30" Margin="2"/>
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>
             </GroupBox>
         </Grid>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Grid.Column="0" Grid.Row="1">
-            <Button Content="Add Station" Width="100" Height="30" Margin="5" Click="AddStationButton_Click"/>
-            <Button Content="Edit Station" Width="100" Height="30" Margin="5" Click="UpdateStationButton_Click"/>
-            <Button Content="Delete Selected" Width="100" Height="30" Margin="5" Click="DeleteStationButton_Click"/>
-            <Button Content="Delete All" Width="100" Height="30" Margin="5" Click="DeleteAllStationsButton_Click"/>
-            <Button Content="Import" Width="100" Height="30" Margin="5" Click="ImportButton_Click"/>
-            <Button Content="Export" Width="100" Height="30" Margin="5" Click="ExportButton_Click"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="2" Grid.Column="0" Grid.Row="1">
+            <Button Content="Add Station" Width="100" Height="30" Margin="2" Click="AddStationButton_Click"/>
+            <Button Content="Edit Station" Width="100" Height="30" Margin="2" Click="UpdateStationButton_Click"/>
+            <Button Content="Delete Selected" Width="100" Height="30" Margin="2" Click="DeleteStationButton_Click"/>
+            <Button Content="Delete All" Width="100" Height="30" Margin="2" Click="DeleteAllStationsButton_Click"/>
+            <Button Content="Import" Width="100" Height="30" Margin="2" Click="ImportButton_Click"/>
+            <Button Content="Export" Width="100" Height="30" Margin="2" Click="ExportButton_Click"/>
         </StackPanel>
         <TextBlock Grid.Row="2" x:Name="tb_status" Height="24" HorizontalAlignment="Center"/>
     </Grid>

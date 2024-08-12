@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 
 namespace IpisCentralDisplayController.models
 {
@@ -26,11 +27,77 @@ namespace IpisCentralDisplayController.models
         public TimeSpan? STA { get; set; }
         public TimeSpan? STD { get; set; }
 
+        public int STA_Hours
+        {
+            get => STA.HasValue ? STA.Value.Hours : 0;
+            set
+            {
+                if (STA.HasValue)
+                {
+                    STA = new TimeSpan(value, STA.Value.Minutes, 0);
+                }
+                else
+                {
+                    STA = new TimeSpan(value, 0, 0);
+                }
+            }
+        }
+
+        public int STA_Minutes
+        {
+            get => STA.HasValue ? STA.Value.Minutes : 0;
+            set
+            {
+                if (STA.HasValue)
+                {
+                    STA = new TimeSpan(STA.Value.Hours, value, 0);
+                }
+                else
+                {
+                    STA = new TimeSpan(0, value, 0);
+                }
+            }
+        }
+
+        public int STD_Hours
+        {
+            get => STD.HasValue ? STD.Value.Hours : 0;
+            set
+            {
+                if (STD.HasValue)
+                {
+                    STD = new TimeSpan(value, STD.Value.Minutes, 0);
+                }
+                else
+                {
+                    STD = new TimeSpan(value, 0, 0);
+                }
+            }
+        }
+
+        public int STD_Minutes
+        {
+            get => STD.HasValue ? STD.Value.Minutes : 0;
+            set
+            {
+                if (STD.HasValue)
+                {
+                    STD = new TimeSpan(STD.Value.Hours, value, 0);
+                }
+                else
+                {
+                    STD = new TimeSpan(0, value, 0);
+                }
+            }
+        }
+
+
         public string DaysOfDeparture { get; set; }
         public string DaysOfArrival { get; set; }
 
         public string Platform { get; set; }
         public string CoachSequence { get; set; }
+        public List<string> CoachList { get; set; }
         public string TrainType { get; set; }
 
         public bool IsFromNTES { get; set; }
@@ -43,18 +110,18 @@ namespace IpisCentralDisplayController.models
         {
             TrainNumber = ntesTrain.TrainNo;
             TrainNameEnglish = ntesTrain.TrainName;
-            TrainNameHindi = ntesTrain.TrainNameHindi;
-            TrainNameRegional = ""; // Logic to determine the regional name if needed
+            TrainNameHindi = WebUtility.HtmlDecode(ntesTrain.TrainNameHindi);
+            TrainNameRegional = "";
 
             SrcCode = ntesTrain.Src;
             SrcNameEnglish = ntesTrain.SrcName;
-            SrcNameHindi = ntesTrain.SrcNameHindi;
-            SrcNameRegional = ""; // Logic to determine the regional name if needed
+            SrcNameHindi = WebUtility.HtmlDecode(ntesTrain.SrcNameHindi);
+            SrcNameRegional = "";
 
             DestCode = ntesTrain.Dstn;
             DestNameEnglish = ntesTrain.DstnName;
-            DestNameHindi = ntesTrain.DstnNameHindi;
-            DestNameRegional = ""; // Logic to determine the regional name if needed
+            DestNameHindi = WebUtility.HtmlDecode(ntesTrain.DstnNameHindi);
+            DestNameRegional = "";
 
             STA = ParseTime(ntesTrain.STA);
             STD = ParseTime(ntesTrain.STD);
@@ -63,33 +130,75 @@ namespace IpisCentralDisplayController.models
             DaysOfArrival = string.Join(",", ParseDaysOfWeek(ntesTrain.DaysOfArrival));
 
             Platform = ntesTrain.PlatformNo;
-            CoachSequence = ntesTrain.CoachPosition;
+            CoachSequence = !string.IsNullOrWhiteSpace(ntesTrain.DepartureCoachPosition?.Trim())
+    ? ntesTrain.DepartureCoachPosition.Trim()
+    : !string.IsNullOrWhiteSpace(ntesTrain.ArrivalCoachPosition?.Trim())
+        ? ntesTrain.ArrivalCoachPosition.Trim()
+        : string.Empty;
+            CoachList = CoachSequence.Split('-').ToList();
+
             TrainType = ntesTrain.TrainTypeName;
             IsFromNTES = true;
         }
 
-        // Helper method to parse time string to TimeSpan
         private TimeSpan? ParseTime(string timeString)
         {
+            if (string.IsNullOrWhiteSpace(timeString))
+            {
+                return TimeSpan.Zero;
+            }
+
             if (TimeSpan.TryParseExact(timeString, @"hh\:mm", CultureInfo.InvariantCulture, out var result))
             {
                 return result;
             }
-            return null; // Handle invalid or empty time strings
+
+            return null;
         }
 
-        // Helper method to parse days of week string (e.g., "Mon,Wed,Fri") to List<DayOfWeek>
-        private List<string> ParseDaysOfWeek(string daysString)
+
+        private List<DayOfWeek> ParseDaysOfWeek(string daysString)
         {
-            var days = new List<string>();
+            var days = new List<DayOfWeek>();
             if (!string.IsNullOrEmpty(daysString))
             {
+                if (daysString.Trim().ToUpper() == "DAILY")
+                {
+                    days.AddRange(Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>());
+                    return days;
+                }
+
                 var dayNames = daysString.Split(',');
+
                 foreach (var day in dayNames)
                 {
-                    if (Enum.TryParse<DayOfWeek>(day.Trim(), true, out var dayOfWeek))
+                    string trimmedDay = day.Trim().ToUpper();
+                    switch (trimmedDay)
                     {
-                        days.Add(dayOfWeek.ToString());
+                        case "MON":
+                            days.Add(DayOfWeek.Monday);
+                            break;
+                        case "TUE":
+                            days.Add(DayOfWeek.Tuesday);
+                            break;
+                        case "WED":
+                            days.Add(DayOfWeek.Wednesday);
+                            break;
+                        case "THU":
+                            days.Add(DayOfWeek.Thursday);
+                            break;
+                        case "FRI":
+                            days.Add(DayOfWeek.Friday);
+                            break;
+                        case "SAT":
+                            days.Add(DayOfWeek.Saturday);
+                            break;
+                        case "SUN":
+                            days.Add(DayOfWeek.Sunday);
+                            break;
+                        default:
+                            Console.WriteLine($"Unrecognized day format: {trimmedDay}");
+                            break;
                     }
                 }
             }

@@ -166,5 +166,29 @@ namespace IpisCentralDisplayController.Properties {
                 this["timelines"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string stations {
+            get {
+                return ((string)(this["stations"]));
+            }
+            set {
+                this["stations"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string trainMaster {
+            get {
+                return ((string)(this["trainMaster"]));
+            }
+            set {
+                this["trainMaster"] = value;
+            }
+        }
     }
 }

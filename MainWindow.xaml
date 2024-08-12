@@ -69,17 +69,19 @@
                 <MenuItem Header="Zoom In"/>
                 <MenuItem Header="Zoom Out"/>
             </MenuItem>
-            <Menu>
-                <MenuItem Header="Workspace">
-                    <MenuItem Header="Create New" Click="CreateNewWorkspace_Click"/>
-                    <MenuItem Header="Change" Click="ChangeWorkspace_Click"/>
-                    <MenuItem Header="Browse" Click="BrowseWorkspace_Click"/>
-                    <MenuItem Header="Export" Click="ExportWorkspace_Click"/>
-                    <MenuItem Header="Repair" Click="RepairWorkspace_Click"/>
-                    <Separator/>
-                    <MenuItem Header="Refresh" Click="RefreshWorkspace_Click"/>
-                </MenuItem>
-            </Menu>
+            <MenuItem Header="Workspace">
+                <MenuItem Header="Create New" Click="CreateNewWorkspace_Click"/>
+                <MenuItem Header="Change" Click="ChangeWorkspace_Click"/>
+                <MenuItem Header="Browse" Click="BrowseWorkspace_Click"/>
+                <MenuItem Header="Export" Click="ExportWorkspace_Click"/>
+                <MenuItem Header="Repair" Click="RepairWorkspace_Click"/>
+                <Separator/>
+                <MenuItem Header="Refresh" Click="RefreshWorkspace_Click"/>
+            </MenuItem>
+            <MenuItem Header="Master">
+                <MenuItem Header="Stations" Click="StationMaster_Click"/>
+                <MenuItem Header="Trains" Click="TrainsMaster_Click"/>
+            </MenuItem>
             <MenuItem Header="Export">
                 <MenuItem Header="Export Mapping" Click="ExportMapping_Click"/>
                 <MenuItem Header="Import Mapping" Click="ImportMapping_Click"/>
@@ -88,10 +90,6 @@
                 <MenuItem Header="Export Mapping" Click="ExportMapping_Click"/>
                 <MenuItem Header="Import Mapping" Click="ImportMapping_Click"/>
             </MenuItem>
-            <!--<MenuItem Header="Platform-Devices">
-                <MenuItem Header="Export Mapping" Click="ExportMapping_Click"/>
-                <MenuItem Header="Import Mapping" Click="ImportMapping_Click"/>
-            </MenuItem>-->
             <MenuItem Header="User">
                 <MenuItem Header="Logout" Click="Logout_Click"/>
             </MenuItem>
@@ -162,128 +160,76 @@
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <Image Width="24" Height="24" Source="icons/icon-train.png" Margin="2"/>
-                        <TextBlock Text="TRAINS" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
+                        <TextBlock Text="DASHBOARD" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
                     </StackPanel>
                 </TabItem.Header>
-                <Grid Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <GroupBox Header="Dashboard" Margin="5">
-                        <Grid Margin="5">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <!-- Train List and CGDB Manager -->
-                            <Grid Grid.Row="1" Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <!--<ColumnDefinition Width="1*"/>-->
-                                </Grid.ColumnDefinitions>
-
-                                <GroupBox Header="Train List" Grid.Column="0" Margin="5">
-                                    <ListBox Name="TrainListBox" Margin="5"/>
-                                </GroupBox>
-
-                                <!--<GroupBox Header="CGDB Manager" Grid.Column="1" Margin="5">
-                                    <ListBox Name="CgdbManagerListBox" Margin="5"/>
-                                </GroupBox>-->
-                            </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <GroupBox Header="Train List" Grid.Row="0" Margin="5">
+                            <TabControl>
+                                <TabItem Header="Active Trains" Height="24">
+                                    <ListBox Name="ActiveTrainListBox" Margin="0"/>
+                                </TabItem>
+                                <TabItem Header="Today Trains" Height="24">
+                                    <ListBox Name="TodayTrainListBox" Margin="0"/>
+                                </TabItem>
+                            </TabControl>
+                        </GroupBox>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Header="Coach Sequence / TADDB" Grid.Column="0" Height="200" Margin="5">
+                            </GroupBox>
+                            <GroupBox Header="Controls" Grid.Column="1" Margin="5">
+                            </GroupBox>
                         </Grid>
-                    </GroupBox>
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <GroupBox Header="Voice Recorder and Media Player" Grid.Row="0" Margin="5">
+                            <StackPanel Margin="5">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                    <Button Name="StartRecordingButton" Content="Start Recording" Width="100" Height="30" Click="StartRecordingButton_Click" Margin="5"/>
+                                    <Button Name="PauseRecordingButton" Content="Pause Recording" Width="100" Height="30" Click="PauseRecordingButton_Click" Margin="5" IsEnabled="False"/>
+                                    <Button Name="StopRecordingButton" Content="Stop Recording" Width="100" Height="30" Click="StopRecordingButton_Click" Margin="5" IsEnabled="False"/>
+                                    <Button Name="ResumeRecordingButton" Content="Resume Recording" Width="100" Height="30" Click="ResumeRecordingButton_Click" Margin="5" IsEnabled="False"/>
+                                </StackPanel>
+                                <TextBlock Name="ElapsedTimeTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="5"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                    <Button Name="PlayAudioButton" Content="Play" Width="100" Height="30" Click="PlayAudioButton_Click" Margin="5" IsEnabled="False"/>
+                                    <Button Name="PauseAudioButton" Content="Pause" Width="100" Height="30" Click="PauseAudioButton_Click" Margin="5" IsEnabled="False"/>
+                                    <Button Name="StopAudioButton" Content="Stop" Width="100" Height="30" Click="StopAudioButton_Click" Margin="5" IsEnabled="False"/>
+                                    <Button Name="SaveAudioButton" Content="Save" Width="100" Height="30" Click="SaveAudioButton_Click" Margin="5" IsEnabled="False"/>
+                                </StackPanel>
+                                <Slider Name="AudioSlider" Minimum="0" Maximum="100" TickFrequency="1" Margin="5" ValueChanged="AudioSlider_ValueChanged"/>
+                                <TextBlock Name="CurrentTimeTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="5"/>
+                                <TextBlock Name="DurationTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="5"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="Playlist" Grid.Row="1" Margin="5">
+                            <ListBox Name="PlaylistListBox" Margin="5"/>
+                        </GroupBox>
+
+                        <GroupBox Header="Audio Files" Grid.Row="2" Margin="5">
+                            <ListBox Name="AudioFilesListBox" Margin="5"/>
+                        </GroupBox>
+                    </Grid>
                 </Grid>
             </TabItem>
-
-            <TabItem Name="PaSystemTab" Width="120" Height="30">
-                <TabItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Width="24" Height="24" Source="icons/icon-speaker.png" Margin="2"/>
-                        <TextBlock Text="PA" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
-                    </StackPanel>
-                </TabItem.Header>
-                <Grid Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <GroupBox Header="Public Announcement System" Grid.Row="0" Margin="5">
-                        <Grid Margin="5">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0" Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Voice Recorder & Media Player -->
-                                <GroupBox Header="Voice Recorder and Media Player" Grid.Column="0" Margin="5">
-                                    <StackPanel Margin="5">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                                            <Button Name="StartRecordingButton" Content="Start Recording" Width="100" Height="30" Click="StartRecordingButton_Click" Margin="5"/>
-                                            <Button Name="PauseRecordingButton" Content="Pause Recording" Width="100" Height="30" Click="PauseRecordingButton_Click" Margin="5" IsEnabled="False"/>
-                                            <Button Name="StopRecordingButton" Content="Stop Recording" Width="100" Height="30" Click="StopRecordingButton_Click" Margin="5" IsEnabled="False"/>
-                                            <Button Name="ResumeRecordingButton" Content="Resume Recording" Width="100" Height="30" Click="ResumeRecordingButton_Click" Margin="5" IsEnabled="False"/>
-                                        </StackPanel>
-                                        <TextBlock Name="ElapsedTimeTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="5"/>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                                            <Button Name="PlayAudioButton" Content="Play" Width="100" Height="30" Click="PlayAudioButton_Click" Margin="5" IsEnabled="False"/>
-                                            <Button Name="PauseAudioButton" Content="Pause" Width="100" Height="30" Click="PauseAudioButton_Click" Margin="5" IsEnabled="False"/>
-                                            <Button Name="StopAudioButton" Content="Stop" Width="100" Height="30" Click="StopAudioButton_Click" Margin="5" IsEnabled="False"/>
-                                            <Button Name="SaveAudioButton" Content="Save" Width="100" Height="30" Click="SaveAudioButton_Click" Margin="5" IsEnabled="False"/>
-                                        </StackPanel>
-                                        <Slider Name="AudioSlider" Minimum="0" Maximum="100" TickFrequency="1" Margin="5" ValueChanged="AudioSlider_ValueChanged"/>
-                                        <TextBlock Name="CurrentTimeTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="5"/>
-                                        <TextBlock Name="DurationTextBlock" Text="0:00" HorizontalAlignment="Center" Margin="5"/>
-                                    </StackPanel>
-                                </GroupBox>
-
-                                <!-- Audio Configuration -->
-                                <GroupBox Header="Audio Configuration" Grid.Column="1" Margin="5">
-                                    <!--<StackPanel Margin="5">
-                                        <ComboBox Name="AudioInterfaceComboBox" Width="200" Height="30" Margin="5"/>
-                                        <ComboBox Name="MicrophoneComboBox" Width="200" Height="30" Margin="5"/>
-                                        <Slider Name="MicVolumeSlider" Minimum="0" Maximum="100" TickFrequency="1" Margin="5" ValueChanged="MicVolumeSlider_ValueChanged"/>
-                                        <CheckBox Name="MicMuteCheckBox" Content="Mute Microphone" Margin="5" Checked="MicMuteCheckBox_Checked" Unchecked="MicMuteCheckBox_Unchecked"/>
-                                        <ComboBox Name="PaSpeakerComboBox" Width="200" Height="30" Margin="5"/>
-                                        <Slider Name="PaVolumeSlider" Minimum="0" Maximum="100" TickFrequency="1" Margin="5" ValueChanged="PaVolumeSlider_ValueChanged"/>
-                                        <CheckBox Name="PaMuteCheckBox" Content="Mute PA Speaker" Margin="5" Checked="PaMuteCheckBox_Checked" Unchecked="PaMuteCheckBox_Unchecked"/>
-                                        <ComboBox Name="LocalSpeakerComboBox" Width="200" Height="30" Margin="5"/>
-                                        <Slider Name="LocalVolumeSlider" Minimum="0" Maximum="100" TickFrequency="1" Margin="5" ValueChanged="LocalVolumeSlider_ValueChanged"/>
-                                        <CheckBox Name="LocalMuteCheckBox" Content="Mute Local Speaker" Margin="5" Checked="LocalMuteCheckBox_Checked" Unchecked="LocalMuteCheckBox_Unchecked"/>
-                                        <CheckBox Name="PlayOnPaSpeakerCheckBox" Content="Play on PA Speaker" Margin="5"/>
-                                        <CheckBox Name="PlayOnLocalSpeakerCheckBox" Content="Play on Local Speaker" Margin="5"/>
-                                    </StackPanel>-->
-                                </GroupBox>
-                            </Grid>
-
-                            <!-- Playlist and Audio Files -->
-                            <Grid Grid.Row="1" Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <GroupBox Header="Playlist" Grid.Column="0" Margin="5">
-                                    <ListBox Name="PlaylistListBox" Margin="5"/>
-                                </GroupBox>
-
-                                <GroupBox Header="Audio Files" Grid.Column="1" Margin="5">
-                                    <ListBox Name="AudioFilesListBox" Margin="5"/>
-                                </GroupBox>
-                            </Grid>
-                        </Grid>
-                    </GroupBox>
-                </Grid>
-            </TabItem>
-
             <TabItem Name="MultimediaTab" Width="120" Height="30">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
@@ -2547,6 +2493,7 @@
                         <ListBoxItem Content="audioSettings"/>
                         <ListBoxItem Content="mediaFiles"/>
                         <ListBoxItem Content="timelines"/>
+                        <ListBoxItem Content="stations"/>
                     </ListBox>
 
                     <!-- ScrollViewer for displaying selected setting's content -->

@@ -229,6 +229,8 @@ namespace IpisCentralDisplayController
 
         private TimelineManager _timelineManager;
 
+        private StationManager _stationManager;
+
 
         private MainViewModel _mainViewModel;
 
@@ -299,6 +301,7 @@ namespace IpisCentralDisplayController
             _trainStatusDisplayManager = new TrainStatusDisplayManager(jsonHelperAdapter);
             _mediaManager = new MediaManager(jsonHelperAdapter);
             _timelineManager = new TimelineManager(jsonHelperAdapter);
+            _stationManager = new StationManager(jsonHelperAdapter);
 
             InitializeDateTimeUpdate();
           
@@ -558,6 +561,46 @@ namespace IpisCentralDisplayController
             else
             {
                 Application.Current.Shutdown();
+            }
+        }
+
+        public void EnsureWorkspaceDirectories(string workspacePath)
+        {
+            // Ensure the Sounds/Stations directory structure
+            string baseSoundPath = Path.Combine(workspacePath, "Sounds", "Stations");
+            string[] languageFolders = new string[]
+            {
+        "ENGLISH", "HINDI", "ASSAMESE", "BANGLA", "DOGRI", "GUJARATI",
+        "KANNADA", "KONKANI", "MALAYALAM", "MARATHI", "MANIPURI", "NEPALI",
+        "ODIA", "PUNJABI", "SANSKRIT", "SINDHI", "TAMIL", "TELUGU", "URDU"
+            };
+
+            foreach (var folder in languageFolders)
+            {
+                string languagePath = Path.Combine(baseSoundPath, folder);
+                if (!Directory.Exists(languagePath))
+                {
+                    Directory.CreateDirectory(languagePath);
+                }
+            }
+
+            // Ensure other workspace directories (example placeholders)
+            string mediaPath = Path.Combine(workspacePath, "Media");
+            string imagesPath = Path.Combine(mediaPath, "Images");
+            string videosPath = Path.Combine(mediaPath, "Videos");
+            string projectsPath = Path.Combine(workspacePath, "Projects");
+
+            string[] otherDirectories = new string[]
+            {
+        mediaPath, imagesPath, videosPath, projectsPath
+            };
+
+            foreach (var directory in otherDirectories)
+            {
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
             }
         }
 
@@ -2755,6 +2798,9 @@ namespace IpisCentralDisplayController
                     case "timelines":
                         settingContent = JsonConvert.SerializeObject(_timelineManager.LoadTimelines(), Formatting.Indented);
                         break;
+                    case "stations":
+                        settingContent = JsonConvert.SerializeObject(_stationManager.LoadStations(), Formatting.Indented);
+                        break;
 
                 }
 
@@ -4227,6 +4273,20 @@ namespace IpisCentralDisplayController
             //        break;
             //        // Handle other item types like transitions, effects here if necessary
             //}
+        }
+
+        private void StationMaster_Click(object sender, RoutedEventArgs e)
+        {
+            StationDbWindow stationDbWindow = new StationDbWindow();
+            stationDbWindow.Owner = this;
+            stationDbWindow.ShowDialog();
+        }
+
+        private void TrainsMaster_Click(object sender, RoutedEventArgs e)
+        {
+            TrainMasterDbWindow trainMasterDbWindow = new TrainMasterDbWindow();
+            trainMasterDbWindow.Owner = this;
+            trainMasterDbWindow.ShowDialog();
         }
 
 

@@ -12,7 +12,6 @@ namespace IpisCentralDisplayController.views
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        public TrainListViewModel TrainListVM { get; set; }
         public ColorViewModel ColorVM { get; set; }
 
         private DisplayStyle _selectedStyle;
@@ -213,10 +212,9 @@ namespace IpisCentralDisplayController.views
             }
         }
 
-        private RmsSettings _rmsSettings;
-        private RmsSettingsManager _rmsSettingsManager;
+        private RmsServerSettings _rmsSettings;
 
-        public RmsSettings RmsSettings
+        public RmsServerSettings RmsSettings
         {
             get => _rmsSettings;
             set
@@ -224,7 +222,21 @@ namespace IpisCentralDisplayController.views
                 if (_rmsSettings != value)
                 {
                     _rmsSettings = value;
-                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(RmsSettings));
+                }
+            }
+        }
+
+        private CAPServerSettings _capSettings;
+        public CAPServerSettings CapSettings
+        {
+            get => _capSettings;
+            set
+            {
+                if (_capSettings != value)
+                {
+                    _capSettings = value;
+                    OnPropertyChanged(nameof(CapSettings));
                 }
             }
         }
@@ -534,7 +546,52 @@ namespace IpisCentralDisplayController.views
             get { return IvdOvdHeight == 4; } // Assuming 4 is the index for Custom
         }
 
+        private ObservableCollection<ActiveTrain> _activeTrains;
 
+        public ObservableCollection<ActiveTrain> ActiveTrains
+        {
+            get => _activeTrains;
+            set
+            {
+                if (_activeTrains != value)
+                {
+                    _activeTrains = value;
+                    OnPropertyChanged(nameof(ActiveTrains));
+                }
+            }
+        }
+
+        public void LoadActiveTrains(List<ActiveTrain> activeTrains)
+        {
+            if (activeTrains == null || !activeTrains.Any())
+            {
+                ActiveTrains.Clear();
+                return;
+            }
+
+            ActiveTrains.Clear(); // Clear the existing collection
+
+            foreach (var train in activeTrains)
+            {
+                ActiveTrains.Add(train); // Add each train to the ObservableCollection
+            }
+
+            OnPropertyChanged(nameof(ActiveTrains)); // Notify the UI that the collection has changed
+        }
+
+        private ActiveTrain _selectedTrain;
+        public ActiveTrain SelectedTrain
+        {
+            get => _selectedTrain;
+            set
+            {
+                if (_selectedTrain != value)
+                {
+                    _selectedTrain = value;
+                    OnPropertyChanged(nameof(SelectedTrain));
+                }
+            }
+        }
 
         public MainViewModel()
         {
@@ -544,7 +601,6 @@ namespace IpisCentralDisplayController.views
             Platforms = new ObservableCollection<Platform>();
             Devices = new ObservableCollection<Device>();
 
-            TrainListVM = new TrainListViewModel();
             ColorVM = new ColorViewModel();
 
             // Initialize the collection and commands
@@ -553,9 +609,7 @@ namespace IpisCentralDisplayController.views
 
             MicInterfaces = new ObservableCollection<string>();
             MonitorInterfaces = new ObservableCollection<string>();
-            AudioOutInterfaces = new ObservableCollection<string>();
-
-            RmsSettings = new RmsSettings();
+            AudioOutInterfaces = new ObservableCollection<string>();            
 
             TrainTemplates = new ObservableCollection<TrainDisplayTemplate>();
 
@@ -567,12 +621,30 @@ namespace IpisCentralDisplayController.views
 
             Timelines = new ObservableCollection<Timeline>();
             TimelineItems = new ObservableCollection<TimelineItem>();
+
+            _activeTrains = new ObservableCollection<ActiveTrain>();
         }
 
-        public void LoadRmsSettings(RmsSettings rmsSettings)
+        public void UpdateActiveTrains(List<ActiveTrain> trains)
         {
-            RmsSettings = rmsSettings;
-        }   
+            ActiveTrains.Clear();
+
+            foreach (var train in trains)
+            {
+                ActiveTrains.Add(train);
+            }
+        }
+
+        public void LoadRmsSettings(RmsServerSettings rmsSettings)
+        {
+            RmsSettings = rmsSettings ?? new RmsServerSettings();
+        }
+
+        public void LoadCAPServerSettings(CAPServerSettings capsSettings)
+        {
+            CapSettings = capsSettings ?? new CAPServerSettings(); 
+        }
+
 
         public void RefreshAudioInterfaces(AudioSettingsManager audioSettingsManager)
         {

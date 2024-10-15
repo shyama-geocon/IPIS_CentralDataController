@@ -2,8 +2,12 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:conv="clr-namespace:IpisCentralDisplayController.converters"
         Title="Train Master Database" Height="800" Width="1000"
         WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <conv:BooleanToYesNoConverter x:Key="BooleanToYesNoConverter"/>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -18,14 +22,40 @@
 
             <!-- Train List on the Left -->
             <GroupBox x:Name="gb_header" Grid.Column="0" Margin="2">
-                <ListView Name="TrainListView" ItemsSource="{Binding Trains}" SelectedItem="{Binding SelectedTrain}" Margin="2" SelectionMode="Extended">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Train Number" DisplayMemberBinding="{Binding TrainNumber}" Width="100"/>
-                            <GridViewColumn Header="Train Name (English)" DisplayMemberBinding="{Binding TrainNameEnglish}" Width="200"/>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <DockPanel Grid.Row="0">
+                        <TextBlock Text="Search" Width="80" VerticalAlignment="Center" Margin="2"/>
+                        <TextBox VerticalContentAlignment="Center" Margin="2" Height="30" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    </DockPanel>
+                    <ListView Grid.Row="1" Name="TrainListView" ItemsSource="{Binding Trains}" SelectedItem="{Binding SelectedTrain}" Margin="2" SelectionMode="Extended">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Width="100">
+                                    <GridViewColumnHeader Content="Train Number" Click="GridViewColumnHeader_Click" Tag="TrainNumber"/>
+                                    <GridViewColumn.DisplayMemberBinding>
+                                        <Binding Path="TrainNumber"/>
+                                    </GridViewColumn.DisplayMemberBinding>
+                                </GridViewColumn>
+                                <GridViewColumn Width="200">
+                                    <GridViewColumnHeader Content="Train Name (English)" Click="GridViewColumnHeader_Click" Tag="TrainNameEnglish"/>
+                                    <GridViewColumn.DisplayMemberBinding>
+                                        <Binding Path="TrainNameEnglish"/>
+                                    </GridViewColumn.DisplayMemberBinding>
+                                </GridViewColumn>
+                                <GridViewColumn Width="100">
+                                    <GridViewColumnHeader Content="From NTES?" Click="GridViewColumnHeader_Click" Tag="IsFromNTES"/>
+                                    <GridViewColumn.DisplayMemberBinding>
+                                        <Binding Path="IsFromNTES" Converter="{StaticResource BooleanToYesNoConverter}"/>
+                                    </GridViewColumn.DisplayMemberBinding>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
             </GroupBox>
 
 
@@ -132,7 +162,7 @@
                             <!-- Display Selected Time -->
                             <TextBlock Text="{Binding SelectedTrain.STA, StringFormat='{}{0:hh\\:mm}', TargetNullValue='--:--'}" 
                                VerticalAlignment="Center" 
-                               Margin="10,0,0,0" 
+                               Margin="2" 
                                FontWeight="Bold"/>
                         </StackPanel>
                         <!-- Scheduled Time of Departure -->
@@ -159,7 +189,7 @@
                             <!-- Display Selected Time -->
                             <TextBlock Text="{Binding SelectedTrain.STD, StringFormat='{}{0:hh\\:mm}', TargetNullValue='--:--'}" 
                                VerticalAlignment="Center" 
-                               Margin="10,0,0,0" 
+                               Margin="2" 
                                FontWeight="Bold"/>
                         </StackPanel>
                         <!-- Days of Departure -->
@@ -185,13 +215,12 @@
                             <ItemsControl Name="CoachListItemsControl" ItemsSource="{Binding SelectedTrain.CoachList}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid Margin="2">
+                                        <Grid Margin="2" HorizontalAlignment="Left">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-
-                                            <TextBox Text="{Binding ., UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" 
+                                            <TextBox VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Text="{Binding ., UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" 
                              Width="60" Height="24" Margin="2" Grid.Column="0"/>
                                             <Button Content="X" Width="25" Height="25" Margin="2" Grid.Column="1"
                             Click="DeleteCoachButton_Click"/>
@@ -218,6 +247,7 @@
             <Button Content="Import" Width="100" Height="30" Margin="2" Click="ImportButton_Click"/>
             <Button Content="Export" Width="100" Height="30" Margin="2" Click="ExportButton_Click"/>
             <Button Content="Save Train" Width="100" Height="30" Margin="2" Click="UpdateTrainButton_Click"/>
+            <Button Content="Use This" Width="100" Height="30" Margin="60,2,2,2" Click="UseThisButton_Click"/>
         </StackPanel>
 
         <TextBlock Grid.Row="2" x:Name="tb_status" Height="24" HorizontalAlignment="Center"/>

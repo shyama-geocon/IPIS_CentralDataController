@@ -3,10 +3,12 @@ using IpisCentralDisplayController.managers;
 using IpisCentralDisplayController.Managers;
 using IpisCentralDisplayController.models;
 using IpisCentralDisplayController.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Data;
 
 namespace IpisCentralDisplayController.views
 {
@@ -14,16 +16,20 @@ namespace IpisCentralDisplayController.views
     {
         private StationManager _stationManager;
         private Station _selectedStation;
-
+        private string _searchQuery;
         public StationViewModel()
         {
             var jsonHelperAdapter = new SettingsJsonHelperAdapter();
             _stationManager = new StationManager(jsonHelperAdapter);
             Stations = new ObservableCollection<Station>();
             LoadStations();
+
+            StationView = CollectionViewSource.GetDefaultView(Stations);
+            StationView.Filter = StationFilter;
         }
 
         public ObservableCollection<Station> Stations { get; set; }
+        public ICollectionView StationView { get; set; }
 
         public Station SelectedStation
         {
@@ -36,6 +42,33 @@ namespace IpisCentralDisplayController.views
                     OnPropertyChanged(nameof(SelectedStation));
                 }
             }
+        }
+
+        public string SearchQuery
+        {
+            get => _searchQuery;
+            set
+            {
+                if (_searchQuery != value)
+                {
+                    _searchQuery = value;
+                    OnPropertyChanged(nameof(SearchQuery));
+                    StationView.Refresh();  // Refresh to apply the filter
+                }
+            }
+        }
+
+        private bool StationFilter(object item)
+        {
+            if (item is Station station)
+            {
+                if (string.IsNullOrEmpty(SearchQuery))
+                    return true;
+
+                return station.StationCode.Contains(SearchQuery, System.StringComparison.OrdinalIgnoreCase) ||
+                       station.StationNameEnglish.Contains(SearchQuery, System.StringComparison.OrdinalIgnoreCase);
+            }
+            return false;
         }
 
         public void LoadStations()

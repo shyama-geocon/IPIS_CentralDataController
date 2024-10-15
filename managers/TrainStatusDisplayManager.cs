@@ -44,7 +44,34 @@ namespace IpisCentralDisplayController.models
 
             var defaultTrainTemplates = new List<TrainDisplayTemplate>();
 
-            foreach (var status in (TrainStatus[])Enum.GetValues(typeof(TrainStatus)))
+            // Define a list of status strings for arrival and departure
+            var statusList = new List<string>
+            {
+                // Arrival statuses
+                "Running Right Time",
+                "Will Arrive Shortly",
+                "Is Arriving On",
+                "Has Arrived On",
+                "Running Late",
+                "Cancelled",
+                "Indefinite Late",
+                "Terminated At",
+                "Platform Changed",
+
+                // Departure statuses
+                "Running Right Time",
+                "Cancelled",
+                "Is Ready to Leave",
+                "Is on Platform",
+                "Departed",
+                "Rescheduled",
+                "Diverted",
+                "Delay Departure",
+                "Platform Change",
+                "Change of Source"
+            };
+
+            foreach (var status in statusList)
             {
                 var (statusType, statusDescription) = GetStatusTypeAndDescription(status);
 
@@ -63,7 +90,8 @@ namespace IpisCentralDisplayController.models
             return (defaultTheme, defaultTrainTemplates);
         }
 
-        private (string StatusType, string StatusDescription) GetStatusTypeAndDescription(TrainStatus status)
+
+        private (string StatusType, string StatusDescription) GetStatusTypeAndDescription(string status)
         {
             string statusType;
             string statusDescription;
@@ -71,84 +99,86 @@ namespace IpisCentralDisplayController.models
             switch (status)
             {
                 // Arrival statuses
-                case TrainStatus.RunningRightTimeArrival:
+                case "Running Right Time":
                     statusType = "Arrival";
                     statusDescription = "Running Right Time";
                     break;
-                case TrainStatus.WillArriveShortly:
+                case "Will Arrive Shortly":
                     statusType = "Arrival";
                     statusDescription = "Will Arrive Shortly";
                     break;
-                case TrainStatus.IsArrivingOn:
+                case "Is Arriving On":
                     statusType = "Arrival";
                     statusDescription = "Is Arriving On";
                     break;
-                case TrainStatus.HasArrivedOn:
+                case "Has Arrived On":
                     statusType = "Arrival";
                     statusDescription = "Has Arrived On";
                     break;
-                case TrainStatus.RunningLateArrival:
+                case "Running Late":
                     statusType = "Arrival";
                     statusDescription = "Running Late";
                     break;
-                case TrainStatus.CancelledArrival:
+                case "Cancelled":
                     statusType = "Arrival";
                     statusDescription = "Cancelled";
                     break;
-                case TrainStatus.IndefiniteLateArrival:
+                case "Indefinite Late":
                     statusType = "Arrival";
                     statusDescription = "Indefinitely Late";
                     break;
-                case TrainStatus.TerminatedAt:
+                case "Terminated At":
                     statusType = "Arrival";
                     statusDescription = "Terminated At";
                     break;
-                case TrainStatus.PlatformChangedArrival:
+                case "Platform Changed":
                     statusType = "Arrival";
                     statusDescription = "Platform Changed";
                     break;
 
                 // Departure statuses
-                case TrainStatus.RunningRightTimeDeparture:
-                    statusType = "Departure";
-                    statusDescription = "Running Right Time";
-                    break;
-                case TrainStatus.CancelledDeparture:
-                    statusType = "Departure";
-                    statusDescription = "Cancelled";
-                    break;
-                case TrainStatus.IsReadyToLeave:
+                //case "Cancelled":
+                //    statusType = "Departure";
+                //    statusDescription = "Cancelled";
+                //    break;
+                case "Is Ready to Leave":
                     statusType = "Departure";
                     statusDescription = "Is Ready to Leave";
                     break;
-                case TrainStatus.IsOnPlatform:
+                case "Is on Platform":
                     statusType = "Departure";
                     statusDescription = "Is on Platform";
                     break;
-                case TrainStatus.Departed:
+                case "Departed":
                     statusType = "Departure";
                     statusDescription = "Departed";
                     break;
-                case TrainStatus.Rescheduled:
+                case "Rescheduled":
                     statusType = "Departure";
                     statusDescription = "Rescheduled";
                     break;
-                case TrainStatus.Diverted:
+                case "Diverted":
                     statusType = "Departure";
                     statusDescription = "Diverted";
                     break;
-                case TrainStatus.DelayDeparture:
+                case "Delay Departure":
                     statusType = "Departure";
                     statusDescription = "Delay Departure";
                     break;
-                case TrainStatus.PlatformChangeDeparture:
+                case "Platform Change":
                     statusType = "Departure";
                     statusDescription = "Platform Change";
                     break;
-                case TrainStatus.ChangeOfSource:
+                case "Change of Source":
                     statusType = "Departure";
                     statusDescription = "Change of Source";
                     break;
+
+                // Specific to Departure but also an Arrival status:
+                //case "Running Right Time":
+                //    statusType = "Departure";
+                //    statusDescription = "Running Right Time";
+                //    break;
 
                 default:
                     statusType = "Unknown";
@@ -158,5 +188,6 @@ namespace IpisCentralDisplayController.models
 
             return (statusType, statusDescription);
         }
+
     }
 }

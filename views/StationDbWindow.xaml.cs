@@ -338,5 +338,17 @@ namespace IpisCentralDisplayController.views
             }
         }
 
+        private void UseThisButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is StationViewModel viewModel && viewModel.SelectedStation != null)
+            {
+                DialogResult = true;
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Please select a station.", "No Station Selected", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
     }
 }

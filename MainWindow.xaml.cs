@@ -13,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-//using System.Windows.Shapes;
 using System.Windows.Threading;
 using Newtonsoft.Json;
 using System.Net.Http;
@@ -38,6 +37,8 @@ using System.Windows.Controls.Primitives;
 using MediaToolkit;
 using MediaToolkit.Model;
 using MediaToolkit.Options;
+using System.Net.NetworkInformation;
+using IpisCentralDisplayController.services;
 
 namespace IpisCentralDisplayController
 {
@@ -221,7 +222,8 @@ namespace IpisCentralDisplayController
         private DisplayStyleManager _displayStyleManager;
         private AudioSettingsManager _audioSettingsManager;
 
-        private RmsSettingsManager _rmsSettingsManager;
+        private RmsServerManager _rmsSettingsManager;
+        private CAPServerSettingsManager _capServerSettingsManager;
 
         private readonly TrainStatusDisplayManager _trainStatusDisplayManager;
 
@@ -230,6 +232,8 @@ namespace IpisCentralDisplayController
         private TimelineManager _timelineManager;
 
         private StationManager _stationManager;
+
+        private ActiveTrainManager _activeTrainsManager;
 
 
         private MainViewModel _mainViewModel;
@@ -273,13 +277,14 @@ namespace IpisCentralDisplayController
         private ObservableCollection<string> playlist;
         private DispatcherTimer recordingTimer;
 
-        private ObservableCollection<NtesTrain951> trainList;
-        private ObservableCollection<CgdbManager> cgdbManagerList;
-        private DispatcherTimer refreshTimer;
         private DispatcherTimer dateTimeTimer;
 
-        public ObservableCollection<TrainViewModel> Trains { get; set; }
-        private TrainListViewModel _viewModel;
+        private DispatcherTimer _autoFetchTimer;
+        private bool _autoFetchEnabled;
+        private int _queryTimeMinutes;
+        private int _nextMins;
+
+        private ServiceManager _serviceManager;
 
         public MainWindow()
         {
@@ -297,11 +302,13 @@ namespace IpisCentralDisplayController
             _platformDeviceManager = new PlatformDeviceManager(jsonHelperAdapter);
             _displayStyleManager = new DisplayStyleManager(jsonHelperAdapter);
             _audioSettingsManager = new AudioSettingsManager(jsonHelperAdapter);
-            _rmsSettingsManager = new RmsSettingsManager(jsonHelperAdapter);
+            _rmsSettingsManager = new RmsServerManager(jsonHelperAdapter);
+            _capServerSettingsManager = new CAPServerSettingsManager(jsonHelperAdapter);
             _trainStatusDisplayManager = new TrainStatusDisplayManager(jsonHelperAdapter);
             _mediaManager = new MediaManager(jsonHelperAdapter);
             _timelineManager = new TimelineManager(jsonHelperAdapter);
             _stationManager = new StationManager(jsonHelperAdapter);
+            _activeTrainsManager = new ActiveTrainManager(jsonHelperAdapter);
 
             InitializeDateTimeUpdate();
           
@@ -309,12 +316,19 @@ namespace IpisCentralDisplayController
             _mainViewModel.LoadUserCategories(_userCategoryManager.LoadUserCategories());
             _mainViewModel.LoadUsers(_userManager.LoadUsers());
             _mainViewModel.LoadAudioSettings(_audioSettingsManager.LoadAudioSettings());
-            _mainViewModel.LoadRmsSettings(_rmsSettingsManager.LoadRmsSettings());
+            _mainViewModel.LoadRmsSettings(_rmsSettingsManager.LoadRmsServerSettings());
+            _mainViewModel.LoadCAPServerSettings(_capServerSettingsManager.LoadCapServerSettings());
+            CAPPassword.Password = _mainViewModel.CapSettings.Password;
+            ApiKey.Password = _mainViewModel.CapSettings.ApiKey;
             _mainViewModel.LoadMediaFiles(_mediaManager.LoadMediaFiles());
             _mainViewModel.LoadTimelines(_timelineManager.LoadTimelines());
+            _mainViewModel.LoadActiveTrains(_activeTrainsManager.LoadActiveTrains());
+
             DataContext = _mainViewModel;
             Loaded += MainWindow_Loaded;
-          
+            Closing += MainWindow_Closing;
+
+            InitializeServices();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -335,7 +349,9 @@ namespace IpisCentralDisplayController
             InitializeUserCategories();
 
             CheckAndCreateDisplayStyles();
+            InitializeNtesControls();
             CheckAndPromptForAdminUser();
+
 
             EnsureDefaultTimeline();
             tb_timeline.Text = _mainViewModel.SelectedTimeline.Name;
@@ -357,8 +373,32 @@ namespace IpisCentralDisplayController
             //    // Handle login cancellation or failure
             //    this.Close(); // Close the MainWindow if login is not successful
             //}
+        }
 
-            //await _viewModel.FetchAndDisplayTrains();
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            OnAppExit(sender,e);
+        }
+
+        private void InitializeServices()
+        {
+            var rmsService = new RMSService();
+            //var capService = new CAPService();
+            //var backupService = new BackupService();
+            //var displayService = new DisplayService();
+            //var announcementService = new AnnouncementService();
+
+            _serviceManager = new ServiceManager(new List<IService>
+        {
+            rmsService/*, capService, backupService, displayService, announcementService*/
+        });
+
+            _serviceManager.StartAllServices();
+        }
+
+        private void OnAppExit(object sender, EventArgs e)
+        {
+            _serviceManager.StopAllServices();
         }
 
         private void Logout_Click(object sender, RoutedEventArgs e)
@@ -387,6 +427,143 @@ namespace IpisCentralDisplayController
                 this.Close(); // Close the MainWindow if login is not successful
             }
         }
+
+        //NTES Specific
+        private void InitializeNtesControls()
+        {
+            // Initialize auto-fetch timer
+            _autoFetchTimer = new DispatcherTimer();
+            _autoFetchTimer.Tick += AutoFetchTimer_Tick;
+
+            // Set default values
+            _autoFetchEnabled = false;
+            _queryTimeMinutes = 3; // Default query time interval
+            _nextMins = 30; // Default next mins to fetch
+
+            // Bind the UI controls to these default values
+            //AutoFetchCheckBox.IsChecked = _autoFetchEnabled;
+            QueryTimeUpDown.Value = _queryTimeMinutes;
+            NextMinsComboBox.SelectedIndex = 0; // 30 min default
+        }
+
+        private void StartAutoFetch()
+        {
+            if (_autoFetchTimer == null)
+            {
+                _autoFetchTimer = new DispatcherTimer();
+                _autoFetchTimer.Tick += AutoFetchTimer_Tick;
+            }
+            _autoFetchTimer.Interval = TimeSpan.FromMinutes(QueryTimeUpDown.Value ?? 3); // Default to 3 minutes if null
+            _autoFetchTimer.Start();
+        }
+
+        private void StopAutoFetch()
+        {
+            _autoFetchTimer?.Stop();
+        }
+
+        private async void AutoFetchTimer_Tick(object sender, EventArgs e)
+        {
+            await FetchTrainsFromNtesAsync();
+        }
+
+        private void QueryTimeUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (QueryTimeUpDown.Value.HasValue)
+            {
+                _queryTimeMinutes = QueryTimeUpDown.Value.Value;
+                if (_autoFetchEnabled)
+                {
+                    _autoFetchTimer.Interval = TimeSpan.FromMinutes(_queryTimeMinutes);
+                }
+            }
+        }
+
+        private void NextMinsComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            //var selectedItem = NextMinsComboBox.SelectedItem as ComboBoxItem;
+            //if (selectedItem != null)
+            //{
+            //    if (int.TryParse(selectedItem.Content.ToString().Split(' ')[0], out int nextMins))
+            //    {
+            //        _nextMins = nextMins;
+            //    }
+            //}
+        }
+
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await FetchTrainsFromNtesAsync();
+        }
+
+        private async Task FetchTrainsFromNtesAsync()
+        {
+            try
+            {
+                var ntesApi = new NtesAPI951();
+                var ntesResponse = await ntesApi.GetTrainsAsync(_stationInfoManager.CurrentStationInfo.StationCode, _nextMins); // Assume _nextMins is defined elsewhere
+
+                if (ntesResponse == null)
+                {
+                    MessageBox.Show("No data received from NTES.", "No Data", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                bool replaceOnlyNTES = ReplaceTrainCombobox.SelectedIndex == 0;
+
+                if (replaceOnlyNTES)
+                {
+                    // Remove only NTES trains from the list
+                    var nonNTESTrains = _mainViewModel.ActiveTrains.Where(t => t.Ref != TrainSource.NTES).ToList();
+                    _mainViewModel.ActiveTrains.Clear();
+                    foreach (var train in nonNTESTrains)
+                    {
+                        _mainViewModel.ActiveTrains.Add(train);
+                    }
+                }
+                else
+                {
+                    // Clear the entire ActiveTrains collection
+                    _mainViewModel.ActiveTrains.Clear();
+                }
+
+                // Convert and add trains from each relevant list in the response directly to the ActiveTrains collection
+                AddTrainsToActiveTrains(ntesResponse.VTrainList);
+                AddTrainsToActiveTrains(ntesResponse.VRescheduledTrainList);
+                AddTrainsToActiveTrains(ntesResponse.VCancelledTrainList);
+                AddTrainsToActiveTrains(ntesResponse.VCancelTrainDueToCS);
+                AddTrainsToActiveTrains(ntesResponse.VCancelTrainDueToCD);
+                AddTrainsToActiveTrains(ntesResponse.VCancelTrainDueToDiversion);
+                AddTrainsToActiveTrains(ntesResponse.VTrainListDueToCS);
+                AddTrainsToActiveTrains(ntesResponse.VTrainListDueToCD);
+                AddTrainsToActiveTrains(ntesResponse.VTrainListDueToDV);
+
+                if (!_mainViewModel.ActiveTrains.Any())
+                {
+                    MessageBox.Show("No trains found for the specified station.", "No Data", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                _activeTrainsManager.SaveActiveTrains(_mainViewModel.ActiveTrains.ToList());
+                MessageBox.Show("NTES data fetched and populated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while fetching data from NTES: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void AddTrainsToActiveTrains(IEnumerable<NtesTrain951> ntesTrainList)
+        {
+            if (ntesTrainList != null && ntesTrainList.Any())
+            {
+                foreach (var nt in ntesTrainList)
+                {
+                    _mainViewModel.ActiveTrains.Add(new ActiveTrain(nt));
+                }
+            }
+        }
+
 
         //Color Display Related code
         private void LoadDisplaySettings()
@@ -441,7 +618,7 @@ namespace IpisCentralDisplayController
             MessageBox.Show("Audio settings have been saved successfully.", "Save Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        private void RefreshAudioButton_Click(object sender, RoutedEventArgs e)
         {
             _mainViewModel.RefreshAudioSettings(_audioSettingsManager);
             MessageBox.Show("Audio settings and interfaces have been refreshed.", "Refresh Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -841,31 +1018,150 @@ namespace IpisCentralDisplayController
         }
 
         //RMS Server specific code
-        private void SaveSystemConfigButton_Click(object sender, RoutedEventArgs e)
+        private void SaveRmsSettings_Click(object sender, RoutedEventArgs e)
         {
-            _rmsSettingsManager.SaveRmsSettings(_mainViewModel.RmsSettings);
-            MessageBox.Show("RMS settings saved successfully.");
+            try
+            {
+                _rmsSettingsManager.SaveRmsServerSettings(_mainViewModel.RmsSettings);
+                MessageBox.Show("Settings saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to save settings: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        private void TestServer1ConnectionButton_Click(object sender, RoutedEventArgs e)
+        private async void TestConnection_Click(object sender, RoutedEventArgs e)
         {
-            bool isConnected = _rmsSettingsManager.TestConnection(
-                _mainViewModel.RmsSettings.Server1Ip,
-                _mainViewModel.RmsSettings.Server1ApiEndpoint,
-                _mainViewModel.RmsSettings.Server1ApiKey
-            );
-            MessageBox.Show(isConnected ? "Server 1 connected successfully." : "Failed to connect to Server 1.");
+            var rmsServerSettings = _mainViewModel.RmsSettings;
+
+            if (rmsServerSettings == null)
+            {
+                MessageBox.Show("Server settings not found.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(rmsServerSettings.ApiUrl))
+            {
+                MessageBox.Show("API URL is empty.");
+                return;
+            }
+
+            // Step 1: Ping the server IP
+            var apiUrl = new Uri(rmsServerSettings.ApiUrl);
+            var host = apiUrl.Host;
+            bool isPingable = await PingHostAsync(host);
+            if (!isPingable)
+            {
+                MessageBox.Show("Ping failed. Server is unreachable.");
+                return;
+            }
+
+            // Step 2: Test HTTP GET /api/ext/test
+            bool isHttpSuccess = await TestHttpGetAsync(rmsServerSettings.ApiUrl);
+            if (isHttpSuccess)
+            {
+                MessageBox.Show("Connection test successful.");
+            }
+            else
+            {
+                MessageBox.Show("HTTP GET test failed.");
+            }
         }
 
-        private void TestServer2ConnectionButton_Click(object sender, RoutedEventArgs e)
+
+        private async Task<bool> PingHostAsync(string host)
         {
-            bool isConnected = _rmsSettingsManager.TestConnection(
-                _mainViewModel.RmsSettings.Server2Ip,
-                _mainViewModel.RmsSettings.Server2ApiEndpoint,
-                _mainViewModel.RmsSettings.Server2ApiKey
-            );
-            MessageBox.Show(isConnected ? "Server 2 connected successfully." : "Failed to connect to Server 2.");
+            using (var ping = new Ping())
+            {
+                try
+                {
+                    PingReply reply = await ping.SendPingAsync(host);
+                    return reply.Status == IPStatus.Success;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
         }
+
+        // Perform an HTTP GET request to check server response
+        private async Task<bool> TestHttpGetAsync(string apiUrl)
+        {
+            using (var client = new HttpClient())
+            {
+                try
+                {
+                    var testUrl = $"{apiUrl}/api/ext/test";
+                    var response = await client.GetAsync(testUrl);
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    return response.IsSuccessStatusCode && responseContent == "OK";
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        //CAP Specific code
+        private void ApiKey_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            var passwordBox = sender as PasswordBox;
+            if (passwordBox != null)
+            {
+                _mainViewModel.CapSettings.ApiKey = passwordBox.Password;
+            }
+        }
+
+        private void CAPPassword_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            var passwordBox = sender as PasswordBox;
+            if (passwordBox != null)
+            {
+                _mainViewModel.CapSettings.Password = passwordBox.Password;
+            }
+        }
+
+        private void SaveCapSettings_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _mainViewModel.CapSettings.Password = CAPPassword.Password;
+                _mainViewModel.CapSettings.ApiKey = ApiKey.Password;
+
+                _capServerSettingsManager.SaveCapServerSettings(_mainViewModel.CapSettings);
+
+                MessageBox.Show("CAP settings saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to save CAP settings: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+        private async void TestCapConnection_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                bool isConnected = _capServerSettingsManager.TestConnection(_mainViewModel.CapSettings);
+                if (isConnected)
+                {
+                    MessageBox.Show("CAP server connection successful.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Failed to connect to CAP server.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to test CAP server connection: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
 
         //User Categories
         private void InitializeUserCategories()
@@ -1297,10 +1593,10 @@ namespace IpisCentralDisplayController
         // code for dashboard
         private void InitializeDashboardComponents()
         {
-            trainList = new ObservableCollection<NtesTrain951>();
-            cgdbManagerList = new ObservableCollection<CgdbManager>();
-            refreshTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
-            refreshTimer.Tick += RefreshTimer_Tick;
+            //trainList = new ObservableCollection<NtesTrain951>();
+            //cgdbManagerList = new ObservableCollection<CgdbManager>();
+            //refreshTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
+            //refreshTimer.Tick += RefreshTimer_Tick;
         }
 
         private void InitializeDateTimeUpdate()
@@ -1315,58 +1611,6 @@ namespace IpisCentralDisplayController
             DateTimeStatus.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
-        private User GetCurrentUser()
-        {
-            // Mock implementation for user information
-            return new User
-            {
-                Name = "John Doe",
-                Email = "john.doe@example.com"
-            };
-        }
-
-        private void RefreshTimer_Tick(object sender, EventArgs e)
-        {
-            LoadTrainData();
-            LoadCgdbManagerData();
-        }
-
-        private async void LoadTrainData()
-        {
-            try
-            {
-                // Mock implementation for loading train data
-                //trainList.Clear();
-                //trainList.Add(new Train { TrainNumber = "12345", TrainName = "Express Train", ArrivalTime = "10:30", DepartureTime = "10:40" });
-                //trainList.Add(new Train { TrainNumber = "67890", TrainName = "Local Train", ArrivalTime = "11:00", DepartureTime = "11:10" });
-
-                // Update UI with new data
-                ActiveTrainListBox.ItemsSource = trainList;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading train data: {ex.Message}");
-            }
-        }
-
-        private async void LoadCgdbManagerData()
-        {
-            //try
-            //{
-            //    // Mock implementation for loading CGDB manager data
-            //    cgdbManagerList.Clear();
-            //    cgdbManagerList.Add(new CgdbManager { DisplayId = "CGDB1", Status = "Online" });
-            //    cgdbManagerList.Add(new CgdbManager { DisplayId = "CGDB2", Status = "Offline" });
-
-            //    // Update UI with new data
-            //    CgdbManagerListBox.ItemsSource = cgdbManagerList;
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show($"Error loading CGDB manager data: {ex.Message}");
-            //}
-        }
-
         // code for pa system 
         private void InitializePAComponents()
         {
@@ -1378,36 +1622,36 @@ namespace IpisCentralDisplayController
 
         private void StartRecordingButton_Click(object sender, RoutedEventArgs e)
         {
-            mediaRecorder.StartRecording();
-            StartRecordingButton.IsEnabled = false;
-            PauseRecordingButton.IsEnabled = true;
-            StopRecordingButton.IsEnabled = true;
-            ResumeRecordingButton.IsEnabled = false;
-            recordingTimer.Start();
+            //mediaRecorder.StartRecording();
+            //StartRecordingButton.IsEnabled = false;
+            //PauseRecordingButton.IsEnabled = true;
+            //StopRecordingButton.IsEnabled = true;
+            //ResumeRecordingButton.IsEnabled = false;
+            //recordingTimer.Start();
         }
 
         private void PauseRecordingButton_Click(object sender, RoutedEventArgs e)
         {
-            mediaRecorder.PauseRecording();
-            PauseRecordingButton.IsEnabled = false;
-            ResumeRecordingButton.IsEnabled = true;
+            //mediaRecorder.PauseRecording();
+            //PauseRecordingButton.IsEnabled = false;
+            //ResumeRecordingButton.IsEnabled = true;
         }
 
         private void ResumeRecordingButton_Click(object sender, RoutedEventArgs e)
         {
-            mediaRecorder.ResumeRecording();
-            ResumeRecordingButton.IsEnabled = false;
-            PauseRecordingButton.IsEnabled = true;
+            //mediaRecorder.ResumeRecording();
+            //ResumeRecordingButton.IsEnabled = false;
+            //PauseRecordingButton.IsEnabled = true;
         }
 
         private void StopRecordingButton_Click(object sender, RoutedEventArgs e)
         {
-            mediaRecorder.StopRecording();
-            StartRecordingButton.IsEnabled = true;
-            PauseRecordingButton.IsEnabled = false;
-            StopRecordingButton.IsEnabled = false;
-            ResumeRecordingButton.IsEnabled = false;
-            recordingTimer.Stop();
+            //mediaRecorder.StopRecording();
+            //StartRecordingButton.IsEnabled = true;
+            //PauseRecordingButton.IsEnabled = false;
+            //StopRecordingButton.IsEnabled = false;
+            //ResumeRecordingButton.IsEnabled = false;
+            //recordingTimer.Stop();
         }
 
         private void RecordingTimer_Tick(object sender, EventArgs e)
@@ -1417,26 +1661,26 @@ namespace IpisCentralDisplayController
 
         private void PlayAudioButton_Click(object sender, RoutedEventArgs e)
         {
-            audioPlayer.Play();
-            PlayAudioButton.IsEnabled = false;
-            PauseAudioButton.IsEnabled = true;
-            StopAudioButton.IsEnabled = true;
-            SaveAudioButton.IsEnabled = true;
+            //audioPlayer.Play();
+            //PlayAudioButton.IsEnabled = false;
+            //PauseAudioButton.IsEnabled = true;
+            //StopAudioButton.IsEnabled = true;
+            //SaveAudioButton.IsEnabled = true;
         }
 
         private void PauseAudioButton_Click(object sender, RoutedEventArgs e)
         {
-            audioPlayer.Pause();
-            PlayAudioButton.IsEnabled = true;
-            PauseAudioButton.IsEnabled = false;
+            //audioPlayer.Pause();
+            //PlayAudioButton.IsEnabled = true;
+            //PauseAudioButton.IsEnabled = false;
         }
 
         private void StopAudioButton_Click(object sender, RoutedEventArgs e)
         {
-            audioPlayer.Stop();
-            PlayAudioButton.IsEnabled = true;
-            PauseAudioButton.IsEnabled = false;
-            StopAudioButton.IsEnabled = false;
+            //audioPlayer.Stop();
+            //PlayAudioButton.IsEnabled = true;
+            //PauseAudioButton.IsEnabled = false;
+            //StopAudioButton.IsEnabled = false;
         }
 
         private void SaveAudioButton_Click(object sender, RoutedEventArgs e)
@@ -2055,21 +2299,21 @@ namespace IpisCentralDisplayController
             _mediaTimer.Start();
         }
 
-        private void PlayButton_Click(object sender, RoutedEventArgs e)
-        {
-            PreviewMediaElement.Play();
-        }
+        //private void PlayButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    PreviewMediaElement.Play();
+        //}
 
-        private void PauseButton_Click(object sender, RoutedEventArgs e)
-        {
-            PreviewMediaElement.Pause();
-        }
+        //private void PauseButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    PreviewMediaElement.Pause();
+        //}
 
-        private void StopButton_Click(object sender, RoutedEventArgs e)
-        {
-            PreviewMediaElement.Stop();
-            _mediaTimer.Stop();
-        }
+        //private void StopButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    PreviewMediaElement.Stop();
+        //    _mediaTimer.Stop();
+        //}
 
         private void MediaTimer_Tick(object sender, EventArgs e)
         {
@@ -2570,170 +2814,6 @@ namespace IpisCentralDisplayController
             CategoryComboBox.SelectedIndex = -1;
         }
 
-        //NTES API 951 implementation
-        public async Task FetchAndDisplayTrains()
-        {
-            try
-            {
-                var trainService = new NtesAPI951();
-                ntesApiResponse951 = await trainService.GetTrainsAsync("NDLS", 30);
-
-                if (ntesApiResponse951 != null)
-                {
-                    Console.WriteLine("Scheduled Trains:");
-                    if (ntesApiResponse951.VTrainList != null)
-                    {
-                        foreach (var train in ntesApiResponse951.VTrainList)
-                        {
-                            Console.WriteLine($"{train.TrainNo} - {train.TrainName}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No scheduled trains found.");
-                    }
-
-                    Console.WriteLine("\nRescheduled Trains:");
-                    if (ntesApiResponse951.VRescheduledTrainList != null)
-                    {
-                        foreach (var rescheduledTrain in ntesApiResponse951.VRescheduledTrainList)
-                        {
-                            Console.WriteLine($"Rescheduled: {rescheduledTrain.TrainNo} - {rescheduledTrain.TrainName}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rescheduled trains found.");
-                    }
-
-                    Console.WriteLine("\nCancelled Trains:");
-                    if (ntesApiResponse951.VCancelledTrainList != null)
-                    {
-                        foreach (var cancelledTrain in ntesApiResponse951.VCancelledTrainList)
-                        {
-                            Console.WriteLine($"Cancelled: {cancelledTrain.TrainNo} - {cancelledTrain.TrainName}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No cancelled trains found.");
-                    }
-
-                    // Handle other lists as needed
-                    Console.WriteLine("\nTrains Cancelled Due To CS:");
-                    if (ntesApiResponse951.VCancelTrainDueToCS != null)
-                    {
-                        foreach (var train in ntesApiResponse951.VCancelTrainDueToCS)
-                        {
-                            Console.WriteLine($"{train.TrainNo} - {train.TrainName}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No trains cancelled due to CS found.");
-                    }
-
-                    Console.WriteLine("\nTrains Cancelled Due To CD:");
-                    if (ntesApiResponse951.VCancelTrainDueToCD != null)
-                    {
-                        foreach (var train in ntesApiResponse951.VCancelTrainDueToCD)
-                        {
-                            Console.WriteLine($"{train.TrainNo} - {train.TrainName}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No trains cancelled due to CD found.");
-                    }
-
-                    Console.WriteLine("\nTrains Cancelled Due To Diversion:");
-                    if (ntesApiResponse951.VCancelTrainDueToDiversion != null)
-                    {
-                        foreach (var train in ntesApiResponse951.VCancelTrainDueToDiversion)
-                        {
-                            Console.WriteLine($"{train.TrainNo} - {train.TrainName}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No trains cancelled due to diversion found.");
-                    }
-
-                    Console.WriteLine("\nTrains Due To CS:");
-                    if (ntesApiResponse951.VTrainListDueToCS != null)
-                    {
-                        foreach (var train in ntesApiResponse951.VTrainListDueToCS)
-                        {
-                            Console.WriteLine($"{train.TrainNo} - {train.TrainName}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No trains due to CS found.");
-                    }
-
-                    Console.WriteLine("\nTrains Due To CD:");
-                    if (ntesApiResponse951.VTrainListDueToCD != null)
-                    {
-                        foreach (var train in ntesApiResponse951.VTrainListDueToCD)
-                        {
-                            Console.WriteLine($"{train.TrainNo} - {train.TrainName}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No trains due to CD found.");
-                    }
-
-                    Console.WriteLine("\nTrains Due To DV:");
-                    if (ntesApiResponse951.VTrainListDueToDV != null)
-                    {
-                        foreach (var train in ntesApiResponse951.VTrainListDueToDV)
-                        {
-                            Console.WriteLine($"{train.TrainNo} - {train.TrainName}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No trains due to DV found.");
-                    }
-
-                    // Handle RestServiceMessage and CacheUpdateTime if needed
-                    if (ntesApiResponse951.RestServiceMessage != null)
-                    {
-                        Console.WriteLine($"\nService Message: {ntesApiResponse951.RestServiceMessage.ServiceMessage}");
-                    }
-
-                    if (ntesApiResponse951.CacheUpdateTime != null)
-                    {
-                        Console.WriteLine($"\nCache Update Time: {ntesApiResponse951.CacheUpdateTime.DD}/{ntesApiResponse951.CacheUpdateTime.MM}/{ntesApiResponse951.CacheUpdateTime.YYYY} " +
-                                          $"{ntesApiResponse951.CacheUpdateTime.HH}:{ntesApiResponse951.CacheUpdateTime.MI}:{ntesApiResponse951.CacheUpdateTime.SECONDS}");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No data received from the API.");
-                }
-            }
-            catch (HttpRequestException httpEx)
-            {
-                Console.WriteLine($"HTTP Request Error: {httpEx.Message}");
-            }
-            catch (JsonSerializationException jsonEx)
-            {
-                Console.WriteLine($"JSON Serialization Error: {jsonEx.Message}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
-            }
-        }
-
-        private async void onWindowLoaded(object sender, RoutedEventArgs e)
-        {
-            await FetchAndDisplayTrains();
-        }
-
         private void UpdateStationInfoButton_Click(object sender, RoutedEventArgs e)
         {
             var stationInfo = new StationInfo
@@ -2790,7 +2870,7 @@ namespace IpisCentralDisplayController
                         settingContent = JsonConvert.SerializeObject(_audioSettingsManager.LoadAudioSettings(), Formatting.Indented);
                         break;
                     case "rmsSettings":
-                        settingContent = JsonConvert.SerializeObject(_rmsSettingsManager.LoadRmsSettings(), Formatting.Indented);
+                        settingContent = JsonConvert.SerializeObject(_rmsSettingsManager.LoadRmsServerSettings(), Formatting.Indented);
                         break;
                     case "mediaFiles":
                         settingContent = JsonConvert.SerializeObject(_mediaManager.LoadMediaFiles(), Formatting.Indented);
@@ -4289,6 +4369,187 @@ namespace IpisCentralDisplayController
             trainMasterDbWindow.ShowDialog();
         }
 
+        //private void AddNewActiveTrain_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var newTrain = new ActiveTrain();
+
+        //    var window = new ActiveTrainWindow(newTrain);
+        //    if (window.ShowDialog() == true)
+        //    {
+        //        //ActiveTrains.Add(newTrain);
+        //    }
+        //}
+
+        //private void EditActiveTrain_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (ActiveTrainDataGrid.SelectedItem is ActiveTrain selectedTrain)
+        //    {
+        //        var window = new ActiveTrainWindow(selectedTrain);
+        //        if (window.ShowDialog() == true)
+        //        {
+
+        //        }
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("Please select a train to edit.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //    }
+        //}
+
+        private void AddNewActiveTrain_Click(object sender, RoutedEventArgs e)
+        {
+            var newTrain = new ActiveTrain();
+
+            var window = new ActiveTrainWindow(newTrain);
+            if (window.ShowDialog() == true)
+            {
+                _mainViewModel.ActiveTrains.Add(newTrain);
+            }
+        }
+
+        private void EditActiveTrain_Click(object sender, RoutedEventArgs e)
+        {
+            if (ActiveTrainDataGrid.SelectedItem is ActiveTrain selectedTrain)
+            {
+                var trainCopy = selectedTrain.DeepClone();
+
+                var window = new ActiveTrainWindow(trainCopy);
+                if (window.ShowDialog() == true)
+                {
+                    selectedTrain.UpdateFrom(trainCopy);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a train to edit.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void AddFromDB_Click(object sender, RoutedEventArgs e)
+        {
+            var trainMasterDbWindow = new TrainMasterDbWindow();
+
+            if (trainMasterDbWindow.ShowDialog() == true)
+            {
+                var viewModel = trainMasterDbWindow.DataContext as TrainMasterViewModel;
+
+                if (viewModel != null)
+                {
+                    var selectedTrain = viewModel.SelectedTrain;
+
+                    if (selectedTrain != null)
+                    {
+                        var newActiveTrain = new ActiveTrain(selectedTrain);
+                        _mainViewModel.ActiveTrains.Add(newActiveTrain);
+                        _activeTrainsManager.SaveActiveTrains(_mainViewModel.ActiveTrains.ToList());
+                    }
+                    else
+                    {
+                        MessageBox.Show("No train selected.", "Selection Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Failed to load train data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void DeleteActiveTrain_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedTrains = _mainViewModel.ActiveTrains.Where(train => train.IsSelected).ToList();
+
+            if (selectedTrains.Any())
+            {
+                var result = MessageBox.Show(
+                    $"Are you sure you want to delete {selectedTrains.Count} selected train(s)?",
+                    "Confirm Deletion",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    foreach (var train in selectedTrains)
+                    {
+                        _mainViewModel.ActiveTrains.Remove(train);
+                    }
+                    _activeTrainsManager.SaveActiveTrains(_mainViewModel.ActiveTrains.ToList());
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select one or more trains to delete.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+
+        private void SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var train in _mainViewModel.ActiveTrains)
+            {
+                train.IsSelected = true;
+            }
+        }
+
+        private void SelectNTES_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var train in _mainViewModel.ActiveTrains)
+            {
+                train.IsSelected = train.Ref == TrainSource.NTES;
+            }
+        }
+
+        private void SelectDB_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var train in _mainViewModel.ActiveTrains)
+            {
+                train.IsSelected = train.Ref == TrainSource.TRAIN_DB;
+            }
+        }
+
+        private void SelectManual_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var train in _mainViewModel.ActiveTrains)
+            {
+                train.IsSelected = train.Ref == TrainSource.USER;
+            }
+        }
+
+        private void UndoSelect_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var train in _mainViewModel.ActiveTrains)
+            {
+                train.IsSelected = false;
+            }
+        }
+
+        private void SaveToDB_Click(object sender, RoutedEventArgs e)
+        {
+            var jsonHelperAdapter = new SettingsJsonHelperAdapter();
+            var trainMasterManager = new TrainMasterManager(jsonHelperAdapter);
+
+            // Iterate through the selected ActiveTrains and save them to TrainMasterDB
+            var selectedTrains = _mainViewModel.ActiveTrains.Where(train => train.IsSelected).ToList();
+
+            if (!selectedTrains.Any())
+            {
+                MessageBox.Show("No trains selected for saving.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Create a list to hold the TrainMaster objects
+            var trainMasters = new List<TrainMaster>();
+
+            foreach (var activeTrain in selectedTrains)
+            {
+                var trainMaster = new TrainMaster(activeTrain);
+                trainMasters.Add(trainMaster);
+                trainMasterManager.AddTrainMaster(trainMaster);
+            }
+
+            trainMasterManager.SaveTrainMasters(trainMasters);
+            MessageBox.Show("Selected trains have been saved to the TrainMasterDB.", "Save Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
 
         private void TimelineListBox_Drop(object sender, DragEventArgs e)
         {
@@ -4315,6 +4576,142 @@ namespace IpisCentralDisplayController
             //}
         }
 
+        // Playlist DataGrid Context Menu Actions
+        private void MoveUp_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to move the selected playlist item up
+            MessageBox.Show("Move Up Clicked");
+        }
 
+        private void MoveDown_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to move the selected playlist item down
+            MessageBox.Show("Move Down Clicked");
+        }
+
+        private void RemoveFromPlaylist_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to remove the selected item from the playlist
+            MessageBox.Show("Remove From Playlist Clicked");
+        }
+
+        // Audio Files DataGrid Context Menu Actions
+        private void OpenInPlayer_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to open the selected audio file in the player
+            MessageBox.Show("Open in Player Clicked");
+        }
+
+        private void AddToPlaylistFromBank_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to add the selected audio file from the bank to the playlist
+            MessageBox.Show("Add to Playlist Clicked");
+        }
+
+        private void ImportAudio_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to import an audio file to the audio bank
+            MessageBox.Show("Import Audio Clicked");
+        }
+
+        private void DeleteAudioFromBank_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to delete the selected audio file from the audio bank
+            MessageBox.Show("Delete Audio Clicked");
+        }
+
+        // Voice Recording DataGrid Context Menu Actions
+        private void PlayRecording_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to play the selected recording
+            MessageBox.Show("Play Recording Clicked");
+        }
+
+        private void RenameRecording_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to rename the selected recording
+            MessageBox.Show("Rename Recording Clicked");
+        }
+
+        private void AddToPlaylist_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to add the selected recording to the playlist
+            MessageBox.Show("Add to Playlist Clicked");
+        }
+
+        private void DeleteRecording_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to delete the selected recording
+            MessageBox.Show("Delete Recording Clicked");
+        }
+
+        // Audio Playback and Recording Controls
+        private void RecordButton_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement functionality to start recording
+            MessageBox.Show("Record Button Clicked");
+        }
+
+        //private void PlayButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    // TODO: Implement functionality to play the audio
+        //    MessageBox.Show("Play Button Clicked");
+        //}
+
+        //private void PauseButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    // TODO: Implement functionality to pause the audio
+        //    MessageBox.Show("Pause Button Clicked");
+        //}
+
+        //private void StopButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    // TODO: Implement functionality to stop the audio or recording
+        //    MessageBox.Show("Stop Button Clicked");
+        //}
+
+        //private void SaveButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    // TODO: Implement functionality to save the recording
+        //    MessageBox.Show("Save Button Clicked");
+        //}
+
+        //private void AudioSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        //{
+        //    // TODO: Implement functionality to handle audio slider value change
+        //    MessageBox.Show("Audio Slider Value Changed");
+        //}
+
+
+        //Announcement Backend
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Stub: Announcement Started
+            MessageBox.Show("Announcement Started");
+        }
+
+        private void PauseButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Stub: Announcement Paused
+            MessageBox.Show("Announcement Paused");
+        }
+
+        private void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Stub: Announcement Stopped
+            MessageBox.Show("Announcement Stopped");
+        }
+
+        private void MuteButton_Checked(object sender, RoutedEventArgs e)
+        {
+            // Stub: Announcement Muted
+            MessageBox.Show("Announcement Muted");
+        }
+
+        private void MuteButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            // Stub: Announcement Unmuted
+            MessageBox.Show("Announcement Unmuted");
+        }
     }
 }

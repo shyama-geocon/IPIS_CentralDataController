@@ -24,16 +24,26 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Station List on the Left -->
+            <!-- Station List on the Left -->                                  
             <GroupBox Header="Stations" Grid.Column="0" Margin="2">
-                <ListView Name="StationListView" ItemsSource="{Binding Stations}" SelectedItem="{Binding SelectedStation}" Margin="2" SelectionMode="Extended">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Code" DisplayMemberBinding="{Binding StationCode}" Width="100"/>
-                            <GridViewColumn Header="Name (English)" DisplayMemberBinding="{Binding StationNameEnglish}" Width="200"/>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <DockPanel Grid.Row="0">
+                        <TextBlock Text="Search" Width="80" VerticalAlignment="Center" Margin="2"/>
+                        <TextBox Margin="2" Height="30" VerticalContentAlignment="Center" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    </DockPanel>
+                    <ListView Grid.Row="1" Name="StationListView" ItemsSource="{Binding Stations}" SelectedItem="{Binding SelectedStation}" Margin="2" SelectionMode="Extended">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Code" DisplayMemberBinding="{Binding StationCode}" Width="100"/>
+                                <GridViewColumn Header="Name (English)" DisplayMemberBinding="{Binding StationNameEnglish}" Width="200"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
             </GroupBox>
 
             <!-- Station Information Section on the Right -->
@@ -229,6 +239,7 @@
             <Button Content="Delete All" Width="100" Height="30" Margin="2" Click="DeleteAllStationsButton_Click"/>
             <Button Content="Import" Width="100" Height="30" Margin="2" Click="ImportButton_Click"/>
             <Button Content="Export" Width="100" Height="30" Margin="2" Click="ExportButton_Click"/>
+            <Button Content="Use This" Width="100" Height="30" Margin="60,2,2,2" Click="UseThisButton_Click"/>
         </StackPanel>
         <TextBlock Grid.Row="2" x:Name="tb_status" Height="24" HorizontalAlignment="Center"/>
     </Grid>

@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Windows.Data;
 
 namespace IpisCentralDisplayController.views
 {
@@ -77,12 +79,45 @@ namespace IpisCentralDisplayController.views
             }
         }
 
+        private string _searchQuery;
+        public string SearchQuery
+        {
+            get => _searchQuery;
+            set
+            {
+                if (_searchQuery != value)
+                {
+                    _searchQuery = value;
+                    OnPropertyChanged(nameof(SearchQuery));
+                    TrainView.Refresh();  // Refresh to apply the filter
+                }
+            }
+        }
+
+        public ICollectionView TrainView { get; set; }
+
         public TrainMasterViewModel()
         {
             var jsonHelperAdapter = new SettingsJsonHelperAdapter();
             Trains = new ObservableCollection<TrainMaster>();
             _trainMasterManager = new TrainMasterManager(jsonHelperAdapter);
             LoadTrains();
+
+            TrainView = CollectionViewSource.GetDefaultView(Trains);
+            TrainView.Filter = TrainFilter;
+        }
+
+        private bool TrainFilter(object item)
+        {
+            if (item is TrainMaster train)
+            {
+                if (string.IsNullOrEmpty(SearchQuery))
+                    return true;
+
+                return train.TrainNumber.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ||
+                       train.TrainNameEnglish.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase);
+            }
+            return false;
         }
 
         public ObservableCollection<TrainMaster> Trains { get; set; }

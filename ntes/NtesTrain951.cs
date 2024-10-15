@@ -1,9 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IpisCentralDisplayController.ntes
 {
@@ -15,17 +11,26 @@ namespace IpisCentralDisplayController.ntes
         [JsonProperty("trainName")]
         public string TrainName { get; set; }
 
+        [JsonProperty("trainNameHindi")]
+        public string TrainNameHindi { get; set; }
+
         [JsonProperty("trainType")]
         public string TrainType { get; set; }
 
         [JsonProperty("trainTypeName")]
         public string TrainTypeName { get; set; }
 
+        [JsonProperty("trainTypeNameHindi")]
+        public string TrainTypeNameHindi { get; set; }
+
         [JsonProperty("trainSubType")]
         public string TrainSubType { get; set; }
 
         [JsonProperty("trainSubTypeName")]
         public string TrainSubTypeName { get; set; }
+
+        [JsonProperty("trainSubTypeNameHindi")]
+        public string TrainSubTypeNameHindi { get; set; }
 
         [JsonProperty("trainStartDate")]
         public DateTime? TrainStartDate { get; set; }
@@ -36,11 +41,17 @@ namespace IpisCentralDisplayController.ntes
         [JsonProperty("srcName")]
         public string SrcName { get; set; }
 
+        [JsonProperty("srcNameHindi")]
+        public string SrcNameHindi { get; set; }
+
         [JsonProperty("dstn")]
         public string Dstn { get; set; }
 
         [JsonProperty("dstnName")]
         public string DstnName { get; set; }
+
+        [JsonProperty("dstnNameHindi")]
+        public string DstnNameHindi { get; set; }
 
         [JsonProperty("STA")]
         public DateTime? STA { get; set; }
@@ -168,11 +179,17 @@ namespace IpisCentralDisplayController.ntes
         [JsonProperty("actSrcName")]
         public string ActSrcName { get; set; }
 
+        [JsonProperty("actSrcNameHindi")]
+        public string ActSrcNameHindi { get; set; }
+
         [JsonProperty("actDstn")]
         public string ActDstn { get; set; }
 
         [JsonProperty("actDstnName")]
         public string ActDstnName { get; set; }
+
+        [JsonProperty("actDstnNameHindi")]
+        public string ActDstnNameHindi { get; set; }
 
         [JsonProperty("exceptionFlag")]
         public int ExceptionFlag { get; set; }
@@ -203,6 +220,5 @@ namespace IpisCentralDisplayController.ntes
 
         [JsonProperty("reservedTrainFlag")]
         public bool ReservedTrainFlag { get; set; }
-
     }
 }

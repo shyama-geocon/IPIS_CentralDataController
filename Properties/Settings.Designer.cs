@@ -190,5 +190,41 @@ namespace IpisCentralDisplayController.Properties {
                 this["trainMaster"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string activeTrains {
+            get {
+                return ((string)(this["activeTrains"]));
+            }
+            set {
+                this["activeTrains"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string rmsSettings {
+            get {
+                return ((string)(this["rmsSettings"]));
+            }
+            set {
+                this["rmsSettings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string capServerSettings {
+            get {
+                return ((string)(this["capServerSettings"]));
+            }
+            set {
+                this["capServerSettings"] = value;
+            }
+        }
     }
 }

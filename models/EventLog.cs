@@ -9,6 +9,8 @@ namespace IpisCentralDisplayController.models
         public EventType EventType { get; set; }
         public string Source { get; set; }
         public string Description { get; set; }
+
+        public bool IsSentToServer { get; set; } = false;
     }
 
     public enum EventType

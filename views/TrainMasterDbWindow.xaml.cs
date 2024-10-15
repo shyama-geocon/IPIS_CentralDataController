@@ -31,6 +31,8 @@ namespace IpisCentralDisplayController.views
         private StationInfo _stationInfo;
         public event PropertyChangedEventHandler PropertyChanged;
         private TrainMasterViewModel _viewModel;
+        private GridViewColumnHeader _lastHeaderClicked = null;
+        private ListSortDirection _lastDirection = ListSortDirection.Ascending;
 
         public TrainMasterDbWindow()
         {
@@ -385,5 +387,64 @@ namespace IpisCentralDisplayController.views
             }
         }
 
+        private void GridViewColumnHeader_Click(object sender, RoutedEventArgs e)
+        {
+            var headerClicked = e.OriginalSource as GridViewColumnHeader;
+            if (headerClicked != null)
+            {
+                var sortBy = headerClicked.Tag.ToString();
+
+                ListSortDirection direction;
+                if (headerClicked != _lastHeaderClicked)
+                {
+                    direction = ListSortDirection.Ascending;
+                }
+                else
+                {
+                    if (_lastDirection == ListSortDirection.Ascending)
+                    {
+                        direction = ListSortDirection.Descending;
+                    }
+                    else
+                    {
+                        direction = ListSortDirection.Ascending;
+                    }
+                }
+
+                Sort(sortBy, direction);
+
+                _lastHeaderClicked = headerClicked;
+                _lastDirection = direction;
+            }
+        }
+
+        private void Sort(string sortBy, ListSortDirection direction)
+        {
+            var dataView = CollectionViewSource.GetDefaultView(TrainListView.ItemsSource);
+
+            dataView.SortDescriptions.Clear();
+            var sortDescription = new SortDescription(sortBy, direction);
+            dataView.SortDescriptions.Add(sortDescription);
+            dataView.Refresh();
+        }
+
+        private void UseThisButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel.SelectedTrain != null)
+            {
+                var result = MessageBox.Show("Are you sure you want to use this train?",
+                                             "Confirm Selection", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    this.DialogResult = true;
+                    this.Close();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a train first.", "No Train Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
     }
 }

@@ -141,6 +141,38 @@ namespace IpisCentralDisplayController.models
             IsFromNTES = true;
         }
 
+        public TrainMaster(ActiveTrain activeTrain)
+        {
+            TrainNumber = activeTrain.TrainNumber;
+            TrainNameEnglish = activeTrain.TrainNameEnglish;
+            TrainNameHindi = activeTrain.TrainNameHindi;
+            TrainNameRegional = activeTrain.TrainNameRegional;
+
+            SrcCode = activeTrain.SrcCode;
+            SrcNameEnglish = activeTrain.SrcNameEnglish;
+            SrcNameHindi = activeTrain.SrcNameHindi;
+            SrcNameRegional = activeTrain.SrcNameRegional;
+
+            DestCode = activeTrain.DestCode;
+            DestNameEnglish = activeTrain.DestNameEnglish;
+            DestNameHindi = activeTrain.DestNameHindi;
+            DestNameRegional = activeTrain.DestNameRegional;
+
+            STA = activeTrain.STA;
+            STD = activeTrain.STD;
+
+            DaysOfDeparture = "";
+            DaysOfArrival = "";
+
+            Platform = activeTrain.PFNo.ToString();
+            CoachSequence = activeTrain.CoachSequence;
+            CoachList = activeTrain.CoachList ?? new List<string>();
+
+            TrainType = activeTrain.TrainType;
+            IsFromNTES = activeTrain.Ref == TrainSource.USER;
+        }
+
+
         private TimeSpan? ParseTime(string timeString)
         {
             if (string.IsNullOrWhiteSpace(timeString))

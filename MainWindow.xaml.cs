@@ -285,6 +285,8 @@ namespace IpisCentralDisplayController
         private int _nextMins;
 
         private ServiceManager _serviceManager;
+        private RmsServerSettings _rmsSettings;
+        private RMSService _rmsService;
 
         public MainWindow()
         {
@@ -366,7 +368,6 @@ namespace IpisCentralDisplayController
             //    PopulateStatusFields();
 
             //    // await _viewModel.FetchAndDisplayTrains();
-            //    // Your further initialization code here
             //}
             //else
             //{
@@ -382,23 +383,49 @@ namespace IpisCentralDisplayController
 
         private void InitializeServices()
         {
-            var rmsService = new RMSService();
+            _rmsSettings = _rmsSettingsManager.LoadRmsServerSettings();
+            if (AreRmsSettingsValid(_rmsSettings))
+            {
+                _rmsService = new RMSService(_rmsSettings);
+                _rmsService.Start();
+                Console.WriteLine("RMSService started successfully with valid settings.");
+            }
+            else
+            {
+                MessageBox.Show("Invalid RMS server settings. Please configure valid settings to start the service.", "Settings Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Console.WriteLine("RMSService could not be started due to invalid settings.");
+            }
             //var capService = new CAPService();
             //var backupService = new BackupService();
             //var displayService = new DisplayService();
             //var announcementService = new AnnouncementService();
 
-            _serviceManager = new ServiceManager(new List<IService>
-        {
-            rmsService/*, capService, backupService, displayService, announcementService*/
-        });
+            //    _serviceManager = new ServiceManager(new List<IService>
+            //{
+            //    rmsService/*, capService, backupService, displayService, announcementService*/
+            //});
 
-            _serviceManager.StartAllServices();
+            //    _serviceManager.StartAllServices();
         }
 
         private void OnAppExit(object sender, EventArgs e)
         {
             _serviceManager.StopAllServices();
+        }
+
+        private bool AreRmsSettingsValid(RmsServerSettings settings)
+        {
+            if (settings == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(settings.ApiUrl))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void Logout_Click(object sender, RoutedEventArgs e)
@@ -419,7 +446,6 @@ namespace IpisCentralDisplayController
                 PopulateStatusFields();
 
                 // await _viewModel.FetchAndDisplayTrains();
-                // Your further initialization code here
             }
             else
             {
@@ -1096,7 +1122,28 @@ namespace IpisCentralDisplayController
                     var testUrl = $"{apiUrl}/api/ext/test";
                     var response = await client.GetAsync(testUrl);
                     string responseContent = await response.Content.ReadAsStringAsync();
-                    return response.IsSuccessStatusCode && responseContent == "OK";
+
+                    if (response.IsSuccessStatusCode && responseContent == "OK")
+                    {
+                        Console.WriteLine("Test connection successful. Preparing to send a test EventLog.");
+
+                        // Create a test EventLog
+                        var testLog = new EventLog
+                        {
+                            Timestamp = DateTime.Now,
+                            EventID = GenerateEventId(),  // Use a method to generate a unique event ID
+                            EventType = EventType.Information,
+                            Source = "CDC",  
+                            Description = "Hi from CDC. This is a test event log generated after successful connection test.",
+                            IsSentToServer = false  // Initial status, before sending
+                        };
+                        _rmsService.ReceiveEventLog(testLog);
+                        Console.WriteLine("Test EventLog created and sent to RMSService.");
+
+                        return true;
+                    }
+
+                    return false;
                 }
                 catch (Exception)
                 {
@@ -1104,6 +1151,14 @@ namespace IpisCentralDisplayController
                 }
             }
         }
+
+        // Example method to generate a unique event ID
+        private int GenerateEventId()
+        {
+            Random rand = new Random();
+            return rand.Next(1000, 9999);  // Random 4-digit event ID
+        }
+
 
         //CAP Specific code
         private void ApiKey_PasswordChanged(object sender, RoutedEventArgs e)

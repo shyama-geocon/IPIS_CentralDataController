@@ -228,13 +228,10 @@ namespace IpisCentralDisplayController
         private readonly TrainStatusDisplayManager _trainStatusDisplayManager;
 
         private MediaManager _mediaManager;
-
         private TimelineManager _timelineManager;
-
         private StationManager _stationManager;
-
         private ActiveTrainManager _activeTrainsManager;
-
+        private EventLogManager _eventLogManager;
 
         private MainViewModel _mainViewModel;
 
@@ -255,13 +252,7 @@ namespace IpisCentralDisplayController
         private NtesApiResponse951 ntesApiResponse951;
         public ObservableCollection<Ticket> Tickets { get; set; }
         public ObservableCollection<BackupItem> LocalBackups { get; set; }
-        public ObservableCollection<BackupItem> CloudBackups { get; set; }
-        public ObservableCollection<LogItem> Logs { get; set; }
-        public ObservableCollection<LogItem> FilteredLogs { get; set; }
-
-        public ObservableCollection<Alert> Alerts { get; set; }
-        public ObservableCollection<Alert> ActiveAlerts { get; set; }
-
+        public ObservableCollection<BackupItem> CloudBackups { get; set; }       
         public ObservableCollection<User> Users { get; set; }
         public User CurrentUser { get; set; }
 
@@ -311,6 +302,7 @@ namespace IpisCentralDisplayController
             _timelineManager = new TimelineManager(jsonHelperAdapter);
             _stationManager = new StationManager(jsonHelperAdapter);
             _activeTrainsManager = new ActiveTrainManager(jsonHelperAdapter);
+            _eventLogManager = new EventLogManager(jsonHelperAdapter);
 
             InitializeDateTimeUpdate();
           
@@ -325,6 +317,9 @@ namespace IpisCentralDisplayController
             _mainViewModel.LoadMediaFiles(_mediaManager.LoadMediaFiles());
             _mainViewModel.LoadTimelines(_timelineManager.LoadTimelines());
             _mainViewModel.LoadActiveTrains(_activeTrainsManager.LoadActiveTrains());
+
+            //just today's logs 
+            _mainViewModel.LoadEventLogs(_eventLogManager.LoadEventLogs());
 
             DataContext = _mainViewModel;
             Loaded += MainWindow_Loaded;
@@ -358,22 +353,23 @@ namespace IpisCentralDisplayController
             EnsureDefaultTimeline();
             tb_timeline.Text = _mainViewModel.SelectedTimeline.Name;
 
-            //var loginWindow = new LoginWindow(_userManager);
-            //bool? loginResult = loginWindow.ShowDialog();
+            var loginWindow = new LoginWindow(_userManager);
+            bool? loginResult = loginWindow.ShowDialog();
 
-            //if (loginResult == true)
-            //{
-            //    // Proceed with further initialization only after successful login
-            //    CheckAndPromptForStationInfo();
-            //    PopulateStatusFields();
+            if (loginResult == true)
+            {
+                LogEvent($"User '{_userManager.CurrentUser.Name}' successfully logged in.", EventType.Information, "Login");
 
-            //    // await _viewModel.FetchAndDisplayTrains();
-            //}
-            //else
-            //{
-            //    // Handle login cancellation or failure
-            //    this.Close(); // Close the MainWindow if login is not successful
-            //}
+                CheckAndPromptForStationInfo();
+                PopulateStatusFields();
+
+                // await _viewModel.FetchAndDisplayTrains();
+            }
+            else
+            {
+                // Handle login cancellation or failure
+                this.Close(); // Close the MainWindow if login is not successful
+            }
         }
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -406,11 +402,14 @@ namespace IpisCentralDisplayController
             //});
 
             //    _serviceManager.StartAllServices();
+
+            //check for RMS
+            TestConnection_Click(null, null);
         }
 
         private void OnAppExit(object sender, EventArgs e)
         {
-            _serviceManager.StopAllServices();
+            //_serviceManager.StopAllServices();
         }
 
         private bool AreRmsSettingsValid(RmsServerSettings settings)
@@ -433,15 +432,42 @@ namespace IpisCentralDisplayController
             Logout();
         }
 
+        //private void Logout()
+        //{
+        //    tc_main.SelectedIndex = 0;
+        //    var loginWindow = new LoginWindow(_userManager);
+        //    bool? loginResult = loginWindow.ShowDialog();
+
+        //    if (loginResult == true)
+        //    {
+        //        // Proceed with further initialization only after successful login
+        //        CheckAndPromptForStationInfo();
+        //        PopulateStatusFields();
+
+        //        // await _viewModel.FetchAndDisplayTrains();
+        //    }
+        //    else
+        //    {
+        //        // Handle login cancellation or failure
+        //        this.Close(); // Close the MainWindow if login is not successful
+        //    }
+        //}
+
         private void Logout()
         {
+            // Log the user logout event
+            LogEvent($"User '{_userManager.CurrentUser.Name}' logged out.", EventType.Information, "Logout");
+
             tc_main.SelectedIndex = 0;
+
             var loginWindow = new LoginWindow(_userManager);
             bool? loginResult = loginWindow.ShowDialog();
 
             if (loginResult == true)
             {
-                // Proceed with further initialization only after successful login
+                // Log the successful login after logout
+                LogEvent($"User '{_userManager.CurrentUser.Name}' successfully logged in after logout.", EventType.Information, "Login");
+
                 CheckAndPromptForStationInfo();
                 PopulateStatusFields();
 
@@ -449,10 +475,31 @@ namespace IpisCentralDisplayController
             }
             else
             {
-                // Handle login cancellation or failure
-                this.Close(); // Close the MainWindow if login is not successful
+                // Log the failed or cancelled login attempt
+                LogEvent("User login failed or was cancelled after logout.", EventType.Error, "Login");
+
+                this.Close();
             }
         }
+
+
+        private void LogEvent(string description, EventType eventType, string source)
+        {
+            var newLog = new EventLog
+            {
+                Timestamp = DateTime.Now,
+                EventID = new Random().Next(1000, 9999), // Random Event ID
+                EventType = eventType,
+                Source = source,
+                Description = description,
+                IsSentToServer = false
+            };
+
+            _eventLogManager.AddEventLog(newLog);
+            _mainViewModel.EventLogs.Add(newLog);
+            _rmsService.ReceiveEventLog(newLog);
+        }
+
 
         //NTES Specific
         private void InitializeNtesControls()
@@ -1080,6 +1127,7 @@ namespace IpisCentralDisplayController
             if (!isPingable)
             {
                 MessageBox.Show("Ping failed. Server is unreachable.");
+                RMSStatus.Text = "NOT REACHABLE";
                 return;
             }
 
@@ -1087,10 +1135,15 @@ namespace IpisCentralDisplayController
             bool isHttpSuccess = await TestHttpGetAsync(rmsServerSettings.ApiUrl);
             if (isHttpSuccess)
             {
+                RMSStatus.Text = "CONNECTED";
                 MessageBox.Show("Connection test successful.");
+
+                //send stationInfo here
+               //await _rmsService.UpdateStationInfoAsync(_stationInfoManager.CurrentStationInfo);
             }
             else
             {
+                RMSStatus.Text = "NOT RESPONDING";
                 MessageBox.Show("HTTP GET test failed.");
             }
         }
@@ -1112,7 +1165,6 @@ namespace IpisCentralDisplayController
             }
         }
 
-        // Perform an HTTP GET request to check server response
         private async Task<bool> TestHttpGetAsync(string apiUrl)
         {
             using (var client = new HttpClient())
@@ -1125,21 +1177,7 @@ namespace IpisCentralDisplayController
 
                     if (response.IsSuccessStatusCode && responseContent == "OK")
                     {
-                        Console.WriteLine("Test connection successful. Preparing to send a test EventLog.");
-
-                        // Create a test EventLog
-                        var testLog = new EventLog
-                        {
-                            Timestamp = DateTime.Now,
-                            EventID = GenerateEventId(),  // Use a method to generate a unique event ID
-                            EventType = EventType.Information,
-                            Source = "CDC",  
-                            Description = "Hi from CDC. This is a test event log generated after successful connection test.",
-                            IsSentToServer = false  // Initial status, before sending
-                        };
-                        _rmsService.ReceiveEventLog(testLog);
-                        Console.WriteLine("Test EventLog created and sent to RMSService.");
-
+                        LogEvent("Hi from CDC. This is a test event log generated after successful connection test.", EventType.Information, "CDC");
                         return true;
                     }
 
@@ -2597,94 +2635,7 @@ namespace IpisCentralDisplayController
         }
 
         //code for logs section
-        private void DownloadLogsButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Implement download logs logic here
-            MessageBox.Show("Logs downloaded", "Download", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
 
-        private void ClearLogsButton_Click(object sender, RoutedEventArgs e)
-        {
-            FilteredLogs.Clear();
-            MessageBox.Show("All logs have been cleared.", "Clear Logs", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void ArchiveLogsButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Implement archiving logic here
-            MessageBox.Show("Logs have been archived.", "Archive Logs", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void SelectedDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (SelectedDatePicker.SelectedDate.HasValue)
-            {
-                var selectedDate = SelectedDatePicker.SelectedDate.Value.Date;
-                FilterLogsByDate(selectedDate);
-            }
-        }
-
-        private void FromDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Date range filtering logic can be implemented here if needed
-        }
-
-        private void ToDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Date range filtering logic can be implemented here if needed
-        }
-
-        private void YesterdayLogsButton_Click(object sender, RoutedEventArgs e)
-        {
-            var yesterday = DateTime.Now.AddDays(-1).Date;
-            SelectedDatePicker.SelectedDate = yesterday;
-        }
-
-        private void DownloadSelectedDateLogsButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedDatePicker.SelectedDate.HasValue)
-            {
-                var selectedDate = SelectedDatePicker.SelectedDate.Value.Date;
-                var logsToDownload = Logs.Where(log => DateTime.Parse(log.Timestamp).Date == selectedDate);
-                DownloadLogs(logsToDownload);
-            }
-        }
-
-        private void DownloadDateRangeLogsButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (FromDatePicker.SelectedDate.HasValue && ToDatePicker.SelectedDate.HasValue)
-            {
-                var fromDate = FromDatePicker.SelectedDate.Value.Date;
-                var toDate = ToDatePicker.SelectedDate.Value.Date;
-                var logsToDownload = Logs.Where(log => DateTime.Parse(log.Timestamp).Date >= fromDate && DateTime.Parse(log.Timestamp).Date <= toDate);
-                DownloadLogs(logsToDownload);
-            }
-        }
-
-        private void FilterLogsByDate(DateTime selectedDate)
-        {
-            var filteredLogs = Logs.Where(log => DateTime.Parse(log.Timestamp).Date == selectedDate);
-            FilteredLogs.Clear();
-            foreach (var log in filteredLogs)
-            {
-                FilteredLogs.Add(log);
-            }
-        }
-
-        private void DownloadLogs(IEnumerable<LogItem> logs)
-        {
-            var csvContent = "Timestamp,Message,Severity\n" + string.Join("\n", logs.Select(log => $"{log.Timestamp},{log.Message},{log.Severity}"));
-            var dialog = new SaveFileDialog
-            {
-                FileName = "logs.csv",
-                Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*"
-            };
-            if (dialog.ShowDialog() == true)
-            {
-                System.IO.File.WriteAllText(dialog.FileName, csvContent);
-                MessageBox.Show("Logs downloaded", "Download", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
 
         //code for backup
         private void BackupLocationRadioButton_Checked(object sender, RoutedEventArgs e)
@@ -4761,6 +4712,21 @@ namespace IpisCentralDisplayController
         {
             // Stub: Announcement Muted
             MessageBox.Show("Announcement Muted");
+        }
+
+        private void ApplyFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DownloadLogsButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ClearLogsButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void MuteButton_Unchecked(object sender, RoutedEventArgs e)

@@ -32,9 +32,9 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Label Content="Username:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-            <TextBox Name="UsernameTextBox" Grid.Row="0" Grid.Column="1" Margin="2" VerticalContentAlignment="Center"/>
+            <TextBox Name="UsernameTextBox" Text="sahil@geocon.in" Grid.Row="0" Grid.Column="1" Margin="2" VerticalContentAlignment="Center"/>
             <Label Content="Password:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-            <PasswordBox Name="PasswordBox" Grid.Row="1" Grid.Column="1" Margin="2" VerticalContentAlignment="Center"/>
+            <PasswordBox Name="PasswordBox" Password="timentide" Grid.Row="1" Grid.Column="1" Margin="2" VerticalContentAlignment="Center"/>
             <!--<CheckBox Content="Remember Me" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="2"/>-->
             <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="2">
                 <Button Name="LoginButton" Content="Login" Height="24" Width="80" Margin="2" Click="LoginButton_Click"/>

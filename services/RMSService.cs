@@ -112,14 +112,29 @@ namespace IpisCentralDisplayController.services
                 using (HttpClient client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(_rmsSettings.ApiUrl);
-                    //client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_rmsSettings.ApiKey}");  // If authentication is needed
 
-                    var content = new StringContent(JsonConvert.SerializeObject(log), System.Text.Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await client.PostAsync("/api/logs", content);
+                    var eventLogJson = new
+                    {
+                        timestamp = log.Timestamp,
+                        eventID = log.EventID,
+                        eventType = log.EventType.ToString(),
+                        source = log.Source,
+                        description = log.Description
+                    };
+
+                    var jsonContent = JsonConvert.SerializeObject(eventLogJson);
+                    var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PostAsync("/api/ext/event-logs", content);
 
                     if (response.IsSuccessStatusCode)
                     {
+                        Console.WriteLine("Event log sent successfully.");
                         return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to send event log. Status code: {response.StatusCode}");
                     }
                 }
             }
@@ -130,6 +145,163 @@ namespace IpisCentralDisplayController.services
 
             return false;
         }
+
+
+        public async Task<bool> SendStationInfoAsync(StationInfo stationInfo)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(_rmsSettings.ApiUrl);
+
+                    var stationInfoJson = new
+                    {
+                        stationCode = stationInfo.StationCode,
+                        regionalLanguage = stationInfo.RegionalLanguage.ToString(),
+                        stationNameEnglish = stationInfo.StationNameEnglish,
+                        stationNameHindi = stationInfo.StationNameHindi,
+                        stationNameRegional = stationInfo.StationNameRegional,
+                        latitude = stationInfo.Latitude,
+                        longitude = stationInfo.Longitude,
+                        altitude = stationInfo.Altitude,
+                        numberOfPlatforms = stationInfo.NumberOfPlatforms,
+                        numberOfSplPlatforms = stationInfo.NumberOfSplPlatforms,
+                        numberOfStationEntrances = stationInfo.NumberOfStationEntrances,
+                        numberOfPlatformBridges = stationInfo.NumberOfPlatformBridges
+                    };
+
+                    var jsonContent = JsonConvert.SerializeObject(stationInfoJson);
+                    var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PostAsync("/api/ext/station-info", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("Station info sent successfully.");
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to send station info. Status code: {response.StatusCode}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending station info: {ex.Message}");
+            }
+
+            return false;
+        }
+
+        public async Task<bool> UpdateStationInfoAsync(StationInfo stationInfo)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(_rmsSettings.ApiUrl);
+
+                    var stationInfoJson = new
+                    {
+                        stationCode = stationInfo.StationCode,
+                        regionalLanguage = stationInfo.RegionalLanguage.ToString(),  // Convert enum to string if necessary
+                        stationNameEnglish = stationInfo.StationNameEnglish,
+                        stationNameHindi = stationInfo.StationNameHindi,
+                        stationNameRegional = stationInfo.StationNameRegional,
+                        latitude = stationInfo.Latitude,
+                        longitude = stationInfo.Longitude,
+                        altitude = stationInfo.Altitude,
+                        numberOfPlatforms = stationInfo.NumberOfPlatforms,
+                        numberOfSplPlatforms = stationInfo.NumberOfSplPlatforms,
+                        numberOfStationEntrances = stationInfo.NumberOfStationEntrances,
+                        numberOfPlatformBridges = stationInfo.NumberOfPlatformBridges
+                    };
+
+                    var jsonContent = JsonConvert.SerializeObject(stationInfoJson);
+                    var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PutAsync("/api/ext/station-info", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("Station info updated successfully.");
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to update station info. Status code: {response.StatusCode}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating station info: {ex.Message}");
+            }
+
+            return false;
+        }
+
+
+        public async Task<bool> SendCapAlertAsync(CAPAlert capAlert)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(_rmsSettings.ApiUrl);
+                    var content = new StringContent(JsonConvert.SerializeObject(capAlert), System.Text.Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync("/api/ext/cap-alerts", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("CAP alert sent successfully.");
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to send CAP alert. Status code: {response.StatusCode}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending CAP alert: {ex.Message}");
+            }
+
+            return false;
+        }
+
+        // Method to send platform and devices status to the RMS server
+        //public async Task<bool> SendPlatformStatusAsync(PlatformStatus platformStatus)
+        //{
+        //    try
+        //    {
+        //        using (HttpClient client = new HttpClient())
+        //        {
+        //            client.BaseAddress = new Uri(_rmsSettings.ApiUrl);
+        //            var content = new StringContent(JsonConvert.SerializeObject(platformStatus), System.Text.Encoding.UTF8, "application/json");
+        //            HttpResponseMessage response = await client.PostAsync("/api/ext/platforms", content);
+
+        //            if (response.IsSuccessStatusCode)
+        //            {
+        //                Console.WriteLine("Platform status sent successfully.");
+        //                return true;
+        //            }
+        //            else
+        //            {
+        //                Console.WriteLine($"Failed to send platform status. Status code: {response.StatusCode}");
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error sending platform status: {ex.Message}");
+        //    }
+
+        //    return false;
+        //}
 
         private void UpdateLocalMemory(EventLog log)
         {

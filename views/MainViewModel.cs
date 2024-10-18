@@ -1,6 +1,7 @@
 ﻿using IpisCentralDisplayController.Managers;
 using IpisCentralDisplayController.models;
 using IpisCentralDisplayController.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -593,6 +594,20 @@ namespace IpisCentralDisplayController.views
             }
         }
 
+        private ObservableCollection<EventLog> _eventLogs;
+        public ObservableCollection<EventLog> EventLogs
+        {
+            get { return _eventLogs; }
+            set
+            {
+                if (_eventLogs != value)
+                {
+                    _eventLogs = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public MainViewModel()
         {
             UserCategories = new ObservableCollection<UserCategory>();
@@ -623,6 +638,8 @@ namespace IpisCentralDisplayController.views
             TimelineItems = new ObservableCollection<TimelineItem>();
 
             _activeTrains = new ObservableCollection<ActiveTrain>();
+
+            _eventLogs = new ObservableCollection<EventLog>();
         }
 
         public void UpdateActiveTrains(List<ActiveTrain> trains)
@@ -685,6 +702,43 @@ namespace IpisCentralDisplayController.views
         public void StopMonitorAudioTest(AudioSettingsManager audioSettingsManager)
         {
             //audioSettingsManager.StopAudioTest();
+        }
+
+        public void LoadEventLogs(List<EventLog> logs)
+        {
+            EventLogs.Clear();
+            foreach (var log in logs)
+            {
+                EventLogs.Add(log);
+            }
+        }
+
+        public void LoadFilteredEventLogs(List<EventLog> filteredLogs)
+        {
+            EventLogs.Clear();
+            foreach (var log in filteredLogs)
+            {
+                EventLogs.Add(log);
+            }
+        }
+
+        public void LoadLogsFromDate(List<EventLog> allLogs, DateTime fromDate, bool isDescending, int numberOfLogs)
+        {
+            var filteredLogs = allLogs
+                .Where(log => log.Timestamp >= fromDate) // Filter logs from the specific date
+                .OrderBy(log => log.Timestamp) // Order by Timestamp (ascending by default)
+                .Take(numberOfLogs); // Take the last N logs
+
+            if (isDescending)
+            {
+                filteredLogs = filteredLogs.OrderByDescending(log => log.Timestamp); // If descending, change the order
+            }
+
+            EventLogs.Clear();
+            foreach (var log in filteredLogs)
+            {
+                EventLogs.Add(log);
+            }
         }
 
         private void Save()

@@ -56,7 +56,50 @@ namespace IpisCentralDisplayController.managers
             SaveEventLogs(eventLogs);
         }
 
+        // Filter by date range
+        public List<EventLog> FilterLogsByDate(DateTime? fromDate, DateTime? toDate)
+        {
+            var eventLogs = LoadEventLogs();
+            if (fromDate.HasValue && toDate.HasValue)
+            {
+                return eventLogs.Where(log => log.Timestamp.Date >= fromDate.Value.Date && log.Timestamp.Date <= toDate.Value.Date).ToList();
+            }
+            return eventLogs;
+        }
 
+        // Filter by EventType
+        public List<EventLog> FilterLogsByEventType(List<EventType> eventTypes)
+        {
+            var eventLogs = LoadEventLogs();
+            if (eventTypes != null && eventTypes.Count > 0)
+            {
+                return eventLogs.Where(log => eventTypes.Contains(log.EventType)).ToList();
+            }
+            return eventLogs;
+        }
+
+        // Filter by both date range and event type
+        public List<EventLog> FilterLogs(DateTime? fromDate, DateTime? toDate, List<EventType> eventTypes)
+        {
+            var eventLogs = LoadEventLogs();
+            var filteredLogs = eventLogs.AsEnumerable();
+
+            // Apply date range filter
+            if (fromDate.HasValue && toDate.HasValue)
+            {
+                filteredLogs = filteredLogs.Where(log => log.Timestamp.Date >= fromDate.Value.Date && log.Timestamp.Date <= toDate.Value.Date);
+            }
+
+            // Apply event type filter
+            if (eventTypes != null && eventTypes.Count > 0)
+            {
+                filteredLogs = filteredLogs.Where(log => eventTypes.Contains(log.EventType));
+            }
+
+            return filteredLogs.ToList();
+        }
+
+        // Update log sent status
         public void UpdateLogSentStatus(int eventID, bool isSentToServer)
         {
             var eventLogs = LoadEventLogs();
@@ -66,28 +109,6 @@ namespace IpisCentralDisplayController.managers
                 eventLog.IsSentToServer = isSentToServer;
                 SaveEventLogs(eventLogs);
             }
-        }
-
-
-        public void SendUnsentLogsToServer()
-        {
-            var eventLogs = LoadEventLogs();
-            foreach (var log in eventLogs.Where(e => !e.IsSentToServer))
-            {
-                bool isSent = SendLogToServer(log);
-                if (isSent)
-                {
-                    log.IsSentToServer = true;
-                }
-            }
-            SaveEventLogs(eventLogs);
-        }
-
-        private bool SendLogToServer(EventLog log)
-        {
-            // Simulate the process of sending a log to the server
-            // Return true if the log was successfully sent, otherwise false
-            return true; 
         }
 
         // Delete a specific event log by event ID
@@ -111,6 +132,7 @@ namespace IpisCentralDisplayController.managers
             SaveEventLogs(eventLogs);
         }
 
+        // Find an event log by ID
         public EventLog FindEventLogById(int eventID)
         {
             var eventLogs = LoadEventLogs();

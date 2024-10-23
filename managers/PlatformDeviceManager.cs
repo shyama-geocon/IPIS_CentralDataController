@@ -64,18 +64,6 @@ namespace IpisCentralDisplayController.Managers
         }
 
 
-        //public void AddDevice(string platformNumber, Device device)
-        //{
-        //    var platforms = LoadPlatforms();
-        //    var platform = platforms.FirstOrDefault(p => p.PlatformNumber == platformNumber);
-        //    if (platform != null)
-        //    {
-        //        platform.Devices.Add(device);
-        //        SavePlatforms(platforms);
-        //        CurrentPlatformInfo = platforms;
-        //    }
-        //}
-
         public bool AddDevice(string platformNumber, Device device)
         {
             var platforms = LoadPlatforms();
@@ -99,26 +87,6 @@ namespace IpisCentralDisplayController.Managers
             }
             return false;
         }
-
-        //public void UpdateDevice(string platformNumber, Device device)
-        //{
-        //    var platforms = LoadPlatforms();
-        //    var platform = platforms.FirstOrDefault(p => p.PlatformNumber == platformNumber);
-        //    if (platform != null)
-        //    {
-        //        var existingDevice = platform.Devices.FirstOrDefault(d => d.Id == device.Id);
-        //        if (existingDevice != null)
-        //        {
-        //            existingDevice.DeviceType = device.DeviceType;
-        //            existingDevice.IpAddress = device.IpAddress;
-        //            existingDevice.Status = device.Status;
-        //            existingDevice.IsEnabled = device.IsEnabled;
-        //            existingDevice.Updated = DateTime.Now;
-        //            SavePlatforms(platforms);
-        //            CurrentPlatformInfo = platforms;
-        //        }
-        //    }
-        //}
 
         public bool UpdateDevice(string platformNumber, Device device)
         {

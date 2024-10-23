@@ -2820,27 +2820,73 @@ namespace IpisCentralDisplayController
             CategoryComboBox.SelectedIndex = -1;
         }
 
+        //private void UpdateStationInfoButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var stationInfo = new StationInfo
+        //    {
+        //        StationCode = StationCodeTextBox.Text,
+        //        RegionalLanguage = (RegionalLanguage)RegLanguageComboBox.SelectedItem,
+        //        StationNameEnglish = StationNameEnTextBox.Text,
+        //        StationNameHindi = StationNameHiTextBox.Text,
+        //        StationNameRegional = StationNameRLTextBox.Text,
+        //        Latitude = (double)(StationLatTextBox.Value ?? 0),
+        //        Longitude = (double)(StationLongTextBox.Value ?? 0),
+        //        Altitude = (double)(StationAltTextBox.Value ?? 0),
+        //        NumberOfPlatforms = StationPlatformsTextBox.Value ?? 0,
+        //        NumberOfSplPlatforms = NumberOfSplPlatformsTextBox.Value ?? 0,
+        //        NumberOfStationEntrances = NumberOfStationEntrancesTextBox.Value ?? 0,
+        //        NumberOfPlatformBridges = NumberOfPlatformBridgesTextBox.Value ?? 0
+        //    };
+
+        //    _stationInfoManager.SaveStationInfo(stationInfo);
+        //    MessageBox.Show("Station information updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        //}
+
         private void UpdateStationInfoButton_Click(object sender, RoutedEventArgs e)
         {
-            var stationInfo = new StationInfo
+            try
             {
-                StationCode = StationCodeTextBox.Text,
-                RegionalLanguage = (RegionalLanguage)RegLanguageComboBox.SelectedItem,
-                StationNameEnglish = StationNameEnTextBox.Text,
-                StationNameHindi = StationNameHiTextBox.Text,
-                StationNameRegional = StationNameRLTextBox.Text,
-                Latitude = (double)(StationLatTextBox.Value ?? 0),
-                Longitude = (double)(StationLongTextBox.Value ?? 0),
-                Altitude = (double)(StationAltTextBox.Value ?? 0),
-                NumberOfPlatforms = StationPlatformsTextBox.Value ?? 0,
-                NumberOfSplPlatforms = NumberOfSplPlatformsTextBox.Value ?? 0,
-                NumberOfStationEntrances = NumberOfStationEntrancesTextBox.Value ?? 0,
-                NumberOfPlatformBridges = NumberOfPlatformBridgesTextBox.Value ?? 0
-            };
+                // Ensure all the required inputs are not null
+                if (string.IsNullOrEmpty(StationCodeTextBox.Text) ||
+                    string.IsNullOrEmpty(StationNameEnTextBox.Text) ||
+                    string.IsNullOrEmpty(StationNameHiTextBox.Text) ||
+                    string.IsNullOrEmpty(StationNameRLTextBox.Text) ||
+                    RegLanguageComboBox.SelectedItem == null ||
+                    StationLatTextBox.Value == null || StationLongTextBox.Value == null || StationAltTextBox.Value == null ||
+                    StationPlatformsTextBox.Value == null || NumberOfSplPlatformsTextBox.Value == null ||
+                    NumberOfStationEntrancesTextBox.Value == null || NumberOfPlatformBridgesTextBox.Value == null)
+                {
+                    MessageBox.Show("Please fill out all fields before updating.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
 
-            _stationInfoManager.SaveStationInfo(stationInfo);
-            MessageBox.Show("Station information updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Update the StationInfo with values from the form
+                StationInfo updatedStationInfo = new StationInfo
+                {
+                    StationCode = StationCodeTextBox.Text,
+                    RegionalLanguage = (RegionalLanguage)Enum.Parse(typeof(RegionalLanguage), ((ComboBoxItem)RegLanguageComboBox.SelectedItem).Content.ToString(), true),
+                    StationNameEnglish = StationNameEnTextBox.Text,
+                    StationNameHindi = StationNameHiTextBox.Text,
+                    StationNameRegional = StationNameRLTextBox.Text,
+                    Latitude = (double)StationLatTextBox.Value,
+                    Longitude = (double)StationLongTextBox.Value,
+                    Altitude = (double)StationAltTextBox.Value,
+                    NumberOfPlatforms = (int)StationPlatformsTextBox.Value,
+                    NumberOfSplPlatforms = (int)NumberOfSplPlatformsTextBox.Value,
+                    NumberOfStationEntrances = (int)NumberOfStationEntrancesTextBox.Value,
+                    NumberOfPlatformBridges = (int)NumberOfPlatformBridgesTextBox.Value
+                };
+
+                // Send the updated information to the manager
+                _stationInfoManager.SaveStationInfo(updatedStationInfo);
+                MessageBox.Show("Station information updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while updating the station info: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
 
         private void SettingsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -4728,6 +4774,133 @@ namespace IpisCentralDisplayController
         {
 
         }
+
+        //private void ImportStationInfoButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    MessageBox.Show("Import Station Info functionality not implemented yet.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+        //}
+
+        //private void ExportStationInfoButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    MessageBox.Show("Export Station Info functionality not implemented yet.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+        //}
+
+        private void ImportStationInfoButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openFileDialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
+                };
+
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    string json = File.ReadAllText(openFileDialog.FileName);
+                    var importedStationInfo = JsonConvert.DeserializeObject<StationInfo>(json);
+
+                    if (importedStationInfo != null)
+                    {
+                        _stationInfoManager.SaveStationInfo(importedStationInfo);
+                        PopulateStationInfo();
+                        MessageBox.Show("Station Info imported successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to import Station Info.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to import Station Info: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+
+        private void ExportStationInfoButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var stationInfo = _stationInfoManager.CurrentStationInfo;
+                string json = JsonConvert.SerializeObject(stationInfo, Formatting.Indented);
+
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = "StationInfo.json",
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
+                };
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    File.WriteAllText(saveFileDialog.FileName, json);
+                    MessageBox.Show("Station Info exported successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to export Station Info: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ImportPlatformDevicesButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openFileDialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
+                };
+
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    string json = File.ReadAllText(openFileDialog.FileName);
+                    var importedPlatforms = JsonConvert.DeserializeObject<List<Platform>>(json);
+
+                    if (importedPlatforms != null)
+                    {
+                        _platformDeviceManager.SavePlatforms(importedPlatforms);
+                        MessageBox.Show("Platforms and devices imported successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to import platforms and devices.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to import platforms and devices: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+        private void ExportPlatformDevicesButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var platforms = _platformDeviceManager.CurrentPlatformInfo;
+                string json = JsonConvert.SerializeObject(platforms, Formatting.Indented);
+
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = "PlatformDevices.json",
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
+                };
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    File.WriteAllText(saveFileDialog.FileName, json);
+                    MessageBox.Show("Platforms and devices exported successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to export platforms and devices: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
 
         private void MuteButton_Unchecked(object sender, RoutedEventArgs e)
         {

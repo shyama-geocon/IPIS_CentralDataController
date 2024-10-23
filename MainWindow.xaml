@@ -1718,6 +1718,8 @@
                                             <!-- Update Button -->
                                             <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="6" Grid.ColumnSpan="4" HorizontalAlignment="Center">
                                                 <Button Content="Update" Width="100" Height="30" Margin="2" Click="UpdateStationInfoButton_Click"/>
+                                                <Button Content="Import" Width="100" Height="30" Margin="2" Click="ImportStationInfoButton_Click"/>
+                                                <Button Content="Export" Width="100" Height="30" Margin="2" Click="ExportStationInfoButton_Click"/>
                                             </StackPanel>
                                         </Grid>
                                     </Grid>
@@ -1728,6 +1730,7 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="Platform and Device Management" FontWeight="Bold" FontSize="18" Margin="2" Grid.Row="0"/>
@@ -1777,6 +1780,10 @@
                                                 <Button Name="DeleteDeviceButton" Content="Delete Device" Height="30" Width="100" Margin="2" Click="DeleteDeviceButton_Click"/>
                                             </StackPanel>
                                         </Grid>
+                                        <StackPanel Grid.Row="3" Margin="10, 2, 10, 2">
+                                            <Button Name="ImportButton" Content="Import Config" Height="30" Width="100" Margin="5" Click="ImportPlatformDevicesButton_Click"/>
+                                            <Button Name="ExportButton" Content="Export Config" Height="30" Width="100" Margin="5" Click="ExportPlatformDevicesButton_Click"/>
+                                        </StackPanel>
                                     </Grid>
                                 </TabItem>
 

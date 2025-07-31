@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using IpisCentralDisplayController.ntes;
+using IpisCentralDisplayController.views;
 
 namespace IpisCentralDisplayController.models
 {
@@ -26,6 +30,586 @@ namespace IpisCentralDisplayController.models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private string specialStatusCodeField;
+        public string SpecialStatusCodeField
+        {
+            get { return specialStatusCodeField; }
+            set { specialStatusCodeField = value; }
+        }
+
+
+        #region TimeScheduled
+
+        private int _STA_Hours;
+        public int STA_Hours
+        {
+
+            //get => STA.HasValue ? STA.Value.Hours : 0;
+           // get => _STA_Hours;
+
+            get { return _STA_Hours; }
+            set
+            {
+                _STA_Hours = value;
+               
+                if (STA.HasValue)
+                {
+                    STA = new TimeSpan(value, STA.Value.Minutes, 0);
+                }
+                else
+                {
+                    STA = new TimeSpan(value, 0, 0);
+                }
+                OnPropertyChanged();
+
+                if (SelectedADOption == "A")
+                {                  
+                    ETA_Hours = value + LateByHours;
+     
+                }
+                else if(SelectedADOption == "D")
+                {
+                    ETA_Hours = STA_Hours ;
+                   
+                }
+
+            }
+            
+        }
+
+
+        private int _STA_Minutes;
+        public int STA_Minutes
+        {
+            //get => STA.HasValue ? STA.Value.Minutes : 0;
+            get { return _STA_Minutes; }
+            set 
+            {  
+                _STA_Minutes = value;
+
+                if (STA.HasValue)
+                {
+                    STA = new TimeSpan(STA.Value.Hours, value,  0);
+                }
+                else
+                {
+                    STA = new TimeSpan(0, value, 0);
+                }
+                OnPropertyChanged();
+               
+
+                if (SelectedADOption == "A")
+                {
+                    ETA_Minutes = value + LateByMinutes;
+                }
+                else if (SelectedADOption == "D")
+                {
+                    ETA_Minutes = STA_Minutes ;
+
+                }
+
+                //if (SelectedADOption == "A")
+                //{
+                //    //LateBy = new TimeSpan(value, LateByMinutes, 0);
+                //    ETA_Minutes = value + STA_Minutes + LateByMinutes;
+                //    ETD_Minutes = value + STD_Minutes + LateByMinutes;
+
+                //}
+                //else if (SelectedADOption == "D")
+                //{
+                //    //  LateBy = new TimeSpan(value, 0, 0);
+                //    ETD_Minutes = value + STD_Minutes + LateByMinutes;
+                //}
+
+
+
+
+
+            }
+        }
+
+
+
+        private int _STD_Hours;
+        public int STD_Hours
+        {
+            get { return _STD_Hours; }
+            set 
+            {   _STD_Hours = value;
+
+                if (STD.HasValue)
+                {
+                    STD = new TimeSpan(value, STD.Value.Minutes, 0);
+                }
+                else
+                {
+                    STD = new TimeSpan(value, 0, 0);
+                }
+
+                OnPropertyChanged();
+                // ETD_Hours = value;
+                ETD_Hours = value + LateByHours;
+
+
+
+
+            }
+        }
+
+
+        private int _STD_Minutes;
+        public int STD_Minutes
+        {
+            get { return _STD_Minutes; }
+            set 
+            {
+                _STD_Minutes = value;
+
+                if (STD.HasValue)
+                {
+                    STD = new TimeSpan(STD.Value.Hours, value, 0);
+                }
+                else
+                {
+                    STD = new TimeSpan(0, value, 0);
+                }
+                OnPropertyChanged();
+                //ETD_Minutes = value;
+                ETD_Minutes = value + LateByMinutes;
+
+            }
+        }
+
+
+
+        private TimeSpan? _sta;
+        public TimeSpan? STA
+        {
+            get => _sta;
+            set
+            {
+                if (_sta != value)
+                {
+                    _sta = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        private DateTime? _sta_ts;
+        public DateTime? STA_TS
+        {
+            get => _sta_ts;
+            set
+            {
+                if (_sta_ts != value)
+                {
+                    _sta_ts = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private TimeSpan? _std;
+        public TimeSpan? STD
+        {
+            get => _std;
+            set
+            {
+                if (_std != value)
+                {
+                    _std = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private DateTime? _std_ts;
+        public DateTime? STD_TS
+        {
+            get => _std_ts;
+            set
+            {
+                if (_std_ts != value)
+                {
+                    _std_ts = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        #endregion
+
+
+
+        #region TimeExpected
+
+        private TimeSpan? _lateBy;
+        public TimeSpan? LateBy
+        {
+            get => _lateBy;
+            set
+            {
+                if (_lateBy != value)
+                {
+                    _lateBy = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        private int _lateByHours;
+        public int LateByHours
+        {
+            get => _lateByHours;
+            set
+            {
+                if (_lateByHours != value)
+                {
+                    _lateByHours = value;
+                    OnPropertyChanged();
+
+                    if(SelectedADOption == "A")
+                    {
+                        //LateBy = new TimeSpan(value, LateByMinutes, 0);
+                        ETA_Hours = value + STA_Hours;
+                        ETD_Hours = value + STD_Hours;
+
+                    }
+                    else if (SelectedADOption == "D")
+                    {
+                        //  LateBy = new TimeSpan(value, 0, 0);
+                        ETD_Hours = value + STD_Hours;
+                    }
+
+                    LateBy = new TimeSpan(value, LateByMinutes, 0);
+
+                }
+            }
+        }
+
+
+        private int _lateByMinutes;
+        public int LateByMinutes
+        {
+            get => _lateByMinutes;
+            set
+            {
+                if (_lateByMinutes != value)
+                {
+                    _lateByMinutes = value;
+                    OnPropertyChanged();
+
+                    if (SelectedADOption == "A")
+                    {
+                        //LateBy = new TimeSpan(value, LateByMinutes, 0);
+                        ETA_Minutes = value + STA_Minutes;
+                        ETD_Minutes = value + STD_Minutes;
+
+                    }
+                    else if (SelectedADOption == "D")
+                    {
+                        //  LateBy = new TimeSpan(value, 0, 0);
+                        ETD_Minutes = value + STD_Minutes;
+                    }
+
+                    LateBy = new TimeSpan(LateByHours, value, 0);
+
+                }
+            }
+        }
+
+
+        private TimeSpan? _eta;
+        public TimeSpan? ETA
+        {
+            get => _eta;
+            set
+            {
+                if (_eta != value)
+                {
+                    _eta = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private int _etaHours;
+        public int ETA_Hours
+        {
+            get => _etaHours;
+            set
+            {
+                if (_etaHours != value)
+                {
+                    _etaHours = value;
+                    ETA = new TimeSpan(value, ETA_Minutes, 0);
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        private int _etaMinutes;
+        public int ETA_Minutes
+        {
+            get => _etaMinutes;
+            set
+            {
+                if (_etaMinutes != value)
+                {
+                    _etaMinutes = value;
+                    ETA = new TimeSpan(ETA_Hours, value, 0);
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private TimeSpan? _etd;
+        public TimeSpan? ETD
+        {
+            get => _etd;
+            set
+            {
+                if (_etd != value)
+                {
+                    _etd = value;
+
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private int _etdHours;
+        public int ETD_Hours
+        {
+            get => _etdHours;
+            set
+            {
+                if (_etdHours != value)
+                {
+                    _etdHours = value;
+                    ETD = new TimeSpan(value, ETD_Minutes, 0);
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private int _etdMinutes;
+        public int ETD_Minutes
+        {
+            get => _etdMinutes;
+            set
+            {
+                if (_etdMinutes != value)
+                {
+                    _etdMinutes = value;
+                    ETD = new TimeSpan(ETD_Hours, value, 0);
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+
+
+        #endregion
+
+        private string _oldPFNo;
+
+        public string OldPFNo
+        {
+            get { return _oldPFNo; }
+            set { _oldPFNo = value; }
+        }
+
+        #region SpecialStatusstuffPOPUP
+
+        private byte _statusByte;
+        public byte StatusByte
+        {
+            get { return _statusByte; }
+            set { _statusByte = value;
+
+                if (value == 0x08)//Terminated At
+                {
+                  //  IsEnabledStationNameForSplStatusCode = true ;
+                    FieldForSplStatusCode= "Terminated At Station:";
+                    OnPropertyChanged();
+
+                    SplPopUpStation POPup = new SplPopUpStation(this, "Terminated At Station",value);
+                    ////  trainMasterDbWindow.Owner = this;
+                    //// POPup.Owner = this;
+                    POPup.ShowDialog();
+
+                }
+                else if (value == 0x10)//Diverted
+                {
+                  //  IsEnabledStationNameForSplStatusCode = true ;
+                    FieldForSplStatusCode = "Diverted To Station:";
+
+                    SplPopUpStation POPup = new SplPopUpStation(this, "Diverted To Station:", value);
+                    //  trainMasterDbWindow.Owner = this;
+                    // POPup.Owner = this;
+                    POPup.ShowDialog();
+
+                }
+                else if (value == 0x13)//Change Of Source
+                {
+                    //IsEnabledStationNameForSplStatusCode = true ;
+                    FieldForSplStatusCode = "Change Of Source Station:";
+
+                    SplPopUpStation POPup = new SplPopUpStation(this, "Change Of Source Station:", value);
+                    //  trainMasterDbWindow.Owner = this;
+                    // POPup.Owner = this;
+                    POPup.ShowDialog();
+
+                }
+                else if(value == 0x09) // platform number changed
+                {
+                    OldPFNo = PFNo.ToString();
+
+                    SplPopUpOldPFNo POPup = new SplPopUpOldPFNo(this);
+                    POPup.ShowDialog();
+                }
+                else
+                {
+                    //IsEnabledStationNameForSplStatusCode = false ;
+                    FieldForSplStatusCode = "";
+                    SplStationNameEnglish = "";
+                    SplStationNameHindi = "";
+                    SplStationNameRegional = "";
+                    SplStationCode = "";
+
+                }
+
+              //  OldPFNo = PFNo.ToString();
+
+
+                // OnPropertyChanged();
+
+            }
+        }
+
+        private ObservableCollection<SplStatusOptionItem> _splStatusOptions;
+        public ObservableCollection<SplStatusOptionItem> SplStatusOptions
+        {
+            get => _splStatusOptions;
+            set { _splStatusOptions = value; OnPropertyChanged(); }
+        }
+
+        private SplStatusOptionItem _splStatusSelectedOption;
+        public SplStatusOptionItem SplStatusSelectedOption
+        {
+            get => _splStatusSelectedOption;
+            set { _splStatusSelectedOption = value; OnPropertyChanged(); }
+        }
+
+        private string _splStatusField;
+        public string SplStatusField
+        {
+            get { return _splStatusField; }
+            set { _splStatusField = value; }
+        }
+
+
+        private string _fieldForSplStatusCode;
+        public string FieldForSplStatusCode
+        {
+            get { return _fieldForSplStatusCode; }
+            set
+            {
+
+                if (_fieldForSplStatusCode != value)
+                {
+                    _fieldForSplStatusCode = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+
+
+
+
+
+        #endregion
+
+        #region Station :SpecialStatusAdditionalFields
+
+
+        private string _splStationNameEnglish;
+        public string SplStationNameEnglish
+        {
+            get { return _splStationNameEnglish; }
+            set { _splStationNameEnglish = value; }
+        }
+
+        private string _splStationNameHindi;
+        public string SplStationNameHindi
+        {
+            get { return _splStationNameHindi; }
+            set { _splStationNameHindi = value; }
+        }
+
+        private string _splStationNameRegional;
+        public string SplStationNameRegional
+        {
+            get { return _splStationNameRegional; }
+            set { _splStationNameRegional = value; }
+        }
+
+        private string _splStationCode;
+        public string SplStationCode
+        {
+            get { return _splStationCode; }
+            set { _splStationCode = value; }
+        }
+
+
+        #endregion
+
+
+
+
+        private string _stationNameForSplStatusCode;
+        public string StationNameForSplStatusCode
+        {
+            get { return _stationNameForSplStatusCode; }
+            set {
+
+                if (_stationNameForSplStatusCode != value)
+                {
+                    _stationNameForSplStatusCode = value;
+                    OnPropertyChanged();
+                }        
+            }
+        }
+
+
+        //private bool _isEnabledStationNameForSplStatusCode;
+        //public bool IsEnabledStationNameForSplStatusCode
+        //{
+        //    get { return _isEnabledStationNameForSplStatusCode; }
+        //    set
+        //    {
+        //        if (_isEnabledStationNameForSplStatusCode != value)
+        //        {
+        //            _isEnabledStationNameForSplStatusCode = value;
+        //            OnPropertyChanged();
+        //        }
+        //    }
+        //}
+
+
+
+      
+
 
         private DateTime _createdTime;
         public DateTime CreatedTime
@@ -262,76 +846,24 @@ namespace IpisCentralDisplayController.models
             }
         }
 
-        private TimeSpan? _sta;
-        public TimeSpan? STA
-        {
-            get => _sta;
-            set
-            {
-                if (_sta != value)
-                {
-                    _sta = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+       
 
-        private DateTime? _sta_ts;
-        public DateTime? STA_TS
-        {
-            get => _sta_ts;
-            set
-            {
-                if (_sta_ts != value)
-                {
-                    _sta_ts = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+      
 
-        private TimeSpan? _std;
-        public TimeSpan? STD
-        {
-            get => _std;
-            set
-            {
-                if (_std != value)
-                {
-                    _std = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private DateTime? _std_ts;
-        public DateTime? STD_TS
-        {
-            get => _std_ts;
-            set
-            {
-                if (_std_ts != value)
-                {
-                    _std_ts = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _ad;
-        public string AD
-        {
-            get => _ad;
-            set
-            {
-                if (_ad != value)
-                {
-                    _ad = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
+        //private string _ad;
+        //public string AD
+        //{
+        //    get => _ad;
+        //    set
+        //    {
+        //        if (_ad != value)
+        //        {
+        //            _ad = value;
+        //            OnPropertyChanged();
+        //        }
+        //    }
+        //}
+        //comeback
         private string _status;
         public string Status
         {
@@ -346,171 +878,200 @@ namespace IpisCentralDisplayController.models
             }
         }
 
-        public List<string> StatusOptions { get; set; }
+        //public List<string> StatusOptions { get; set; }
 
-        private int _statusIndex;
-        public int StatusIndex
+        //private int _statusIndex;
+        //public int StatusIndex
+        //{
+        //    get => _statusIndex;
+        //    set
+        //    {
+        //        if (_statusIndex != value)
+        //        {
+        //            _statusIndex = value;
+        //            OnPropertyChanged(nameof(StatusIndex));
+        //            Status = StatusOptions[_statusIndex];
+        //            OnPropertyChanged(nameof(Status));
+        //        }
+        //    }
+        //}
+
+        public ObservableCollection<string> StatusOptions { get; set; } = new ObservableCollection<string> { "A", "D" };
+
+        private string _selectedStatusOption;
+
+        public string SelectedStatusOption
         {
-            get => _statusIndex;
+            get => _selectedStatusOption;
             set
             {
-                if (_statusIndex != value)
+                _selectedStatusOption = value;
+                OnPropertyChanged(nameof(SelectedStatusOption));
+                //OnPropertyChangedforLoading("StatusByte");
+
+                //When status option delection is changed then StatusByte will also change.
+                if (SelectedADOption == "A")
                 {
-                    _statusIndex = value;
-                    OnPropertyChanged(nameof(StatusIndex));
-                    Status = StatusOptions[_statusIndex];
-                    OnPropertyChanged(nameof(Status));
+                    if (_selectedStatusOption == "Running Right Time")
+                    {
+                        StatusByte = 0x01;
+                    }
+                    else if (_selectedStatusOption == "Will Arrive Shortly")
+                    {
+                        StatusByte = 0x02;
+                    }
+                    else if (_selectedStatusOption == "Is Arriving On")
+                    {
+                        StatusByte = 0x03;
+                    }
+                    else if (_selectedStatusOption == "Has Arrived On")
+                    {
+                        StatusByte = 0x04;
+                    }
+                    else if (_selectedStatusOption == "Running Late")
+                    {
+                        StatusByte = 0x05;
+                    }
+                    else if (_selectedStatusOption == "Cancelled")
+                    {
+                        StatusByte = 0x06;
+                    }
+                    else if (_selectedStatusOption == "Indefinite Late")
+                    {
+                        StatusByte = 0x07;
+                    }
+                    else if (_selectedStatusOption == "Terminated At")
+                    {
+                        StatusByte = 0x08;
+                    }
+                    else if (_selectedStatusOption == "Platform Changed")
+                    {
+                        StatusByte = 0x09;
+                    }
+                    else
+                    {
+                        throw new Exception(message: $"Unknown status message: ");
+                    }
+
                 }
+
+                else if (SelectedADOption == "D")
+                {
+                    if (_selectedStatusOption == "Running Right Time")
+                    {
+                        StatusByte = 0x0A;
+                    }
+                    else if (_selectedStatusOption == "Cancelled")
+                    {
+                        StatusByte = 0x0B;
+                    }
+                    else if (_selectedStatusOption == "Is Ready To Leave")
+                    {
+                        StatusByte = 0x0C;
+                    }
+                    else if (_selectedStatusOption == "Is On Platform")
+                    {
+                        StatusByte = 0x0D;
+                    }
+                    else if (_selectedStatusOption == "Departed")
+                    {
+                        StatusByte = 0x0E;
+                    }
+                    else if (_selectedStatusOption == "Rescheduled")
+                    {
+                        StatusByte = 0x0F;
+                    }
+                    else if (_selectedStatusOption == "Diverted")
+                    {
+                        StatusByte = 0x10;
+                    }
+                    else if (_selectedStatusOption == "Delayed")
+                    {
+                        StatusByte = 0x11;
+                    }
+                    else if (_selectedStatusOption == "Platform Changed")
+                    {
+                        StatusByte = 0x12;
+                    }
+                    else if (_selectedStatusOption == "Change Of Source")
+                    {
+                        StatusByte = 0x13;
+                    }
+                    else
+                    {
+                        throw new Exception(message: $"Unknown status message: ");
+                    }
+
+                }
+
             }
         }
 
-        public List<string> ADOptions { get; set; } = new List<string> { "A", "D" };
 
-        private int _adIndex;
-        public int ADIndex
+        //public List<string> ADOptions { get; set; } = new List<string> { "A", "D" };
+
+        //private int _adIndex;
+        //public int ADIndex
+        //{
+        //    get => _adIndex;
+        //    set
+        //    {
+        //        if (_adIndex != value)
+        //        {
+        //            _adIndex = value;
+        //            OnPropertyChanged(nameof(ADIndex));
+        //            AD = ADOptions[_adIndex];
+        //            OnPropertyChanged(nameof(AD));
+        //            UpdateStatusOptions();
+        //        }
+        //    }
+        //}
+
+
+        public ObservableCollection<string> ADOptions { get; set; } = new ObservableCollection<string> { "A", "D" };
+
+        private string _selectedADOption;
+        public string SelectedADOption
         {
-            get => _adIndex;
+            get => _selectedADOption;
             set
             {
-                if (_adIndex != value)
+                if (_selectedADOption != value)
                 {
-                    _adIndex = value;
-                    OnPropertyChanged(nameof(ADIndex));
-                    AD = ADOptions[_adIndex];
-                    OnPropertyChanged(nameof(AD));
+                    _selectedADOption = value;
+                    OnPropertyChanged(nameof(SelectedADOption));
+
                     UpdateStatusOptions();
+
+                    if (value == "A")
+                    {
+                        ETA_Hours = STA_Hours + LateByHours;
+                        ETA_Minutes = STA_Minutes + LateByMinutes;
+
+                        ETD_Hours= STD_Hours + LateByHours;
+                        ETD_Minutes = STD_Minutes + LateByMinutes;
+
+                    }
+                    else if(value== "D")
+                    {
+                        ETA_Hours = STA_Hours ;
+                        ETA_Minutes = STA_Minutes ;
+
+                        ETD_Hours = STD_Hours + LateByHours;
+                        ETD_Minutes = STD_Minutes + LateByMinutes;
+
+                    }
+
+                    LateBy = new TimeSpan(LateByHours, LateByMinutes, 0);
+                    ETA = new TimeSpan(ETA_Hours, ETA_Minutes, 0);
+                    ETD = new TimeSpan(ETD_Hours, ETD_Minutes, 0);
+
+
+
                 }
             }
         }
 
-        private TimeSpan? _lateBy;
-        public TimeSpan? LateBy
-        {
-            get => _lateBy;
-            set
-            {
-                if (_lateBy != value)
-                {
-                    _lateBy = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private int _lateByHours;
-        public int LateByHours
-        {
-            get => _lateByHours;
-            set
-            {
-                if (_lateByHours != value)
-                {
-                    _lateByHours = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private int _lateByMinutes;
-        public int LateByMinutes
-        {
-            get => _lateByMinutes;
-            set
-            {
-                if (_lateByMinutes != value)
-                {
-                    _lateByMinutes = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private TimeSpan? _eta;
-        public TimeSpan? ETA
-        {
-            get => _eta;
-            set
-            {
-                if (_eta != value)
-                {
-                    _eta = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        private int _etaHours;
-        public int ETA_Hours
-        {
-            get => _etaHours;
-            set
-            {
-                if (_etaHours != value)
-                {
-                    _etaHours = value;
-                    ETA = new TimeSpan(value, ETA_Minutes, 0);
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private int _etaMinutes;
-        public int ETA_Minutes
-        {
-            get => _etaMinutes;
-            set
-            {
-                if (_etaMinutes != value)
-                {
-                    _etaMinutes = value;
-                    ETA = new TimeSpan(ETA_Hours, value, 0);
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private TimeSpan? _etd;
-        public TimeSpan? ETD
-        {
-            get => _etd;
-            set
-            {
-                if (_etd != value)
-                {
-                    _etd = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private int _etdHours;
-        public int ETD_Hours
-        {
-            get => _etdHours;
-            set
-            {
-                if (_etdHours != value)
-                {
-                    _etdHours = value;
-                    ETD = new TimeSpan(value, ETD_Minutes, 0);
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private int _etdMinutes;
-        public int ETD_Minutes
-        {
-            get => _etdMinutes;
-            set
-            {
-                if (_etdMinutes != value)
-                {
-                    _etdMinutes = value;
-                    ETD = new TimeSpan(ETD_Hours, value, 0);
-                    OnPropertyChanged();
-                }
-            }
-        }
 
         private int _pfNo;
         public int PFNo
@@ -598,11 +1159,11 @@ namespace IpisCentralDisplayController.models
 
         private void UpdateStatusOptions()
         {
-            if (AD == "A")
+            if (SelectedADOption == "A")
             {
-                StatusOptions = new List<string>
+                StatusOptions = new ObservableCollection<string>
             {
-                "Select Status", // Default option
+                //"Select Status", // Default option
                 "Running Right Time",
                 "Will Arrive Shortly",
                 "Is Arriving On",
@@ -614,11 +1175,11 @@ namespace IpisCentralDisplayController.models
                 "Platform Changed"
             };
             }
-            else if (AD == "D")
+            else if (SelectedADOption == "D")
             {
-                StatusOptions = new List<string>
+                StatusOptions = new ObservableCollection<string>
             {
-                "Select Status", // Default option
+                //"Select Status", // Default option
                 "Running Right Time",
                 "Cancelled",
                 "Is Ready To Leave",
@@ -633,10 +1194,11 @@ namespace IpisCentralDisplayController.models
             }
             else
             {
-                StatusOptions = new List<string> { "Select Status" }; // Fallback
+                StatusOptions = new ObservableCollection<string> { "Select Status" }; // Fallback
             }
-
+            SelectedStatusOption = StatusOptions.FirstOrDefault(); // Set default selection to the first item
             OnPropertyChanged(nameof(StatusOptions));
+            OnPropertyChanged(nameof(SelectedStatusOption));
         }
 
         public ActiveTrain() 
@@ -679,22 +1241,25 @@ namespace IpisCentralDisplayController.models
             STD = ParseTime(ntesTrain.STD_HHMM);
             STD_TS = ParseDateTime(ntesTrain.STD_HHMMDDMM);
 
-            AD = ntesTrain.ADFlag;
-            ADIndex = ADOptions.IndexOf(AD);
+            //AD = ntesTrain.ADFlag;
+            SelectedADOption = ntesTrain.ADFlag;
+            //ADIndex = ADOptions.IndexOf(AD);
+            SelectedADOption = ntesTrain.ADFlag;
 
             UpdateStatusOptions();
 
             Status = ntesTrain.TrainStatus;
-            StatusIndex = 0;
-
-            for (int i = 0; i < StatusOptions.Count; i++)
-            {
-                if (StatusOptions[i].IndexOf(Status, StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    StatusIndex = i;
-                    break;
-                }
-            }
+            SelectedStatusOption = ntesTrain.TrainStatus;
+            //StatusIndex = 0;
+            ////comeback
+            //for (int i = 0; i < StatusOptions.Count; i++)
+            //{
+            //    if (StatusOptions[i].IndexOf(Status, StringComparison.OrdinalIgnoreCase) >= 0)
+            //    {
+            //        StatusIndex = i;
+            //        break;
+            //    }
+            //}
 
             if (ntesTrain.ExpectedDelay != null && ntesTrain.ExpectedDelay!="" && ntesTrain.ExpectedDelay.ToUpper() != "ON TIME")
             {
@@ -782,12 +1347,20 @@ namespace IpisCentralDisplayController.models
                 STA_TS = this.STA_TS,
                 STD = this.STD,
                 STD_TS = this.STD_TS,
-                AD = this.AD,
+
+                STA_Hours = this.STA_Hours,
+                STA_Minutes = this.STA_Minutes,
+                STD_Hours = this.STD_Hours,
+                STD_Minutes = this.STD_Minutes,
+                //AD = this.AD,
+                _selectedADOption = this.SelectedADOption,
                 Status = this.Status,
-                StatusOptions = this.StatusOptions != null ? new List<string>(this.StatusOptions) : new List<string>(), // Handle null list
-                StatusIndex = this.StatusIndex,
-                ADOptions = this.ADOptions != null ? new List<string>(this.ADOptions) : new List<string>(), // Handle null list
-                ADIndex = this.ADIndex,
+                StatusOptions = this.StatusOptions != null ? new ObservableCollection<string>(this.StatusOptions) : new ObservableCollection<string>(), // Handle null list
+                                                                                                                                                        // StatusIndex = this.StatusIndex,
+                SelectedStatusOption = this.SelectedStatusOption,
+                ADOptions = this.ADOptions != null ? new ObservableCollection<string>(this.ADOptions) : new ObservableCollection<string>(), // Handle null list
+                //ADIndex = this.ADIndex,
+                SelectedADOption = this.SelectedADOption,
                 LateBy = this.LateBy,
                 LateByHours = this.LateByHours,
                 LateByMinutes = this.LateByMinutes,
@@ -827,15 +1400,22 @@ namespace IpisCentralDisplayController.models
             DestNameRegional = source.DestNameRegional;
             TrainType = source.TrainType;
             STA = source.STA;
+            STA_Hours = source.STA_Hours;//custom addition
+            STA_Minutes = source.STA_Minutes; //custom addition
+            STD_Hours = source.STD_Hours;
+            STD_Minutes = source.STD_Minutes;
             STA_TS = source.STA_TS;
             STD = source.STD;
             STD_TS = source.STD_TS;
-            AD = source.AD;
+            //AD = source.AD;
+            SelectedADOption = source.SelectedADOption; 
             Status = source.Status;
-            StatusOptions = source.StatusOptions != null ? new List<string>(source.StatusOptions) : new List<string>(); // Deep copy with null check
-            StatusIndex = source.StatusIndex;
-            ADOptions = source.ADOptions != null ? new List<string>(source.ADOptions) : new List<string>(); // Deep copy with null check
-            ADIndex = source.ADIndex;
+            StatusOptions = source.StatusOptions != null ? new ObservableCollection<string>(source.StatusOptions) : new ObservableCollection<string>(); // Deep copy with null check
+            //StatusIndex = source.StatusIndex;
+            SelectedStatusOption = source.SelectedStatusOption; // Assuming you want to copy the selected status option
+            ADOptions = source.ADOptions != null ? new ObservableCollection<string>(source.ADOptions) : new ObservableCollection<string>(); // Deep copy with null check
+           // ADIndex = source.ADIndex;
+            SelectedADOption = source.SelectedADOption; // Assuming you want to copy the selected AD option
             LateBy = source.LateBy;
             LateByHours = source.LateByHours;
             LateByMinutes = source.LateByMinutes;
@@ -935,5 +1515,23 @@ namespace IpisCentralDisplayController.models
             }
             return days;
         }
+  
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     }
 }

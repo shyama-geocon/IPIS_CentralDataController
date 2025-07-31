@@ -29,8 +29,7 @@ namespace IpisCentralDisplayController.views
         public ActiveTrainWindow(ActiveTrain activeTrain)
         {
             InitializeComponent();
-
-            
+           
             _viewModel = new ActiveTrainViewModel(activeTrain);
             DataContext = _viewModel;
         }
@@ -78,8 +77,9 @@ namespace IpisCentralDisplayController.views
                 string.IsNullOrWhiteSpace(_viewModel.ActiveTrain.DestNameEnglish) ||
                 string.IsNullOrWhiteSpace(_viewModel.ActiveTrain.DestNameHindi) ||
                 string.IsNullOrWhiteSpace(_viewModel.ActiveTrain.TrainType) ||
-                _viewModel.ActiveTrain.STA == null ||
-                _viewModel.ActiveTrain.STD == null ||
+                //SP
+                //_viewModel.ActiveTrain.STA == null ||
+                //_viewModel.ActiveTrain.STD == null || 
                 string.IsNullOrWhiteSpace(_viewModel.ActiveTrain.CoachSequence))
             {
                 MessageBox.Show("Please fill in all mandatory fields before saving.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -89,6 +89,7 @@ namespace IpisCentralDisplayController.views
             var result = MessageBox.Show("Are you sure you want to save the changes?", "Confirm Save", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
+                //here
                 _viewModel.ActiveTrain.Ref = TrainSource.USER;
                 _viewModel.ActiveTrain.UpdateModificationTime();
                 this.DialogResult = true;

@@ -38,6 +38,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
@@ -130,43 +131,51 @@
 
                 <!-- A/D -->
                 <Label Grid.Row="16" Grid.Column="0" Content="A/D:" VerticalAlignment="Center"/>
-                <ComboBox Grid.Row="16" Grid.Column="1" VerticalAlignment="Center" Margin="2" ItemsSource="{Binding ActiveTrain.ADOptions}" SelectedIndex="{Binding ADIndex}" Height="30"/>
+                <ComboBox Grid.Row="16" Grid.Column="1" VerticalAlignment="Center" Margin="2"
+                          ItemsSource="{Binding ActiveTrain.ADOptions}" SelectedItem="{Binding ActiveTrain.SelectedADOption}" Height="30"/>
 
                 <!-- Status -->
                 <Label Grid.Row="17" Grid.Column="0" Content="Status:" VerticalAlignment="Center"/>
-                <ComboBox Grid.Row="17" Grid.Column="1" VerticalAlignment="Center" Margin="2" ItemsSource="{Binding ActiveTrain.StatusOptions}" SelectedIndex="{Binding StatusIndex}" Height="30"/>
+                <ComboBox Grid.Row="17" Grid.Column="1" VerticalAlignment="Center" Margin="2" 
+                          ItemsSource="{Binding ActiveTrain.StatusOptions}" SelectedItem="{Binding ActiveTrain.SelectedStatusOption}" Height="30"/>
+
+                 <!-- Station Name for Special Status (Terminated At/Diverted/Change Of Source)-->
+                <Label Grid.Row="18" Grid.Column="0" Content="{Binding ActiveTrain.FieldForSplStatusCode , UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center"/>
+                <TextBox VerticalContentAlignment="Center" Grid.Row="18" Grid.Column="1" VerticalAlignment="Center" Margin="2" 
+                         Text="{Binding ActiveTrain.SplStationNameEnglish, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="30" IsEnabled="False"/>
+                <!--IsEnabled="{Binding ActiveTrain.IsEnabledStationNameForSplStatusCode}"-->
 
                 <!-- ETA -->
-                <Label Grid.Row="18" Grid.Column="0" Content="ETA:" VerticalAlignment="Center"/>
-                <StackPanel Grid.Row="18" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="2" Height="30">
-                    <xctk:IntegerUpDown Width="40" Value="{Binding ActiveTrain.ETA_Hours}" Minimum="0" Maximum="23"/>
+                <Label Grid.Row="19" Grid.Column="0" Content="ETA:" VerticalAlignment="Center"/>
+                <StackPanel Grid.Row="19" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="2" Height="30">
+                    <xctk:IntegerUpDown Width="40" Value="{Binding ActiveTrain.ETA_Hours}" Minimum="0" Maximum="23" IsEnabled="False"/>
                     <TextBlock Text=":" VerticalAlignment="Center"/>
-                    <xctk:IntegerUpDown Width="40" Value="{Binding ActiveTrain.ETA_Minutes}" Minimum="0" Maximum="59"/>
+                    <xctk:IntegerUpDown Width="40" Value="{Binding ActiveTrain.ETA_Minutes}" Minimum="0" Maximum="59" IsEnabled="False"/>
                 </StackPanel>
 
                 <!-- ETD -->
-                <Label Grid.Row="19" Grid.Column="0" Content="ETD:" VerticalAlignment="Center"/>
-                <StackPanel Grid.Row="19" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="2" Height="30">
-                    <xctk:IntegerUpDown Width="40" Value="{Binding ActiveTrain.ETD_Hours}" Minimum="0" Maximum="23"/>
+                <Label Grid.Row="20" Grid.Column="0" Content="ETD:" VerticalAlignment="Center"/>
+                <StackPanel Grid.Row="20" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="2" Height="30">
+                    <xctk:IntegerUpDown Width="40" Value="{Binding ActiveTrain.ETD_Hours}" Minimum="0" Maximum="23" IsEnabled="False"/>
                     <TextBlock Text=":" VerticalAlignment="Center"/>
-                    <xctk:IntegerUpDown Width="40" Value="{Binding ActiveTrain.ETD_Minutes}" Minimum="0" Maximum="59"/>
+                    <xctk:IntegerUpDown Width="40" Value="{Binding ActiveTrain.ETD_Minutes}" Minimum="0" Maximum="59" IsEnabled="False"/>
                 </StackPanel>
 
                 <!-- Late By -->
-                <Label Grid.Row="20" Grid.Column="0" Content="Late By:" VerticalAlignment="Center"/>
-                <StackPanel Grid.Row="20" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="2" Height="30">
+                <Label Grid.Row="21" Grid.Column="0" Content="Late By:" VerticalAlignment="Center"/>
+                <StackPanel Grid.Row="21" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="2" Height="30">
                     <xctk:IntegerUpDown Width="40" Value="{Binding ActiveTrain.LateByHours}" Minimum="0" Maximum="23"/>
                     <TextBlock Text=":" VerticalAlignment="Center"/>
                     <xctk:IntegerUpDown Width="40" Value="{Binding ActiveTrain.LateByMinutes}" Minimum="0" Maximum="59"/>
                 </StackPanel>
 
                 <!-- PF No -->
-                <Label Grid.Row="21" Grid.Column="0" Content="PF No:" VerticalAlignment="Center"/>
-                <xctk:IntegerUpDown Grid.Row="21" Grid.Column="1" VerticalAlignment="Center" Margin="2" Value="{Binding ActiveTrain.PFNo}" Height="30"/>
+                <Label Grid.Row="22" Grid.Column="0" Content="PF No:" VerticalAlignment="Center"/>
+                <xctk:IntegerUpDown Grid.Row="22" Grid.Column="1" VerticalAlignment="Center" Margin="2" Value="{Binding ActiveTrain.PFNo}" Height="30"/>
 
                 <!-- CoachSequence -->
-                <Label Grid.Row="22" Grid.Column="0" Content="Coach Sequence:" VerticalAlignment="Center"/>
-                <TextBox VerticalContentAlignment="Center" Grid.Row="22" Grid.Column="1" VerticalAlignment="Center" Margin="2" Text="{Binding ActiveTrain.CoachSequence}" Height="30"/>
+                <Label Grid.Row="23" Grid.Column="0" Content="Coach Sequence:" VerticalAlignment="Center"/>
+                <TextBox VerticalContentAlignment="Center" Grid.Row="23" Grid.Column="1" VerticalAlignment="Center" Margin="2" Text="{Binding ActiveTrain.CoachSequence}" Height="30"/>
 
                 <!-- CoachList -->
                 <!--<Label Grid.Row="23" Grid.Column="0" Content="Coach List:" VerticalAlignment="Center"/>

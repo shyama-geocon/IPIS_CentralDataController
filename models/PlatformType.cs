@@ -1,6 +1,6 @@
 ﻿namespace IpisCentralDisplayController.models
 {
-    public enum PlatformType
+    public enum PlatformType 
     {
         Platform,
         Bridge,

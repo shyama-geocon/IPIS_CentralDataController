@@ -41,6 +41,6 @@
                 <Button Name="CancelButton" Content="Cancel" Height="24" Width="80" Margin="2"/>
             </StackPanel>
         </Grid>
-        <TextBlock Grid.Row="2" Text="(c) SEIL | 2024" HorizontalAlignment="Center" Margin="2"/>
+        <TextBlock Grid.Row="2" Text="(c) TOPGRIP | 2024" HorizontalAlignment="Center" Margin="2"/>
     </Grid>
 </Window>

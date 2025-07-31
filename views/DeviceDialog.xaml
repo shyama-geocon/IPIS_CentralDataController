@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:models="clr-namespace:IpisCentralDisplayController.models"
         Title="Device Dialog" Height="320" Width="400" WindowStartupLocation="CenterScreen">
+    
     <StackPanel Orientation="Vertical" Margin="2">
         <TextBlock Text="Device Details" FontWeight="Bold" FontSize="16" Margin="2"/>
         <Grid>
@@ -56,4 +57,5 @@
             <Button Content="Cancel" Height="30" Width="100" Margin="2" Click="CancelButton_Click"/>
         </StackPanel>
     </StackPanel>
+    
 </Window>

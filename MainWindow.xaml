@@ -32,7 +32,12 @@
         <conv:ADToStatusListConverter x:Key="ADToStatusListConverter"/>
         <conv:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
     </Window.Resources>
+   
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="37*"/>
+            <ColumnDefinition Width="1163*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -43,7 +48,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Menu Grid.Row="0">
+        <Menu Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,144">
             <MenuItem Header="File">
                 <MenuItem Header="Open"/>
                 <MenuItem Header="Save"/>
@@ -87,7 +92,7 @@
                 <MenuItem Header="About"/>
             </MenuItem>
         </Menu>
-        <Grid Grid.Row="2">
+        <Grid Grid.ColumnSpan="2" Margin="0,18,0,37">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -149,7 +154,7 @@
                 </StackPanel>
             </GroupBox>
         </Grid>
-        <Grid Grid.Row="4" >
+        <Grid Grid.ColumnSpan="2" Margin="0,125,0,0" Grid.RowSpan="5" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="*"/>
@@ -190,7 +195,9 @@
                                             <RowDefinition Height="*"/>
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
-                                        <DataGrid SelectionMode="Single"  Name="ActiveTrainDataGrid" ItemsSource="{Binding ActiveTrains}" SelectedItem="{Binding SelectedTrain, Mode=TwoWay}" AutoGenerateColumns="False" Grid.Row="0" Margin="0">
+                                        <DataGrid SelectionMode="Single"  Name="ActiveTrainDataGrid" ItemsSource="{Binding ActiveTrains}"
+                                                  SelectedItem="{Binding SelectedTrain, Mode=TwoWay}"
+                                                  AutoGenerateColumns="False" Grid.Row="0" Margin="0,0,0,34" Grid.RowSpan="2" >
                                             <DataGrid.ColumnHeaderStyle>
                                                 <Style TargetType="DataGridColumnHeader">
                                                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -261,7 +268,7 @@
                                                 </DataGridTemplateColumn>
 
                                                 <!-- STA -->
-                                                <DataGridTemplateColumn Header="STA" Width="60" SortMemberPath="STA">
+                                                <DataGridTemplateColumn Header="SCH ARR" Width="60" SortMemberPath="STA">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <TextBlock Text="{Binding STA, StringFormat={}{0:hh\\:mm}}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
@@ -270,7 +277,7 @@
                                                 </DataGridTemplateColumn>
 
                                                 <!-- STD -->
-                                                <DataGridTemplateColumn Header="STD" Width="60" SortMemberPath="STD">
+                                                <DataGridTemplateColumn Header="SCH DEP" Width="60" SortMemberPath="STD">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <TextBlock Text="{Binding STD, StringFormat={}{0:hh\\:mm}}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
@@ -278,29 +285,31 @@
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
 
+                                                <!-- A or D -->
                                                 <DataGridTemplateColumn Header="A/D" Width="50">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <ComboBox SelectedIndex="{Binding ADIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                            <ComboBox  
                                                               HorizontalAlignment="Stretch" 
                                                               VerticalAlignment="Center" 
                                                               Margin="2" 
+                                                              ItemsSource="{Binding ADOptions}"
+                                                              SelectedItem="{Binding SelectedADOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                               Height="24">
-                                                                <ComboBoxItem Content="A" />
-                                                                <ComboBoxItem Content="D" />
+                                                                <!--<ComboBoxItem Content="A" />
+                                                                <ComboBoxItem Content="D" />-->
                                                             </ComboBox>
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
 
-
-
+                                                <!-- Status -->
                                                 <DataGridTemplateColumn Header="STATUS" Width="150">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <ComboBox 
                                                             ItemsSource="{Binding StatusOptions}" 
-                                                            SelectedIndex="{Binding StatusIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                            SelectedItem="{Binding SelectedStatusOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                             HorizontalAlignment="Stretch" 
                                                             VerticalAlignment="Center" 
                                                             Margin="2" 
@@ -309,9 +318,8 @@
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
 
-
                                                 <!-- Late By (TimeSpan) -->
-                                                <DataGridTemplateColumn Header="LATE HH:mm" Width="100">
+                                                <DataGridTemplateColumn Header="LATE/RESCH hh:mm" Width="100">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -337,7 +345,7 @@
 
 
                                                 <!-- ETA -->
-                                                <DataGridTemplateColumn Header="ETA" Width="60" SortMemberPath="ETA">
+                                                <DataGridTemplateColumn Header="EXP ARR" Width="60" SortMemberPath="ETA">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <TextBlock Text="{Binding ETA, StringFormat={}{0:hh\\:mm}}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
@@ -346,7 +354,7 @@
                                                 </DataGridTemplateColumn>
 
                                                 <!-- ETD -->
-                                                <DataGridTemplateColumn Header="ETD" Width="60" SortMemberPath="ETD">
+                                                <DataGridTemplateColumn Header="EXP DEP" Width="60" SortMemberPath="ETD">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <TextBlock Text="{Binding ETD, StringFormat={}{0:hh\\:mm}}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
@@ -358,13 +366,13 @@
                                                 <DataGridTemplateColumn Header="PF." Width="60" SortMemberPath="PFNo">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <xctk:IntegerUpDown Height="24" Value="{Binding PFNo}" Minimum="0" Maximum="100" Width="40" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            <xctk:IntegerUpDown Height="24" Value="{Binding PFNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" Width="40" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
 
                                                 <!-- TADDB Update Checkbox -->
-                                                <DataGridCheckBoxColumn Header="TADDB" Binding="{Binding TADDB_Update}" Width="40">
+                                                <DataGridCheckBoxColumn Header="TADDB" Binding="{Binding TADDB_Update , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="40">
                                                     <DataGridCheckBoxColumn.ElementStyle>
                                                         <Style TargetType="CheckBox">
                                                             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -386,7 +394,7 @@
                                                 </DataGridCheckBoxColumn>
 
                                                 <!-- Announce Update Checkbox -->
-                                                <DataGridCheckBoxColumn Header="ANN" Binding="{Binding Announce_Update}" Width="40">
+                                                <DataGridCheckBoxColumn Header="ANN" Binding="{Binding Announce_Update, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="40">
                                                     <DataGridCheckBoxColumn.ElementStyle>
                                                         <Style TargetType="CheckBox">
                                                             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -397,6 +405,9 @@
                                                 </DataGridCheckBoxColumn>
                                             </DataGrid.Columns>
                                         </DataGrid>
+
+                                        
+                                        
                                         <Grid Grid.Row="1">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
@@ -413,8 +424,10 @@
                                                 <Button Content="ADD-NEW" Width="80" Height="30" Margin="2" Click="AddNewActiveTrain_Click"/>
                                                 <Button Content="GET-frm-DB" Width="80" Height="30" Margin="2" Click="AddFromDB_Click"/>
                                                 <Button Content="EDIT" Width="80" Height="30" Margin="2" Click="EditActiveTrain_Click"/>
-                                                <Button Content="DELETE" Width="80" Height="30" Margin="2" Click="DeleteActiveTrain_Click"/>
-                                                <Button Content="SAVE-to-DB" Width="80" Height="30" Margin="2" Click="SaveToDB_Click"/>
+                                                <!--<Button Content="DELETE" Width="80" Height="30" Margin="2" Click="DeleteActiveTrain_Click"/>
+                                                <Button Content="SAVE-to-DB" Width="80" Height="30" Margin="2" Click="SaveToDB_Click"/>-->
+                                                <Button Content="Save temp" Width="80" Height="30" Margin="2" Command="{Binding SaveCommandTemp}"/>
+                                                <Button Content="Load temp" Width="80" Height="30" Margin="2" Command="{Binding OpenCommandTemp}"/>
                                             </StackPanel>
 
                                         </Grid>
@@ -597,7 +610,9 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Button HorizontalAlignment="Left" Height="30" Width="80" Content="SET" Grid.Row="0" Grid.Column="0" Margin="2"/>
+                                        <Button HorizontalAlignment="Left" Height="30" Width="80"
+                                                Content="SET" Grid.Row="0" Grid.Column="0"
+                                                Margin="2" Command="{Binding TADDB_SET_Command }"/>
                                         <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" >
                                             <Button Height="30" Width="40" Content="CLR" Margin="2"/>
                                             <TextBlock VerticalAlignment="Center" Text="PF."/>
@@ -606,57 +621,100 @@
                                         <Button HorizontalAlignment="Left" Height="30" Width="80" Content="CLR-SEL" Grid.Row="2" Grid.Column="0" Margin="2"/>
                                     </Grid>
                                 </GroupBox>
+                                
+                                
                                 <GroupBox Header="ANNOUNCEMENT" Grid.Column="4" Margin="2" Background="AliceBlue">
                                     <Grid>
+                                        
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="*"/>
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
+                                        
                                         <Grid Grid.Row="0">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
+                                            
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
+                                            
                                             <CheckBox Content="Station" IsChecked="True" Grid.Row="0" Grid.Column="0" Height="30" Margin="2" VerticalContentAlignment="Center"/>
                                             <CheckBox Content="Monitor" Grid.Row="0" Grid.Column="1" Height="30" Margin="2" VerticalContentAlignment="Center"/>
                                             <TextBlock VerticalAlignment="Center" TextAlignment="Center" Grid.Row="1" Grid.Column="0" Margin="2" Text="REPEAT"/>
-                                            <xctk:IntegerUpDown Height="30" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="2" Value="1" Minimum="1" Maximum="10"/>
+                                            <!--<xctk:IntegerUpDown Height="30" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="2" Value="1" Minimum="1" Maximum="10"/>-->
+                                            <xctk:IntegerUpDown Height="30" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="2" Value="{Binding RepeatAnnouncement, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Minimum="1" Maximum="100"/>
+
+                                            <!--<CheckBox Content="12 hr" IsChecked="True" Grid.Row="2" Grid.Column="0" Height="30" Margin="2" VerticalContentAlignment="Center"/>
+                                            <CheckBox Content="24 hr" Grid.Row="2" Grid.Column="1" Height="30" Margin="2" VerticalContentAlignment="Center"/>-->
+
+                                            <RadioButton Content="12 hr" Grid.Row="2" Grid.Column="0" Height="30" Margin="2" VerticalContentAlignment="Center"
+                                                         IsChecked="{Binding SelectedFormat, Converter={StaticResource EnumToBoolConverter}, ConverterParameter= _12_hr }" />
+                                            <RadioButton Content="24 hr" Grid.Row="2" Grid.Column="1" Height="30" Margin="2" VerticalContentAlignment="Center"
+                                                         IsChecked="{Binding SelectedFormat, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=_24_hr }" />
+
                                         </Grid>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Margin="2">
-                                            <Button Width="40" Height="40" Margin="2" ToolTip="Play" Click="PlayButton_Click">
+                                            
+                                            
+                                            <!--<Button Width="40" Height="40" Margin="2" ToolTip="Play" Click="PlayButton_Click">--><!--
+                                            <Button Width="40" Height="40" Margin="2" ToolTip="Play" Command="{Binding PlayAnnCommand}">
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE768;" VerticalAlignment="Center" FontSize="16"/>
+                                                    --><!-- Play Icon --><!--
+                                                </StackPanel>
+                                            </Button>-->
+
+                                            <!--<Button Width="40" Height="40" Margin="2" ToolTip="Play" Click="PlayButton_Click">-->
+                                            <Button Width="40" Height="40" Margin="2"  ToolTip="{Binding PlayPauseToolTip , Mode=TwoWay}" Command="{Binding PlayPauseAnnCommand}">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="{Binding Button1Icon, Mode=TwoWay}" VerticalAlignment="Center" FontSize="16"/>
                                                     <!-- Play Icon -->
                                                 </StackPanel>
                                             </Button>
 
-                                            <Button Width="40" Height="40" Margin="2" ToolTip="Pause" Click="PauseButton_Click">
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE769;" VerticalAlignment="Center" FontSize="16"/>
-                                                    <!-- Pause Icon -->
-                                                </StackPanel>
-                                            </Button>
-
-                                            <Button Width="40" Height="40" Margin="2" ToolTip="Stop" Click="StopButton_Click">
+                                            <!--<Button Width="40" Height="40" Margin="2" ToolTip="Stop" Click="StopButton_Click">-->
+                                            <Button Width="40" Height="40" Margin="2" ToolTip="Stop" Command="{Binding StopAnnCommand}">
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE15B;" VerticalAlignment="Center" FontSize="16"/>
                                                     <!-- Stop Icon -->
                                                 </StackPanel>
                                             </Button>
 
+                                            <!--<Button Width="40" Height="40" Margin="2" ToolTip="Pause" Click="PauseButton_Click">--><!--
+                                            <Button Width="40" Height="40" Margin="2" ToolTip="Pause" Command="{Binding PauseAnnCommand}">                                                
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE769;" VerticalAlignment="Center" FontSize="16"/>
+                                                    --><!-- Pause Icon --><!--
+                                                </StackPanel>
+                                            </Button>
+
+                                            --><!--<Button Width="40" Height="40" Margin="2" ToolTip="Stop" Click="StopButton_Click">--><!--
+                                            <Button Width="40" Height="40" Margin="2" ToolTip="Stop" Command="{Binding StopAnnCommand}">                                                
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE15B;" VerticalAlignment="Center" FontSize="16"/>
+                                                    --><!-- Stop Icon --><!--
+                                                </StackPanel>
+                                            </Button>
+
                                             <ToggleButton Width="40" Height="40" Margin="2" ToolTip="Mute" Checked="MuteButton_Checked" Unchecked="MuteButton_Unchecked">
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE198;" VerticalAlignment="Center" FontSize="16"/>
-                                                    <!-- Mute Icon -->
+                                                    --><!-- Mute Icon --><!--
                                                 </StackPanel>
-                                            </ToggleButton>
+                                            </ToggleButton>-->
+                                            
+                                            
+                                            
                                         </StackPanel>
                                     </Grid>
                                 </GroupBox>
+                                
+                                
                                 <GroupBox Header="SPEAK" Grid.Column="5" Margin="2" Background="AliceBlue">
                                     <Grid>
                                         <Grid.RowDefinitions>
@@ -992,16 +1050,41 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <GroupBox Header="Display List" Grid.Column="0">
-                                <DataGrid Name="DisplaysDataGrid" AutoGenerateColumns="False" Margin="2">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Platform" Binding="{Binding PlatformNumber}" Width="*"/>
-                                        <DataGridTextColumn Header="Device Type" Binding="{Binding DeviceType}" Width="*"/>
-                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
-                                        <DataGridTextColumn Header="IP Address" Binding="{Binding IpAddress}" Width="*"/>
-                                        <DataGridCheckBoxColumn Header="Status" Binding="{Binding Status}" Width="*"/>
-                                        <DataGridTextColumn Header="Last Status" Binding="{Binding LastStatusWhen}" Width="*"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Grid.Row="0" Name="DisplaysDataGrid" AutoGenerateColumns="False" Margin="2" ItemsSource="{Binding DeviceStatusList}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Platform" Binding="{Binding PlatformNumber}" Width="Auto"/>
+                                            <DataGridTextColumn Header="Device Type" Binding="{Binding DeviceType}" Width="Auto"/>
+                                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                                            <DataGridTextColumn Header="IP Address" Binding="{Binding IpAddress}" Width="*"/>
+                                            <DataGridTextColumn Header="Status" Binding="{Binding StatusDisplay}" Width="Auto" >
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="True">
+                                                                <Setter Property="Foreground" Value="Green"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Status}" Value="False">
+                                                                <Setter Property="Foreground" Value="Red"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Last Status" Binding="{Binding LastStatusFormatted}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <!--<StackPanel Grid.Row="1"  Orientation="Horizontal" HorizontalAlignment="Center" Margin="10, 5, 10, 5">
+                                        <Button Name="QueryButton" Content="Query" Width="100" Height="30" Margin="5" Click="QueryButton_Click"/>
+                                        <Button Name="TestButton" Content="Test" Width="100" Height="30" Margin="5" Click="TestButton_Click"/>
+                                    </StackPanel>-->
+                                </Grid>
                             </GroupBox>
                             <GroupBox Header="Test Display" Grid.Column="1">
                                 <Grid>
@@ -1143,11 +1226,6 @@
                                                                 <TextBlock FontFamily="Arial" FontWeight="Bold" x:Name="tb_canvas_sldb_5" HorizontalAlignment="Center" FontSize="16" Width="22" Height="16" Text="{Binding ElementName=ud_pf_no, Path=Value}"
                                        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" Background="Transparent" Foreground="#FF0000"
                                            Canvas.Top="-2" Canvas.Left="314"/>
-                                                                <!-- Hindi-->
-                                                                <!--<TextBlock FontFamily="Arial" FontWeight="Bold" x:Name="tb_canvas_sldb_2" HorizontalAlignment="Center" FontSize="13" Width="192" Height="16" Text="{Binding ElementName=tb_train_name, Path=Text}"
-                                       TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased" TextWrapping="Wrap" TextAlignment="Left" VerticalAlignment="Center" Background="Transparent" Foreground="#FF0000"
-                                           Canvas.Top="1" Canvas.Left="58"/>-->
-
                                                             </Canvas>
                                                         </GroupBox>
                                                         <GroupBox x:Name="gb_agdb" Grid.Row="1" Grid.Column="0" Margin="2">
@@ -1405,38 +1483,6 @@
                                        TextWrapping="NoWrap" TextAlignment="Center" VerticalAlignment="Center" 
                                        Background="{Binding BackgroundColor5}" Foreground="{Binding TextColor5}" Canvas.Top="0" Canvas.Left="314"/>
 
-
-                                                                <!--<TextBlock FontFamily="Arial" FontWeight="Bold" x:Name="tb_canvas_sldb_1_rgb" HorizontalAlignment="Center" FontSize="16" Width="55" Height="16" 
-                                       Text="{Binding ElementName=ud_train_no_rgb, Path=Value}"
-                                       TextWrapping="NoWrap"  TextAlignment="Left" VerticalAlignment="Center" 
-                                       Background="{Binding BackgroundColor1}" Foreground="{Binding TextColor1}" Canvas.Top="-2" Canvas.Left="0"/>
-
-                                    <TextBlock FontFamily="Arial" FontWeight="Bold" x:Name="tb_canvas_sldb_2_rgb" HorizontalAlignment="Center" FontSize="16" Width="192" Height="16" 
-                                       Text="{Binding ElementName=tb_train_name_rgb, Path=Text}"
-                                       TextWrapping="NoWrap" TextAlignment="Left" VerticalAlignment="Center" 
-                                       Background="{Binding BackgroundColor2}" Foreground="{Binding TextColor2}" Canvas.Top="-2" Canvas.Left="58"/>
-
-                                    <TextBlock FontFamily="Arial" FontWeight="Bold" x:Name="tb_canvas_sldb_3_rgb" HorizontalAlignment="Center" FontSize="16" Width="45" Height="16" 
-                                       Text="{Binding ElementName=tb_exp_time_rgb, Path=Text}"
-                                       TextWrapping="NoWrap" TextAlignment="Left" VerticalAlignment="Center" 
-                                       Background="{Binding BackgroundColor3}" Foreground="{Binding TextColor3}" Canvas.Top="-2" Canvas.Left="253"/>
-
-                                    <TextBlock FontFamily="Arial" FontWeight="Bold" x:Name="tb_canvas_sldb_4_rgb" HorizontalAlignment="Center" FontSize="16" Width="10" Height="16" 
-                                       Text="{Binding ElementName=cb_ad_rgb, Path=SelectionBoxItem}"
-                                       TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" 
-                                       Background="{Binding BackgroundColor4}" Foreground="{Binding TextColor4}" Canvas.Top="-2" Canvas.Left="301"/>
-
-                                    <TextBlock FontFamily="Arial" FontWeight="Bold" x:Name="tb_canvas_sldb_5_rgb" HorizontalAlignment="Center" FontSize="16" Width="22" Height="16" 
-                                       Text="{Binding ElementName=ud_pf_no_rgb, Path=Value}"
-                                       TextWrapping="NoWrap" TextAlignment="Center" VerticalAlignment="Center" 
-                                       Background="{Binding BackgroundColor5}" Foreground="{Binding TextColor5}" Canvas.Top="-2" Canvas.Left="314"/>-->
-
-
-                                                                <!-- Hindi-->
-                                                                <!--<TextBlock FontFamily="Arial" FontWeight="Bold" x:Name="tb_canvas_sldb_2" HorizontalAlignment="Center" FontSize="13" Width="192" Height="16" Text="{Binding ElementName=tb_train_name, Path=Text}"
-                                       TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Aliased" TextWrapping="Wrap" TextAlignment="Left" VerticalAlignment="Center" Background="Transparent" Foreground="#FF0000"
-                                           Canvas.Top="1" Canvas.Left="58"/>-->
-
                                                             </Canvas>
                                                         </GroupBox>
                                                     </Grid>
@@ -1521,8 +1567,6 @@
                                                         <StackPanel Grid.Row="1" Margin="2" Orientation="Horizontal" HorizontalAlignment="Center">
                                                             <Button x:Name="btn_read_config" Content="READ" Click="read_config" Height="30" Width="80" HorizontalAlignment="Center" Margin="2"/>
                                                             <Button x:Name="btn_write_config" Content="WRITE" Click="write_config" Height="30" Width="80" HorizontalAlignment="Center" Margin="2"/>
-                                                            <!--<Button x:Name="btn_load_default" Content="LOAD DFLT" Click="bt_load_default" Height="30" Width="80" HorizontalAlignment="Center" Margin="20,2,2,2"/>
-                                <Button x:Name="btn_save_as_default" Content="SAVE AS DFLT" Click="bt_save_default" Height="30" Width="80" HorizontalAlignment="Center" Margin="2"/>-->
                                                         </StackPanel>
                                                     </Grid>
                                                 </GroupBox>
@@ -1574,7 +1618,9 @@
                             </StackPanel>
                         </TabItem.Header>
                         <Grid Margin="2">
+                            
                             <TabControl TabStripPlacement="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                
                                 <TabItem Header="User Categories" Name="UserCategoriesTab" Width="160" Height="30">
                                     <Grid>
                                         <Grid.RowDefinitions>
@@ -1740,7 +1786,7 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <GroupBox Header="Platforms" Grid.Column="0" Margin="2">
-                                                <DataGrid Name="PlatformDataGrid" AutoGenerateColumns="False" Margin="2"
+                                                <DataGrid Name="PlatformDataGrid" AutoGenerateColumns="False" Margin="1,0,3,0"
                                               ItemsSource="{Binding Platforms}"
                                               SelectedItem="{Binding SelectedPlatform}">
                                                     <DataGrid.Columns>
@@ -1845,8 +1891,8 @@
                                                     <!-- Language -->
                                                     <TextBlock Text="Language" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
                                                     <ComboBox Grid.Row="1" Grid.Column="1" Margin="2" Height="24"
-                  ItemsSource="{x:Static models:RegionalLanguageEnum.Values}"
-                  SelectedItem="{Binding SelectedStyle.Language, Mode=TwoWay}"/>
+                                                              ItemsSource="{x:Static models:RegionalLanguageEnum.Values}"
+                                                              SelectedItem="{Binding SelectedStyle.Language, Mode=TwoWay}"/>
 
                                                     <!-- Font Size -->
                                                     <TextBlock Text="Font Size" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
@@ -1855,7 +1901,7 @@
                                                     <!-- Font Weight -->
                                                     <TextBlock Text="Font Weight" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
                                                     <ComboBox Grid.Row="3" Grid.Column="1" Margin="2" Height="24"
-                  SelectedIndex="{Binding SelectedStyle.FontWeight, Mode=TwoWay}">
+                                                              SelectedIndex="{Binding SelectedStyle.FontWeight, Mode=TwoWay}">
                                                         <ComboBoxItem Content="Normal" />
                                                         <ComboBoxItem Content="Bold" />
                                                         <ComboBoxItem Content="Thin" />
@@ -1963,6 +2009,7 @@
                                         </Grid>
                                     </Grid>
                                 </TabItem>
+                                
                                 <TabItem Header="Display Styles (Color)" Name="DisplayStylesRGBTab" Width="160" Height="30">
                                     <Grid>
                                         <Grid.RowDefinitions>
@@ -2202,6 +2249,7 @@
                                         </Grid>
                                     </Grid>
                                 </TabItem>
+                                
                                 <TabItem Header="RMS Server" Name="RMSServerTab" Width="160" Height="30">
                                     <Grid Margin="2">
                                         <Grid.RowDefinitions>
@@ -2357,6 +2405,7 @@
                                     </Grid>
                                 </TabItem>
 
+                                <!-- Automation Tab -->
                                 <TabItem Header="Automation" Name="AutomationSettingsTab" Width="160" Height="30">
                                     <Grid Margin="2">
                                         <Grid.RowDefinitions>
@@ -2424,7 +2473,133 @@
                                     </Grid>
                                 </TabItem>
 
-                            </TabControl>
+                                <!-- Device Configuration Tab -->
+                                <TabItem Header="Device Configuration" Name="DeviceConfigurationTab" Width="160" Height="30">
+                                    <Grid>
+                                        
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <!--<Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>                                           
+                                        </Grid.ColumnDefinitions>-->
+
+                                        <TextBlock Text="Device Configuration Management" FontWeight="Bold" FontSize="18" Margin="2"/>                                                                     
+                                        
+                                        <Grid Grid.Row="1" >
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <!--<RowDefinition Height="*"/>-->
+                                            </Grid.RowDefinitions>
+                                            <GroupBox Grid.Row="0" Margin="2" Header="Settings-Trial">
+                                                <Grid Margin="2">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="2*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                     <!--CheckBox Row--> 
+                                                    <TextBlock Text=" " Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    
+                                                     <!--Speed--> 
+                                                    <TextBlock Text="Speed" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="2" Height="24"
+                                                                ItemsSource="{Binding SpeedOptions}"
+                                                                SelectedItem="{Binding SelectedSpeedOption, Mode=TwoWay}">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <!--<Image Source="{Binding Icon}" Width="16" Height="16" Margin="2"/>-->
+                                                                    <TextBlock Text="{Binding DisplayName}" Margin="2"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+
+                                                    <!--Effect-->
+                                                    <TextBlock Text="Effect" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    <ComboBox Grid.Row="2" Grid.Column="1" Margin="2" Height="24" 
+                                                              ItemsSource="{Binding EffectOptions}"
+                                                              SelectedItem="{Binding  SelectedEffectOption, Mode=TwoWay}">
+                                                        <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <!--<Image Source="{Binding Icon}" Width="16" Height="16" Margin="2"/>-->
+                                                                    <TextBlock Text="{Binding DisplayName}" Margin="2"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+
+                                                    <!--Letter Size--> 
+                                                    <TextBlock Text="Letter Size" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    <ComboBox Grid.Row="3" Grid.Column="1" Margin="2" Height="24" 
+                                                              ItemsSource="{Binding LetterSizeOptions}"
+                                                              SelectedItem="{Binding  SelectedLetterSizeOption, Mode=TwoWay}">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <!--<Image Source="{Binding Icon}" Width="16" Height="16" Margin="2"/>-->
+                                                                    <TextBlock Text="{Binding DisplayName}" Margin="2"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+
+                                                    <!--Time Delay -->
+                                                    <TextBlock Text="Time Delay (sec OR MINUTE CHECK ??)" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    <xctk:IntegerUpDown Grid.Row="4" Grid.Column="1" Margin="2" Height="24"
+                                                                        Maximum="255" Minimum="0"
+                                                                        Value="{Binding TimeDelay, Mode=TwoWay}"/>
+
+                                                    <!--Data Timeout -->
+                                                    <TextBlock Text="Data Timeout (min)" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    <xctk:IntegerUpDown Grid.Row="5" Grid.Column="1" Margin="2" Height="24"
+                                                                        Maximum="240" Minimum="0"
+                                                                        Value="{Binding DataTimeout, Mode=TwoWay}"/>
+
+                                                    <!--Effect-->
+                                                    <TextBlock Text="Effect" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    <ComboBox Grid.Row="2" Grid.Column="1" Margin="2" Height="24" 
+                                                              ItemsSource="{Binding IntensityOptions}"
+                                                              SelectedItem="{Binding  SelectedEffectOption, Mode=TwoWay}">      
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <!--<Image Source="{Binding Icon}" Width="16" Height="16" Margin="2"/>-->
+                                                                    <TextBlock Text="{Binding DisplayName}" Margin="2"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+
+
+                                                    <!--Save Button--> 
+                                                    <Button Grid.Row="9" Grid.ColumnSpan="2" Content="Save" Margin="2" Height="30" Width="100" Command="{Binding SaveCommand}"/>
+                                                </Grid>
+                                            </GroupBox>
+
+                                           
+                                        </Grid>
+                                    </Grid>
+                                </TabItem>
+
+
+                                  </TabControl>
                         </Grid>
                     </TabItem>
                     <TabItem Width="120" Height="30">
@@ -3247,12 +3422,12 @@
                 </GroupBox>
             </Grid>
         </Grid>
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="1" Margin="563,484,0,0">
             <!-- Add common options controls here -->
             <!--<Label Content="Common Option 1"/>
             <Button Content="Option 1"/>-->
         </StackPanel>
-        <Grid Grid.Row="6" Margin="2">
+        <Grid Grid.Row="6" Margin="2,2,2,2" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -3260,7 +3435,7 @@
             <StatusBar Grid.Row="0" Grid.Column="0" Height="24" Margin="2">
                 <TextBlock x:Name="tb_sb" Height="24" Text="Status"/>
             </StatusBar>
-            <TextBlock Text=" (c) 2024 | SEIL | All Rights Reserved" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Height="24" Margin="20,2,2,2"/>
+            <TextBlock Text=" (c) 2024 | TOPGRIP | All Rights Reserved" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Height="24" Margin="20,2,2,2"/>
         </Grid>
     </Grid>
 </Window>

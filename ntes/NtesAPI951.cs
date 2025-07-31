@@ -10,7 +10,6 @@ namespace IpisCentralDisplayController
     public class NtesAPI951
     {
         private static readonly HttpClient client = new HttpClient();
-
         public async Task<NtesApiResponse951> GetTrainsAsync(string station, int nextMins)
         {
             try
@@ -52,5 +51,4 @@ namespace IpisCentralDisplayController
             }
         }
     }
-
 }

@@ -28,6 +28,30 @@ namespace IpisCentralDisplayController.views
             StationView.Filter = StationFilter;
         }
 
+        
+
+        #region ForTerminatedAtPOPup
+
+        private string _fieldText;
+        public string FieldText
+        {
+            get { return _fieldText; }
+            set { _fieldText = value; }
+        }
+
+
+        private string _title;
+        public string Title
+        {
+            get { return _title; }
+            set { _title = value; }
+        }
+
+        #endregion
+
+
+
+
         public ObservableCollection<Station> Stations { get; set; }
         public ICollectionView StationView { get; set; }
 

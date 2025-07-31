@@ -75,10 +75,10 @@ namespace IpisCentralDisplayController.Managers
                     throw new InvalidOperationException("Primary server can only be on platform 0.");
                 }
 
-                if (platform.Devices.Any(d => d.DeviceType == DeviceType.CDS || d.DeviceType == DeviceType.PDC) && (device.DeviceType == DeviceType.CDS || device.DeviceType == DeviceType.PDC))
-                {
-                    throw new InvalidOperationException("There can only be one CDS or PDC on a platform.");
-                }
+                //if (platform.Devices.Any(d => d.DeviceType == DeviceType.CDS || d.DeviceType == DeviceType.PDC) && (device.DeviceType == DeviceType.CDS || device.DeviceType == DeviceType.PDC))
+                //{
+                //    throw new InvalidOperationException("There can only be one CDS or PDC on a platform.");
+                //}
 
                 platform.Devices.Add(device);
                 SavePlatforms(platforms);

@@ -5,16 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Net.Http;
+
 
 namespace IpisCentralDisplayController.services
 {
-    using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     public class RMSService : IService
     {
         private bool _isRunning;

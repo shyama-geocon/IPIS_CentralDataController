@@ -13,7 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Threading;
+using System.Windows.Threading;       
 using Newtonsoft.Json;
 using System.Net.Http;
 using IpisCentralDisplayController.ntes;
@@ -208,7 +208,7 @@ namespace IpisCentralDisplayController
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static string applicationTitle = "IP based IPIS | Central Display Controller";
+        private static string applicationTitle = "TOPGRIP | IP based IPIS | Central Display Controller";
         private static string softwareVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         private static string buildDateTime = RetrieveLinkerTimestamp().ToString("yyyy-MM-dd HH:mm:ss");
 
@@ -279,6 +279,8 @@ namespace IpisCentralDisplayController
         private RmsServerSettings _rmsSettings;
         private RMSService _rmsService;
 
+        private DeviceStatusService _deviceStatusService;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -318,8 +320,14 @@ namespace IpisCentralDisplayController
             _mainViewModel.LoadTimelines(_timelineManager.LoadTimelines());
             _mainViewModel.LoadActiveTrains(_activeTrainsManager.LoadActiveTrains());
 
+
+           //_mainViewModel.ActiveTrains =
+           //_mainViewModel.LoadActiveTrains(_mainViewModel.ActiveTrains.ToList());
+
+
             //just today's logs 
             _mainViewModel.LoadEventLogs(_eventLogManager.LoadEventLogs());
+
 
             DataContext = _mainViewModel;
             Loaded += MainWindow_Loaded;
@@ -353,23 +361,24 @@ namespace IpisCentralDisplayController
             EnsureDefaultTimeline();
             tb_timeline.Text = _mainViewModel.SelectedTimeline.Name;
 
-            var loginWindow = new LoginWindow(_userManager);
-            bool? loginResult = loginWindow.ShowDialog();
+            //SP
+            //var loginWindow = new LoginWindow(_userManager);
+            //bool? loginResult = loginWindow.ShowDialog();
 
-            if (loginResult == true)
-            {
-                LogEvent($"User '{_userManager.CurrentUser.Name}' successfully logged in.", EventType.Information, "Login");
+            //if (loginResult == true)
+            //{
+            //    LogEvent($"User '{_userManager.CurrentUser.Name}' successfully logged in.", EventType.Information, "Login");
 
-                CheckAndPromptForStationInfo();
-                PopulateStatusFields();
+            //    CheckAndPromptForStationInfo();
+            //    //PopulateStatusFields();
 
-                // await _viewModel.FetchAndDisplayTrains();
-            }
-            else
-            {
-                // Handle login cancellation or failure
-                this.Close(); // Close the MainWindow if login is not successful
-            }
+            //    // await _viewModel.FetchAndDisplayTrains();
+            //}
+            //else
+            //{
+            //    // Handle login cancellation or failure
+            //    this.Close(); // Close the MainWindow if login is not successful
+            //}
         }
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -391,20 +400,40 @@ namespace IpisCentralDisplayController
                 MessageBox.Show("Invalid RMS server settings. Please configure valid settings to start the service.", "Settings Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 Console.WriteLine("RMSService could not be started due to invalid settings.");
             }
+
+            var platforms = _platformDeviceManager.LoadPlatforms();
+            if (platforms != null && platforms.Any())
+            {
+                _deviceStatusService = new DeviceStatusService(platforms);
+                _deviceStatusService.OnStatusUpdateComplete += DeviceStatusService_OnStatusUpdateComplete;
+                _deviceStatusService.Start();
+                Console.WriteLine("DeviceStatusService started successfully with valid platform settings.");
+            }
+            else
+            {
+                MessageBox.Show("Invalid or missing platform display settings. Please configure valid settings to start the DeviceStatusService.", "Settings Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Console.WriteLine("DeviceStatusService could not be started due to invalid platform settings.");
+            }
+
             //var capService = new CAPService();
             //var backupService = new BackupService();
-            //var displayService = new DisplayService();
+            //var DeviceStatusService = new DeviceStatusService();
             //var announcementService = new AnnouncementService();
 
             //    _serviceManager = new ServiceManager(new List<IService>
             //{
-            //    rmsService/*, capService, backupService, displayService, announcementService*/
+            //    rmsService/*, capService, backupService, DeviceStatusService, announcementService*/
             //});
 
             //    _serviceManager.StartAllServices();
 
             //check for RMS
             TestConnection_Click(null, null);
+        }
+
+        private void DeviceStatusService_OnStatusUpdateComplete(string jsonResponse)
+        {
+            _mainViewModel.UpdateDeviceStatusList(jsonResponse);
         }
 
         private void OnAppExit(object sender, EventArgs e)
@@ -1506,6 +1535,9 @@ namespace IpisCentralDisplayController
                 _mainViewModel.Platforms.Add(platform);
             }
         }
+
+      
+
 
         private void AddPlatformButton_Click(object sender, RoutedEventArgs e)
         {
@@ -4424,7 +4456,6 @@ namespace IpisCentralDisplayController
         //private void AddNewActiveTrain_Click(object sender, RoutedEventArgs e)
         //{
         //    var newTrain = new ActiveTrain();
-
         //    var window = new ActiveTrainWindow(newTrain);
         //    if (window.ShowDialog() == true)
         //    {
@@ -4901,6 +4932,42 @@ namespace IpisCentralDisplayController
             }
         }
 
+        private void TestButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openFileDialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
+                };
+
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    string jsonResponse = File.ReadAllText(openFileDialog.FileName);
+
+                    _mainViewModel.UpdateDeviceStatusList(jsonResponse);
+
+                    MessageBox.Show("Device status updated from test JSON file.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to update device status from JSON file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void QueryButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void UpdateDeviceStatusUI(string jsonResponse)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                _mainViewModel.UpdateDeviceStatusList(jsonResponse);
+            });
+        }
 
         private void MuteButton_Unchecked(object sender, RoutedEventArgs e)
         {

@@ -59,7 +59,8 @@ namespace IpisCentralDisplayController.managers
             existingActiveTrain.DestNameRegional = activeTrain.DestNameRegional;
             existingActiveTrain.STA = activeTrain.STA;
             existingActiveTrain.STD = activeTrain.STD;
-            existingActiveTrain.AD = activeTrain.AD;
+            //existingActiveTrain.AD = activeTrain.AD;
+            existingActiveTrain.SelectedADOption = activeTrain.SelectedADOption;
             existingActiveTrain.Status = activeTrain.Status;
             existingActiveTrain.LateBy = activeTrain.LateBy;
             existingActiveTrain.ETA = activeTrain.ETA;

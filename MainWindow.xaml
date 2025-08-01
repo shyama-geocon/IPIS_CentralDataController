@@ -2490,10 +2490,69 @@
                                         
                                         <Grid Grid.Row="1" >
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="*"/>
-                                                <!--<RowDefinition Height="*"/>-->
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
-                                            <GroupBox Grid.Row="0" Margin="2" Header="Settings-Trial">
+
+                                            <GroupBox Grid.Row="0" Margin="2" Header="Device Selection">
+                                                <Grid Margin="2">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                             
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="2*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!--Platforms/ Concourse-->
+                                                    <TextBlock Text="Platforms / Concourse" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    <ComboBox Grid.Row="0" Grid.Column="1" Margin="2" Height="24"
+                                                             ItemsSource="{Binding Platforms}"
+                                                             SelectedItem="{Binding SelectedPlatform, Mode=TwoWay}">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <!--<Image Source="{Binding Icon}" Width="16" Height="16" Margin="2"/>-->
+                                                                    <TextBlock Text="{Binding PlatformNumber}" Margin="2"/>
+                                                                    <TextBlock Text=" : " Margin="2"/>
+                                                                    <TextBlock Text="{Binding PlatformType}" Margin="2"/>
+                                                                    <!--<TextBlock Text=" : " Margin="2"/>
+                                                                    <TextBlock Text="{Binding Description}" Margin="2"/>-->
+                                                                    <TextBlock Text=" : " Margin="2"/>
+                                                                    <TextBlock Text="{Binding Subnet}" Margin="2"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+
+                                                    <!-- Device-->
+                                                    <TextBlock Text="Device" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="2" Height="24" 
+                                                               ItemsSource="{Binding SelectedPlatform.Devices}"
+                                                               SelectedItem="{Binding  SelectedDevice, Mode=TwoWay}">     
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="{Binding DeviceType}" Margin="2"/>
+                                                                    <TextBlock Text=" : " Margin="2"/>
+                                                                    <TextBlock Text="{Binding IpAddress}" Margin="2"/>
+                                                                    <!--<TextBlock Text=" : " Margin="2"/>
+                                                                    <TextBlock Text="{Binding Description}" Margin="2"/>-->
+                                                                    <!--<TextBlock Text=" : " Margin="2"/>
+                                                                    <TextBlock Text="{Binding Subnet}" Margin="2"/>-->
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+
+
+
+                                                </Grid>
+                                            </GroupBox>
+
+                                            <GroupBox Grid.Row="1" Margin="2" Header="Configuration Options">
                                                 <Grid Margin="2">
                                                     <Grid.RowDefinitions>
                                                         <RowDefinition Height="Auto"/>
@@ -2513,9 +2572,14 @@
                                                     </Grid.ColumnDefinitions>
 
                                                      <!--CheckBox Row--> 
-                                                    <TextBlock Text=" " Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                                    
-                                                     <!--Speed--> 
+                                                    <!--<TextBlock Text=" " Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>-->
+                                                    <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="2"
+                                                                VerticalAlignment="Center" HorizontalAlignment="Left">
+                                                        <CheckBox Content="Reverse Video" IsChecked="{Binding ReverseVideo, Mode=TwoWay}" Margin="2"/>
+                                                        <CheckBox Content="Enable Device" IsChecked="{Binding DeviceIsEnabled, Mode=TwoWay}" Margin="2"/>
+                                                    </StackPanel>
+
+                                                    <!--Speed--> 
                                                     <TextBlock Text="Speed" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
                                                     <ComboBox Grid.Row="1" Grid.Column="1" Margin="2" Height="24"
                                                                 ItemsSource="{Binding SpeedOptions}"
@@ -2572,11 +2636,11 @@
                                                                         Maximum="240" Minimum="0"
                                                                         Value="{Binding DataTimeout, Mode=TwoWay}"/>
 
-                                                    <!--Effect-->
-                                                    <TextBlock Text="Effect" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
-                                                    <ComboBox Grid.Row="2" Grid.Column="1" Margin="2" Height="24" 
+                                                    <!--Intensity-->
+                                                    <TextBlock Text="Intensity Level" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    <ComboBox Grid.Row="6" Grid.Column="1" Margin="2" Height="24" 
                                                               ItemsSource="{Binding IntensityOptions}"
-                                                              SelectedItem="{Binding  SelectedEffectOption, Mode=TwoWay}">      
+                                                              SelectedItem="{Binding  SelectedIntensityOption, Mode=TwoWay}">      
                                                         <ComboBox.ItemTemplate>
                                                             <DataTemplate>
                                                                 <StackPanel Orientation="Horizontal">
@@ -2598,6 +2662,7 @@
                                     </Grid>
                                 </TabItem>
 
+                                
 
                                   </TabControl>
                         </Grid>

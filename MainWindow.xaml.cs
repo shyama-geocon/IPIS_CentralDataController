@@ -1608,8 +1608,19 @@ namespace IpisCentralDisplayController
                         IsEnabled = dialog.IsEnabled,
                         Description = dialog.Description,
                         Created = DateTime.Now,
-                        Updated = DateTime.Now
+                        Updated = DateTime.Now,
+                        //DIALOG
+                        SpeedByte = 0x02, //medium
+                        EffectByte = 0x01, //Curtain Left to Right
+                        LetterSizeByte= 0x02, //10
+                        IntensityByte = 0x03, // 75%
+                        TimeDelayValueByte = 0x0F,
+                        DataTimeoutValueByte = 0x0F,
+                        IsReverseVideo = false,
+                        //IsEnabled = true
+
                     };
+
                     if (_platformDeviceManager.AddDevice(_mainViewModel.SelectedPlatform.PlatformNumber, newDevice))
                     {
                         _mainViewModel.Devices.Add(newDevice);

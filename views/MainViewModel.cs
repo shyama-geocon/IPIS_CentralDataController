@@ -445,7 +445,7 @@ namespace IpisCentralDisplayController.views
             SpeedOptions = new ObservableCollection<ConfigOptionObject>
             {
                 new ConfigOptionObject { DisplayName = "Lowest", ByteValue = 0x00 },
-                new ConfigOptionObject { DisplayName = "Lowest", ByteValue = 0x01 },
+                new ConfigOptionObject { DisplayName = "Low", ByteValue = 0x01 },
                 new ConfigOptionObject { DisplayName = "Medium", ByteValue = 0x02 },
                 new ConfigOptionObject { DisplayName = "High", ByteValue = 0x03 },
                 new ConfigOptionObject { DisplayName = "Highest", ByteValue = 0x04 }
@@ -477,10 +477,10 @@ namespace IpisCentralDisplayController.views
 
             IntensityOptions = new ObservableCollection<ConfigOptionObject>
             {
-                new ConfigOptionObject { DisplayName = "25% ", ByteValue = 0x00 },
-                new ConfigOptionObject { DisplayName = "50% ", ByteValue = 0x01 },
-                new ConfigOptionObject { DisplayName = "75% ", ByteValue = 0x02 },
-                new ConfigOptionObject { DisplayName = "100% ", ByteValue = 0x03 },
+                new ConfigOptionObject { DisplayName = "25% ", ByteValue = 0x01 },
+                new ConfigOptionObject { DisplayName = "50% ", ByteValue = 0x02 },
+                new ConfigOptionObject { DisplayName = "75% ", ByteValue = 0x03 },
+                new ConfigOptionObject { DisplayName = "100% ", ByteValue = 0x43 },
 
             };
 
@@ -566,7 +566,6 @@ namespace IpisCentralDisplayController.views
 
 
         #region DeviceCongigurationsOptions
-
         public ObservableCollection<ConfigOptionObject> SpeedOptions { get; set; }
         public ObservableCollection<ConfigOptionObject> EffectOptions { get; set; }
         public ObservableCollection<ConfigOptionObject> LetterSizeOptions { get; set; }
@@ -677,7 +676,6 @@ namespace IpisCentralDisplayController.views
 
         #region TADDB_SET_Command
         //public RelayCommand TADDB_SET_Command => new RelayCommand(execute => TADDB_SET(), canExecute => CanExecuteTADDB_SET());
-
         //asynchronous relay command, part of communitytoolkit.mvvm
         public IAsyncRelayCommand TADDB_SET_Command => new AsyncRelayCommand(TADDB_SET, CanExecuteTADDB_SET);
 
@@ -1119,8 +1117,9 @@ namespace IpisCentralDisplayController.views
                 if (_selectedPlatform != value)
                 {
                     _selectedPlatform = value;
-                    OnPropertyChanged();
                     LoadDevices();
+                    OnPropertyChanged();
+                    
                 }
             }
         }
@@ -1134,8 +1133,31 @@ namespace IpisCentralDisplayController.views
                 {
                     _selectedDevice = value;
                     OnPropertyChanged();
+                    UpdateConfigDevicePage();
+                    
+
                 }
             }
+        }
+
+        private void UpdateConfigDevicePage()
+        {
+           
+            SelectedSpeedOption = SpeedOptions.FirstOrDefault(s => s.ByteValue == SelectedDevice.SpeedByte);      
+                      
+            SelectedEffectOption = EffectOptions.FirstOrDefault(s => s.ByteValue == SelectedDevice.EffectByte);
+           
+            SelectedLetterSizeOption = LetterSizeOptions.FirstOrDefault(s => s.ByteValue == SelectedDevice.LetterSizeByte);
+
+            TimeDelay = SelectedDevice.TimeDelayValueByte;
+
+            DataTimeout = SelectedDevice.DataTimeoutValueByte;
+
+            ReverseVideo = SelectedDevice.IsReverseVideo ;
+
+            DeviceIsEnabled = SelectedDevice.IsEnabled ;
+
+
         }
 
         private void LoadDevices()
@@ -1147,6 +1169,7 @@ namespace IpisCentralDisplayController.views
                 {
                     Devices.Add(device);
                 }
+                SelectedDevice= SelectedPlatform.Devices.FirstOrDefault(); // Select the first device by default
             }
         }
 

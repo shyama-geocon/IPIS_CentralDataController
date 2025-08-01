@@ -63,7 +63,6 @@ namespace IpisCentralDisplayController.Managers
             }
         }
 
-
         public bool AddDevice(string platformNumber, Device device)
         {
             var platforms = LoadPlatforms();

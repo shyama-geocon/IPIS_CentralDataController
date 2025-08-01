@@ -2530,7 +2530,7 @@
                                                     <!-- Device-->
                                                     <TextBlock Text="Device" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
                                                     <ComboBox Grid.Row="1" Grid.Column="1" Margin="2" Height="24" 
-                                                               ItemsSource="{Binding SelectedPlatform.Devices}"
+                                                               ItemsSource="{Binding Devices}"
                                                                SelectedItem="{Binding  SelectedDevice, Mode=TwoWay}">     
                                                         <ComboBox.ItemTemplate>
                                                             <DataTemplate>
@@ -2651,9 +2651,27 @@
                                                         </ComboBox.ItemTemplate>
                                                     </ComboBox>
 
+                                                    <!--Gap-->
+                                                    <TextBlock Text="Gap" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    <ComboBox Grid.Row="7" Grid.Column="1" Margin="2" Height="24" 
+                                                              ItemsSource="{Binding GapOptions}"
+                                                              SelectedItem="{Binding  SelectedGapOption, Mode=TwoWay}">       
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <!--<Image Source="{Binding Icon}" Width="16" Height="16" Margin="2"/>-->
+                                                                    <TextBlock Text="{Binding DisplayName}" Margin="2"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
 
+                                                    
                                                     <!--Save Button--> 
-                                                    <Button Grid.Row="9" Grid.ColumnSpan="2" Content="Save" Margin="2" Height="30" Width="100" Command="{Binding SaveCommand}"/>
+                                                    <Button Grid.Row="9" Grid.ColumnSpan="2"
+                                                            Content="Save" Margin="2" Height="30" Width="100"                                                            
+                                                        Click="ExportPlatformDevicesButton_Click" HorizontalAlignment="Center" 
+                                                            VerticalAlignment="Center"     />
                                                 </Grid>
                                             </GroupBox>
 
@@ -2662,9 +2680,8 @@
                                     </Grid>
                                 </TabItem>
 
-                                
 
-                                  </TabControl>
+                                </TabControl>
                         </Grid>
                     </TabItem>
                     <TabItem Width="120" Height="30">

@@ -480,14 +480,27 @@ namespace IpisCentralDisplayController.views
                 new ConfigOptionObject { DisplayName = "25% ", ByteValue = 0x01 },
                 new ConfigOptionObject { DisplayName = "50% ", ByteValue = 0x02 },
                 new ConfigOptionObject { DisplayName = "75% ", ByteValue = 0x03 },
-                new ConfigOptionObject { DisplayName = "100% ", ByteValue = 0x43 },
+                new ConfigOptionObject { DisplayName = "100% ", ByteValue = 0x04 },
 
             };
 
-            SelectedEffectOption = EffectOptions.FirstOrDefault();
-            SelectedSpeedOption = SpeedOptions.FirstOrDefault();
-            SelectedLetterSizeOption = LetterSizeOptions.FirstOrDefault();
-            SelectedIntensityOption = IntensityOptions.FirstOrDefault();
+            GapOptions = new ObservableCollection<ConfigOptionObject>
+            {
+                new ConfigOptionObject { DisplayName = "1", ByteValue = 0x00 },
+                new ConfigOptionObject { DisplayName = "2", ByteValue = 0x01 },
+                new ConfigOptionObject { DisplayName = "3", ByteValue = 0x02 },
+                new ConfigOptionObject { DisplayName = "4", ByteValue = 0x03 },
+                new ConfigOptionObject { DisplayName = "5", ByteValue = 0x04 },
+                new ConfigOptionObject { DisplayName = "6", ByteValue = 0x05 },
+                new ConfigOptionObject { DisplayName = "7", ByteValue = 0x06 },
+                new ConfigOptionObject { DisplayName = "8", ByteValue = 0x07 },
+            };
+
+            
+            //SelectedEffectOption = EffectOptions.FirstOrDefault();
+            //SelectedSpeedOption = SpeedOptions.FirstOrDefault();
+            //SelectedLetterSizeOption = LetterSizeOptions.FirstOrDefault();
+            //SelectedIntensityOption = IntensityOptions.FirstOrDefault();
 
             #endregion
 
@@ -570,6 +583,7 @@ namespace IpisCentralDisplayController.views
         public ObservableCollection<ConfigOptionObject> EffectOptions { get; set; }
         public ObservableCollection<ConfigOptionObject> LetterSizeOptions { get; set; }
         public ObservableCollection<ConfigOptionObject> IntensityOptions { get; set; }
+        public ObservableCollection<ConfigOptionObject> GapOptions { get; set; }
 
         private ConfigOptionObject _selectedSpeedOption;
         public ConfigOptionObject SelectedSpeedOption
@@ -581,6 +595,7 @@ namespace IpisCentralDisplayController.views
             }
         }
 
+      
         private ConfigOptionObject _selectedEffectOption;
         public ConfigOptionObject SelectedEffectOption 
         {
@@ -591,6 +606,7 @@ namespace IpisCentralDisplayController.views
             }
         }
 
+       
         private ConfigOptionObject _selectedLetterSizeOption;
         public ConfigOptionObject SelectedLetterSizeOption  
         {
@@ -602,6 +618,7 @@ namespace IpisCentralDisplayController.views
             }
         }
 
+     
         private ConfigOptionObject _selectedIntensityOption;
         public ConfigOptionObject SelectedIntensityOption
         {
@@ -612,6 +629,19 @@ namespace IpisCentralDisplayController.views
                 OnPropertyChanged();
             }
         }
+
+        private ConfigOptionObject _selectedGapOption;
+        public ConfigOptionObject SelectedGapOption
+        {
+            get { return _selectedGapOption; }
+            set { 
+                _selectedGapOption = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
 
         private int _timeDelay;
         public int TimeDelay
@@ -762,7 +792,7 @@ namespace IpisCentralDisplayController.views
 
                             //this method will be changed to a task eventually
                             // I don't think chnging this to a task is really necessary
-                            _servers.Add(FrameBuilder( device, null,trainToBeDisplayedList));
+                            _servers.Add(FrameBuilder(device, null, trainToBeDisplayedList));
 
                         }
                     }
@@ -810,7 +840,7 @@ namespace IpisCentralDisplayController.views
             }
         }
 
-        private ServerConfig FrameBuilder( Device device , ActiveTrain train=null, List<TrainToBeDisplayed> trainToBeDisplayedList =null)
+        private ServerConfig FrameBuilder( Device device , ActiveTrain? train=null, List<TrainToBeDisplayed>? trainToBeDisplayedList =null)
         {
             byte[] frame; 
 
@@ -1106,8 +1136,31 @@ namespace IpisCentralDisplayController.views
         private Platform _selectedPlatform;
         private Device _selectedDevice;
 
-        public ObservableCollection<Platform> Platforms { get; set; }
-        public ObservableCollection<Device> Devices { get; set; }
+        //public ObservableCollection<Platform> Platforms { get; set; }
+        //public ObservableCollection<Device> Devices { get; set; }
+
+        private ObservableCollection<Platform> _platforms;
+        public ObservableCollection<Platform> Platforms
+        {
+            get { return _platforms; }
+            set {
+                _platforms = value;
+               OnPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<Device>  _devices;
+        public ObservableCollection<Device>  Devices
+        {
+            get { return _devices; }
+            set {
+                _devices = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
 
         public Platform SelectedPlatform
         {
@@ -1133,8 +1186,26 @@ namespace IpisCentralDisplayController.views
                 {
                     _selectedDevice = value;
                     OnPropertyChanged();
-                    UpdateConfigDevicePage();
-                    
+
+                    if (SelectedDevice != null)
+                    {
+                        UpdateConfigDevicePage();
+
+                    }
+                    //else
+                    //{
+                    //    // Handle case when no device is selected
+                    //    SelectedSpeedOption = null;
+                    //    SelectedEffectOption = null;
+                    //    SelectedLetterSizeOption = null;
+                    //    SelectedIntensityOption = null;
+                    //    TimeDelay = 0;
+                    //    DataTimeout = 0;
+                    //    ReverseVideo = false;
+                    //    DeviceIsEnabled = false;
+
+                    //}
+
 
                 }
             }
@@ -1148,6 +1219,10 @@ namespace IpisCentralDisplayController.views
             SelectedEffectOption = EffectOptions.FirstOrDefault(s => s.ByteValue == SelectedDevice.EffectByte);
            
             SelectedLetterSizeOption = LetterSizeOptions.FirstOrDefault(s => s.ByteValue == SelectedDevice.LetterSizeByte);
+
+            SelectedIntensityOption = LetterSizeOptions.FirstOrDefault(s => s.ByteValue == SelectedDevice.IntensityByte);
+
+            SelectedGapOption = LetterSizeOptions.FirstOrDefault(s => s.ByteValue == SelectedDevice.GapByte);
 
             TimeDelay = SelectedDevice.TimeDelayValueByte;
 
@@ -1169,7 +1244,28 @@ namespace IpisCentralDisplayController.views
                 {
                     Devices.Add(device);
                 }
-                SelectedDevice= SelectedPlatform.Devices.FirstOrDefault(); // Select the first device by default
+                
+
+                if (Devices.Count != 0)
+                {
+                    //UpdateConfigDevicePage();
+                    SelectedDevice = SelectedPlatform.Devices.FirstOrDefault(); // Select the first device by default
+                }
+                else
+                {
+                    SelectedDevice = null;
+                    // Handle case when no device is selected
+                    SelectedSpeedOption = null;
+                    SelectedEffectOption = null;
+                    SelectedLetterSizeOption = null;
+                    SelectedIntensityOption = null;
+                    SelectedGapOption = null;
+                    TimeDelay = 0;
+                    DataTimeout = 0;
+                    ReverseVideo = false;
+                    DeviceIsEnabled = false;
+
+                }
             }
         }
 

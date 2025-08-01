@@ -94,11 +94,25 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             //FrameBytesObject.ArrivalOrDeptureBytes = new byte[] { (byte)FrameBytesObject.ArrivalOrDepture };
             //FrameBytesObject.PlatformNumberBytes = BitConverter.GetBytes(FrameBytesObject.PlatformNumber);
 
-            //FrameBytesObject.TrainNumberBytes= BitConverter.GetBytes(FrameBytesObject.TrainNumber);
-            FrameBytesObject.TrainNumberBytes = EncodeFixedUtf16BE(FrameBytesObject.TrainNumber, GetUtf16ByteSize(FrameBytesObject.TrainNumber));
+
+            //  FrameBytesObject.TrainNumberBytes = EncodeFixedUtf16BE(FrameBytesObject.TrainNumber, GetUtf16ByteSize(FrameBytesObject.TrainNumber));
+            //FrameBytesObject.TrainNumberBytes = EncodeFixedUtf16BE(FrameBytesObject.TrainNumber, 10);
+
+
+            if (GetUtf16ByteSize(FrameBytesObject.TrainNumber) == 10)
+            {
+                FrameBytesObject.TrainNumberBytes = EncodeFixedUtf16BE(FrameBytesObject.TrainNumber, GetUtf16ByteSize(FrameBytesObject.TrainNumber));
+            }
+            else if (GetUtf16ByteSize(FrameBytesObject.TrainNumber) == 8)
+            {
+                FrameBytesObject.TrainNumberBytes = EncodeFixedUtf16BE( $"0{GetUtf16ByteSize(FrameBytesObject.TrainNumber)}", 10);
+            }
+
+
             FrameBytesObject.TrainNameBytes = EncodeFixedUtf16BE(FrameBytesObject.TrainName, GetUtf16ByteSize(FrameBytesObject.TrainName));
-            //comeback Time
-            FrameBytesObject.Time = "00:00";
+            
+                //comeback Time
+                FrameBytesObject.Time = "00:00";
             FrameBytesObject.TimeBytes = EncodeFixedUtf16BE(FrameBytesObject.Time, GetUtf16ByteSize(FrameBytesObject.Time));
             FrameBytesObject.ArrivalOrDeptureBytes = new byte[2] ;
             FrameBytesObject.ArrivalOrDeptureBytes[0] =0x00;
@@ -109,11 +123,25 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             //platformNumberBytes[1] = (byte)(FrameBytesObject.PlatformNumber & 0x0000FF00);
             //platformNumberBytes[2] = (byte)(FrameBytesObject.PlatformNumber & 0xFF);  // LSB
 
-            FrameBytesObject.PlatformNumberBytes = EncodeFixedUtf16BE((FrameBytesObject.PlatformNumber).ToString(), 6);
-            //  BitConverter.GetBytes(FrameBytesObject.PlatformNumber);
+            
+
+           //  FrameBytesObject.PlatformNumberBytes = EncodeFixedUtf16BE((FrameBytesObject.PlatformNumber).ToString(), 6);
+
+            if ((FrameBytesObject.PlatformNumber).ToString().Length == 1)
+            {
+                FrameBytesObject.PlatformNumberBytes = EncodeFixedUtf16BE( $"00{(FrameBytesObject.PlatformNumber)}"  , 6 );
+            }
+            else if((FrameBytesObject.PlatformNumber).ToString().Length == 2)
+            {
+                FrameBytesObject.PlatformNumberBytes = EncodeFixedUtf16BE($"0{(FrameBytesObject.PlatformNumber)}", 6);
+            }
+            else if ((FrameBytesObject.PlatformNumber).ToString().Length == 3)
+            {
+                FrameBytesObject.PlatformNumberBytes = EncodeFixedUtf16BE((FrameBytesObject.PlatformNumber).ToString(), 6);
+            }
 
 
-                 if (FrameBytesObject.StatusByte == 0x04)
+                if (FrameBytesObject.StatusByte == 0x04)
                 {
                     FrameBytesObject.StatusByte = 0x04;
                     FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Arrived", GetUtf16ByteSize("Arrived"));
@@ -139,8 +167,7 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
                 {
                     FrameBytesObject.StatusByte = 0x0B;
                     FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Cancelled", GetUtf16ByteSize("Cancelled"));
-                }
-              
+                }             
                 else if (FrameBytesObject.StatusByte == 0x0F)
                 {
                     FrameBytesObject.StatusByte = 0x0F;
@@ -153,8 +180,7 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
                     FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Diverted", GetUtf16ByteSize("Diverted"));
                     FrameBytesObject.StationNameBytes = EncodeFixedUtf16BE(FrameBytesObject.StationName, GetUtf16ByteSize(FrameBytesObject.StationName));
 
-                }
-              
+                }             
                 else if (FrameBytesObject.StatusByte == 0x13)
                 {
                     FrameBytesObject.StatusByte = 0x13;
@@ -320,12 +346,12 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
             // DATA STUFF GOES HERE
 
-            FrameBytesObject.Level1EndOfDataPacket = 0xAA;
+            FrameBytesObject.Level1EndOfDataPacket = 0x03;
 
             //FrameBytesObject.CRC_MSB = 0xCC;
             //FrameBytesObject.CRC_LSB = 0xCC;
 
-            FrameBytesObject.EOT = 0xCC;
+            FrameBytesObject.EOT = 0x04;
 
             #endregion
 
@@ -342,7 +368,8 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             FrameBytesObject.WindowTopRow6 = 0x50; //LSB
 
             FrameBytesObject.WindowBottomRow7 = 0x00; //MSB
-            FrameBytesObject.WindowBottomRow8 = 0x10; //LSB
+            //FrameBytesObject.WindowBottomRow8 = 0x10; //LSB
+            FrameBytesObject.WindowBottomRow8 = 0x01; //LSB
 
             //public ByteBuilder Level2Byte9 { get; set; }
             //public ByteBuilder Level2Byte10 { get; set; }
@@ -363,8 +390,11 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
             FrameBytesObject.HorizontalOffsetMSB = 0X00;
             FrameBytesObject.HorizontalOffsetLSB = 0X01;
-            FrameBytesObject.VerticalOffsetMSB = 0X00;
-            FrameBytesObject.VerticalOffsetLSB = 0X01;
+
+            //FrameBytesObject.VerticalOffsetMSB = 0X00;
+            //FrameBytesObject.VerticalOffsetLSB = 0X01;
+            FrameBytesObject.VerticalOffsetMSB = 0x01; //MSB
+            FrameBytesObject.VerticalOffsetLSB = 0x50; //LSB
 
             #endregion
 

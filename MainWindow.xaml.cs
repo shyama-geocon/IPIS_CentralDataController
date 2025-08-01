@@ -511,7 +511,6 @@ namespace IpisCentralDisplayController
             }
         }
 
-
         private void LogEvent(string description, EventType eventType, string source)
         {
             var newLog = new EventLog
@@ -528,7 +527,6 @@ namespace IpisCentralDisplayController
             _mainViewModel.EventLogs.Add(newLog);
             _rmsService.ReceiveEventLog(newLog);
         }
-
 
         //NTES Specific
         private void InitializeNtesControls()
@@ -1617,6 +1615,7 @@ namespace IpisCentralDisplayController
                         TimeDelayValueByte = 0x0F,
                         DataTimeoutValueByte = 0x0F,
                         IsReverseVideo = false,
+                        GapByte=0x00
                         //IsEnabled = true
 
                     };
@@ -1688,7 +1687,8 @@ namespace IpisCentralDisplayController
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 string filePath = dialog.FileName;
-                var platforms = _platformDeviceManager.LoadPlatforms();
+                   var platforms = _platformDeviceManager.LoadPlatforms();
+              //  var platforms = _mainViewModel.Devices;
                 string json = JsonConvert.SerializeObject(platforms, Formatting.Indented);
                 File.WriteAllText(filePath, json);
                 MessageBox.Show("Platform-Device mapping exported successfully.", "Export Successful", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -4917,7 +4917,7 @@ namespace IpisCentralDisplayController
             }
         }
 
-
+        //comeback
         private void ExportPlatformDevicesButton_Click(object sender, RoutedEventArgs e)
         {
             try

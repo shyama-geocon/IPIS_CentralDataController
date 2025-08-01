@@ -14,12 +14,17 @@ namespace IpisCentralDisplayController.models
         public DateTime LastStatusWhen { get; set; }
 
 
+
+
         public byte SpeedByte { get; set; }
         public byte EffectByte { get; set; }
         public byte LetterSizeByte { get; set; }
+        public byte GapByte { get; set; }
         public byte IntensityByte { get; set; }
         public byte TimeDelayValueByte { get; set; }
         public byte DataTimeoutValueByte { get; set; }
+        
+        
         public bool IsReverseVideo { get; set; }
         public bool IsEnabled { get; set; }
 

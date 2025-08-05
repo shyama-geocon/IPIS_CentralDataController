@@ -575,8 +575,6 @@ namespace IpisCentralDisplayController.models
         #endregion
 
 
-
-
         private string _stationNameForSplStatusCode;
         public string StationNameForSplStatusCode
         {
@@ -863,7 +861,7 @@ namespace IpisCentralDisplayController.models
         //        }
         //    }
         //}
-        //comeback
+       
         private string _status;
         public string Status
         {
@@ -1095,21 +1093,33 @@ namespace IpisCentralDisplayController.models
             {
                 if (_coachSequence != value)
                 {
-                    _coachSequence = value;
+                    _coachSequence = !string.IsNullOrWhiteSpace(value)
+                                    ? value.Trim()
+                                    : string.Empty;
+
+                    // Convert List<string> to ObservableCollection<string>  
+                    CoachListEnglish = new ObservableCollection<string>(_coachSequence.Split('-').ToList());
+
                     OnPropertyChanged();
                 }
             }
         }
 
-        private List<string> _coachList;
-        public List<string> CoachList
+        //     CoachSequence = !string.IsNullOrWhiteSpace(_coachSequence)
+        //? _coachSequence.Trim()
+        //: !string.IsNullOrWhiteSpace(ntesTrain.ArrivalCoachPosition?.Trim())
+        //    ? ntesTrain.ArrivalCoachPosition.Trim()
+        //    : string.Empty;
+
+        private ObservableCollection<string> _coachListEnglish;
+        public ObservableCollection<string> CoachListEnglish
         {
-            get => _coachList;
+            get => _coachListEnglish;
             set
             {
-                if (_coachList != value)
+                if (_coachListEnglish != value)
                 {
-                    _coachList = value;
+                    _coachListEnglish = value;
                     OnPropertyChanged();
                 }
             }
@@ -1205,6 +1215,7 @@ namespace IpisCentralDisplayController.models
         {
             CreatedTime = DateTime.Now;
             ModifiedTime = DateTime.Now;
+           // CoachList = new ObservableCollection<string>();
         }
 
         public void UpdateModificationTime()
@@ -1251,7 +1262,7 @@ namespace IpisCentralDisplayController.models
             Status = ntesTrain.TrainStatus;
             SelectedStatusOption = ntesTrain.TrainStatus;
             //StatusIndex = 0;
-            ////comeback
+            
             //for (int i = 0; i < StatusOptions.Count; i++)
             //{
             //    if (StatusOptions[i].IndexOf(Status, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -1280,7 +1291,9 @@ namespace IpisCentralDisplayController.models
                     ? ntesTrain.ArrivalCoachPosition.Trim()
                     : string.Empty;
 
-            CoachList = CoachSequence.Split('-').ToList();
+            //CoachList = CoachSequence.Split('-').ToList();
+           // CoachList = new ObservableCollection<string>(_coachSequence.Split('-').ToList());
+           //comeback
 
             TADDB_Update = false;
             CGDB_Update = false;
@@ -1316,7 +1329,7 @@ namespace IpisCentralDisplayController.models
             ETD = train.STD;
 
             CoachSequence = train.CoachSequence;
-            CoachList = train.CoachList ?? new List<string>();
+            CoachListEnglish = train.CoachListEnglish != null ? new ObservableCollection<string>(train.CoachListEnglish) : new ObservableCollection<string>();
 
             TADDB_Update = false;
             CGDB_Update = false;
@@ -1372,7 +1385,7 @@ namespace IpisCentralDisplayController.models
                 ETD_Minutes = this.ETD_Minutes,
                 PFNo = this.PFNo,
                 CoachSequence = this.CoachSequence,
-                CoachList = this.CoachList != null ? new List<string>(this.CoachList) : new List<string>(), // Handle null list
+              //  CoachList = this.CoachList != null ? new ObservableCollection<string>(this.CoachList) : new ObservableCollection<string>(), // Handle null list
                 TADDB_Update = this.TADDB_Update,
                 CGDB_Update = this.CGDB_Update,
                 Announce_Update = this.Announce_Update
@@ -1414,7 +1427,7 @@ namespace IpisCentralDisplayController.models
             //StatusIndex = source.StatusIndex;
             SelectedStatusOption = source.SelectedStatusOption; // Assuming you want to copy the selected status option
             ADOptions = source.ADOptions != null ? new ObservableCollection<string>(source.ADOptions) : new ObservableCollection<string>(); // Deep copy with null check
-           // ADIndex = source.ADIndex;
+            // ADIndex = source.ADIndex;
             SelectedADOption = source.SelectedADOption; // Assuming you want to copy the selected AD option
             LateBy = source.LateBy;
             LateByHours = source.LateByHours;
@@ -1427,7 +1440,8 @@ namespace IpisCentralDisplayController.models
             ETD_Minutes = source.ETD_Minutes;
             PFNo = source.PFNo;
             CoachSequence = source.CoachSequence;
-            CoachList = source.CoachList != null ? new List<string>(source.CoachList) : new List<string>(); // Deep copy with null check
+            //comeback
+       //     CoachList = source.CoachList != null ? new ObservableCollection<string>(source.CoachList) : new ObservableCollection<string>(); // Deep copy with null check
             TADDB_Update = source.TADDB_Update;
             CGDB_Update = source.CGDB_Update;
             Announce_Update = source.Announce_Update;

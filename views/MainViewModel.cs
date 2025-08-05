@@ -157,9 +157,7 @@ namespace IpisCentralDisplayController.views
 
             }
 
-
-
-}
+        } 
 
         private void StopAnn(object parameter)
         {
@@ -167,8 +165,6 @@ namespace IpisCentralDisplayController.views
             PlayAudio = false;
             PauseAudio = false;
             MuteAudio = false;
-
-
         }
 
 
@@ -402,8 +398,6 @@ namespace IpisCentralDisplayController.views
 
         #endregion
 
-
-
         private ActiveTrain _selectedTrain;
         public ActiveTrain SelectedTrain
         {
@@ -412,18 +406,19 @@ namespace IpisCentralDisplayController.views
             {
                 if (_selectedTrain != value)
                 {
-                    if (_selectedTrain != null)
-                    {
-                        _selectedTrain.PropertyChanged -= OnCategoryPropertyChanged;
-                    }
+                    //if (_selectedTrain != null)
+                    //{
+                    //    _selectedTrain.PropertyChanged -= OnCategoryPropertyChanged;
+                    //}
 
                     _selectedTrain = value;
-                    OnPropertyChanged(nameof(SelectedTrain));
+                 //   OnPropertyChanged(nameof(SelectedTrain));
+                    OnPropertyChanged();
 
-                    if (_selectedTrain != null)
-                    {
-                        _selectedTrain.PropertyChanged += OnCategoryPropertyChanged;
-                    }
+                    //if (_selectedTrain != null)
+                    //{
+                    //    _selectedTrain.PropertyChanged += OnCategoryPropertyChanged;
+                    //}
                 }
             }
         }
@@ -798,10 +793,10 @@ namespace IpisCentralDisplayController.views
                     }
                 }
 
-                else
-                {
-                    throw new Exception($"Invalid platform number: {platform.PlatformNumber}");
-                }
+                //else
+                //{
+                //    throw new Exception($"Invalid platform number: {platform.PlatformNumber}");
+                //}
             }
 
 
@@ -869,7 +864,10 @@ namespace IpisCentralDisplayController.views
             }
 
             else if (device.DeviceType == DeviceType.MLDB)
-            { 
+            {
+                FrameBuilderForMultilineService.ReadProcessAddDeviceDetails( device);
+                FrameBuilderForMultilineService.AddFixedBytes();
+                FrameBuilderForMultilineService.CompileFrame(trainToBeDisplayedList, device);
 
             }
 
@@ -904,6 +902,37 @@ namespace IpisCentralDisplayController.views
                 //Not even sure about why do we even need this here
             }
         }
+
+
+
+
+
+
+        #region CGDB_Set
+
+        private readonly TcpClientService _tcpClientServiceCGDB;
+        private readonly List<ServerConfig> _serversCGDB;
+        private ObservableCollection<byte> _resultsCGDB;
+        private bool _isOperationInProgressCGDB;
+
+
+        #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         private string _filePath;

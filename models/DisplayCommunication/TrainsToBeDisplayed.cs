@@ -9,7 +9,9 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
     public class TrainToBeDisplayed
     {
         public string TrainNumber { get; set; }
-        public string TrainName { get; set; }
+        public string TrainNameEnglish { get; set; }
+        public string TrainNameHindi { get; set; }
+        public string TrainNameRegional { get; set; }
         public string Time { get; set; }
         public char ArrivalOrDeparture { get; set; }
         public string PlatformNumber { get; set; }
@@ -19,8 +21,16 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
 
 
         public byte[] TrainNumberBytes { get; set; } // length of array is fixed
-        public byte[] TrainNameBytes { get; set; }// length of array is NOT fixed
-                                                  // will need to find it out dynamically 
+        public byte[] TrainNameEnglishBytes { get; set; }// length of array is NOT fixed
+                                                         // will need to find it out dynamically 
+
+        public byte[] TrainNameHindiBytes { get; set; }// length of array is NOT fixed
+                                                         // will need to find it out dynamically 
+
+        public byte[] TrainNameRegionalBytes { get; set; }// length of array is NOT fixed
+                                                         // will need to find it out dynamically 
+
+
         public byte[] TimeBytes { get; set; } // length of array is fixed
         public byte[] ArrivalOrDepartureBytes { get; set; } // length of array is fixed
         public byte[] PlatformNumberBytes { get; set; } // length of array is fixed       

@@ -18,7 +18,9 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Platform Number:" VerticalAlignment="Center" Margin="2"/>
-            <TextBox Name="PlatformNumberTextBox" VerticalContentAlignment="Center" Grid.Column="1" Height="24" Margin="2" TextChanged="PlatformNumberTextBox_TextChanged"/>
+            <TextBox Name="PlatformNumberTextBox" VerticalContentAlignment="Center" Grid.Column="1" Height="24" Margin="2" 
+                     Text="{Binding PlatformNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     TextChanged="PlatformNumberTextBox_TextChanged"/>
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Platform Type:" VerticalAlignment="Center" Margin="2"/>
             <!--<ComboBox Grid.Row="1" Grid.Column="1" Height="24" Margin="2" x:Name="PlatformTypeComboBox">
@@ -28,7 +30,8 @@
                 <ComboBoxItem Content="SpecialPlatform10A"/>
                 <ComboBoxItem Content="Concourse"/>
             </ComboBox>-->
-            <ComboBox Name="PlatformTypeComboBox" VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="1" Height="24" Margin="2" SelectedItem="{Binding PlatformType}">
+            <ComboBox Name="PlatformTypeComboBox" VerticalContentAlignment="Center" Grid.Row="1"
+                      Grid.Column="1" Height="24" Margin="2" SelectedItem="{Binding PlatformType}">
                 <ComboBox.ItemsSource>
                     <x:Array Type="{x:Type models:PlatformType}">
                         <models:PlatformType>Platform</models:PlatformType>
@@ -41,10 +44,12 @@
             </ComboBox>
 
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Description:" VerticalAlignment="Center" Margin="2"/>
-            <TextBox Grid.Row="2" Grid.Column="1" Height="24" Margin="2" x:Name="DescriptionTextBox"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Height="24" Margin="2" x:Name="DescriptionTextBox"
+                     Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Subnet:" VerticalAlignment="Center" Margin="2"/>
-            <TextBox Grid.Row="3" Grid.Column="1" Height="24" Margin="2" x:Name="SubnetTextBox"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Height="24" Margin="2" x:Name="SubnetTextBox"
+                     Text="{Binding Subnet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="2">
             <Button Content="Save" Height="30" Width="100" Margin="2" Click="SaveButton_Click"/>

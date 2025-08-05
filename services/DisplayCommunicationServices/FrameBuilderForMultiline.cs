@@ -28,7 +28,9 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             TrainToBeDisplayed trainholder = new TrainToBeDisplayed();
 
             trainholder.TrainNumber = train.TrainNumber;
-            trainholder.TrainName = train.TrainNameEnglish;
+            trainholder.TrainNameEnglish = train.TrainNameEnglish;
+            trainholder.TrainNameHindi = train.TrainNameHindi;
+            trainholder.TrainNameRegional = train.TrainNameRegional;
 
             trainholder.ArrivalOrDeparture = !string.IsNullOrEmpty(train.SelectedADOption) && train.SelectedADOption.Length == 1
                ? train.SelectedADOption[0]
@@ -194,7 +196,9 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
                 trainholder.TrainNumberBytes = EncodeFixedUtf16BE($"0{GetUtf16ByteSize(trainholder.TrainNumber)}", 10);
             }
 
-            trainholder.TrainNameBytes = EncodeFixedUtf16BE(trainholder.TrainName, GetUtf16ByteSize(trainholder.TrainName));
+            trainholder.TrainNameEnglishBytes = EncodeFixedUtf16BE(trainholder.TrainNameEnglish, GetUtf16ByteSize(trainholder.TrainNameEnglish));
+            trainholder.TrainNameHindiBytes = EncodeFixedUtf16BE(trainholder.TrainNameHindi, GetUtf16ByteSize(trainholder.TrainNameHindi));
+            trainholder.TrainNameRegionalBytes = EncodeFixedUtf16BE(trainholder.TrainNameRegional, GetUtf16ByteSize(trainholder.TrainNameRegional));
 
             //num of bytes must always be 10
             trainholder.TimeBytes = EncodeFixedUtf16BE(trainholder.Time, GetUtf16ByteSize(trainholder.Time));
@@ -219,18 +223,13 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             }
 
 
-
-
-
             if (trainholder.StatusByte == 0x04)
             {
-                trainholder.StatusByte = 0x04;
                 trainholder.Nplus5toKfIELD = EncodeFixedUtf16BE("Arrived", GetUtf16ByteSize("Arrived"));
 
             }
             else if (trainholder.StatusByte == 0x06)
             {
-                trainholder.StatusByte = 0x06;
                 trainholder.Nplus5toKfIELD = EncodeFixedUtf16BE("Cancelled", GetUtf16ByteSize("Cancelled"));
             }
             else if (trainholder.StatusByte == 0x07)
@@ -240,37 +239,36 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             }
             else if (trainholder.StatusByte == 0x08)
             {
-                trainholder.StatusByte = 0x08;
                 trainholder.Nplus5toKfIELD = EncodeFixedUtf16BE("Terminated At", GetUtf16ByteSize("Terminated At"));
                 trainholder.StationNameBytes = EncodeFixedUtf16BE(trainholder.StationNameForSplStatus, GetUtf16ByteSize(trainholder.StationNameForSplStatus));
             }
             else if (trainholder.StatusByte == 0x0B)
             {
-                trainholder.StatusByte = 0x0B;
                 trainholder.Nplus5toKfIELD = EncodeFixedUtf16BE("Cancelled", GetUtf16ByteSize("Cancelled"));
             }
             else if (trainholder.StatusByte == 0x0F)
             {
-                trainholder.StatusByte = 0x0F;
                 trainholder.Nplus5toKfIELD = EncodeFixedUtf16BE("Rescheduled", GetUtf16ByteSize("Rescheduled"));
 
             }
             else if (trainholder.StatusByte == 0x10)
             {
-                trainholder.StatusByte = 0x10;
                 trainholder.Nplus5toKfIELD = EncodeFixedUtf16BE("Diverted", GetUtf16ByteSize("Diverted"));
                 trainholder.StationNameBytes = EncodeFixedUtf16BE(trainholder.StationNameForSplStatus, GetUtf16ByteSize(trainholder.StationNameForSplStatus));
 
             }
             else if (trainholder.StatusByte == 0x13)
             {
-                trainholder.StatusByte = 0x13;
+          
                 trainholder.Nplus5toKfIELD = EncodeFixedUtf16BE("Start at", GetUtf16ByteSize("Start at"));
                 trainholder.StationNameBytes = EncodeFixedUtf16BE(trainholder.StationNameForSplStatus, GetUtf16ByteSize(trainholder.StationNameForSplStatus));
             }
             else
             {
-                throw new Exception(message: $"Unknown status byte: {trainholder.StatusByte}");
+                //throw new Exception(message: $"Unknown status byte: {trainholder.StatusByte}");
+                FrameBytesObject.Nplus5toKfIELD = null;
+                FrameBytesObject.StationNameBytes = null;
+
             }
 
 
@@ -280,82 +278,6 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             return trainholder;
 
          }
-
-        //public List<ByteTrainToBeDisplayed> ReadAndAddDirectFields( Device device)
-        //{
-        //    // NOTE: ALL THE DIRECT READ FIELDS WILL NOT NECESSARILY BE  
-        //    // READ FROM THE ACTIVETRAIN INSTANCE. MANY OF THEM WILL ALSO BE  
-        //    // DEPENDENT ON OTHER SETTINGS WHICH IN TURN IS BEING SET FROM SOME UI  
-        //    // ELEMENT AND HENCE IS BEING STORED IN ONE OF THE FIELDS  
-
-        //    #region ForLevel1
-
-        //    FrameBytesObject.SourceIPAddress = IPAddress.Parse("192.168.0.253");
-        //    FrameBytesObject.DestinationIPAddress = IPAddress.Parse(device.IpAddress);
-
-        //    #endregion
-
-        //    #region ForLevel2  
-        //    // FrameBytesObject.ReverseVideo = ;  
-        //    // FrameBytesObject.Speed = ;  
-        //    // FrameBytesObject.EffectCode = ;  
-        //    // FrameBytesObject.LetterSize = ;  
-        //    // FrameBytesObject.Gap = ;  
-        //    // FrameBytesObject.TimeDelay = ;  
-        //    #endregion
-
-        //    #region ForLevel3  
-
-        //    // FrameBytesObject.StatusMessage = train.Status;
-        //    FrameBytesObject.StatusByte = train.StatusByte;
-        //    FrameBytesObject.StatusMessage = train.SelectedStatusOption;
-
-        //    #endregion
-
-        //    #region ForLevel4  
-        //    //if (int.TryParse(train.TrainNumber, out int parsedTrainNumber))
-        //    //{
-        //    //    FrameBytesObject.TrainNumber = parsedTrainNumber;
-        //    //}
-        //    //else
-        //    //{
-        //    //    throw new InvalidOperationException($"TrainNumber '{train.TrainNumber}' cannot be converted to an integer.");
-        //    //}
-
-        //    FrameBytesObject.TrainNumber = train.TrainNumber;
-        //    FrameBytesObject.TrainName = train.TrainNameEnglish;
-        //    FrameBytesObject.Time = train.STA?.ToString(@"hh\:mm") ?? string.Empty; // check this properly  
-
-        //    // Convert string to char explicitly  
-        //    FrameBytesObject.ArrivalOrDepture = !string.IsNullOrEmpty(train.SelectedADOption) && train.SelectedADOption.Length == 1
-        //        ? train.SelectedADOption[0]
-        //        : throw new InvalidOperationException($"SelectedADOption '{train.SelectedADOption}' is not a valid single character.");
-
-        //    FrameBytesObject.PlatformNumber = train.PFNo;
-
-        //    //For page 2 Diverted/Terminated at/Change of Source
-        //    FrameBytesObject.StationName = train.SrcNameEnglish;
-        //    #endregion
-        //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //helper method which converts the string to the specified number of bytes
-        //in UTF-16 Big Endian format encoding
-
-
 
         public void ReadProcessAddDeviceDetails( Device device)
         {
@@ -378,6 +300,10 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             #region ForLevel3  
             //FrameBytesObject.StatusByte = train.StatusByte;
             //FrameBytesObject.StatusMessage = train.SelectedStatusOption;
+
+            FrameBytesObject.NumOfLines = (int)device.NumOfLines;
+            FrameBytesObject.DeviceType = device.DeviceType;
+
             #endregion
 
             #region ForLevel4  
@@ -403,7 +329,6 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             {
                 FrameBytesObject.DestinationAddressThird6 = octets[2];   // Index 2 = 3rd octet
                 FrameBytesObject.DestinationAddressFourth7 = octets[3];  // Index 3 = 4th octet
-
             }
 
             octets = FrameBytesObject.SourceIPAddress.GetAddressBytes();
@@ -412,9 +337,7 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             {
                 FrameBytesObject.SourceAddressThird8 = octets[2];   // Index 2 = 3rd octet
                 FrameBytesObject.SourceAddressFourth9 = octets[3];  // Index 3 = 4th octet
-
             }
-
 
             //public ByteBuilder Level2Byte9 { get; set; }
             //public ByteBuilder Level2Byte10 { get; set; }
@@ -654,9 +577,7 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
             FrameBytesObject.TimeDelay12 = FrameBytesObject.TimeDelay;
 
-
         }
-
 
         public void AddFixedBytes()
         {
@@ -687,14 +608,19 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
             #endregion
 
-
             #region ForLevel2
 
             FrameBytesObject.WindowLeftColumn1 = 0x00; //MSB
             FrameBytesObject.WindowLeftColumn2 = 0x01; //LSB
 
-            FrameBytesObject.WindowRightColumn3 = 0x01; //MSB
-            FrameBytesObject.WindowRightColumn4 = 0x50; //LSB
+            //FrameBytesObject.WindowRightColumn3 = 0x01; //MSB
+            //FrameBytesObject.WindowRightColumn4 = 0x50; //LSB
+
+            if (FrameBytesObject.DeviceType == DeviceType.MLDB)
+            {
+                FrameBytesObject.WindowRightColumn3 = (byte)(((16 * FrameBytesObject.NumOfLines) & 0xFF00) >> 8);
+                FrameBytesObject.WindowRightColumn4 = (byte)((16 * FrameBytesObject.NumOfLines) & 0xFF);
+            }
 
             FrameBytesObject.WindowTopRow5 = 0x01; //MSB
             FrameBytesObject.WindowTopRow6 = 0x50; //LSB
@@ -722,14 +648,17 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
             #region ForLevel3
 
+            //THIS IS USELESS, THESE 2 FIELDS WILL BE CALCULATED DYNAMICALLY IN THE CompileFrame method
             FrameBytesObject.HorizontalOffsetMSB = 0X00;
-            FrameBytesObject.HorizontalOffsetLSB = 0X01;
+            FrameBytesObject.HorizontalOffsetLSB = 0X01; //ROW NUMBER
+           
             FrameBytesObject.VerticalOffsetMSB = 0X00;
             FrameBytesObject.VerticalOffsetLSB = 0X01;
 
             #endregion
 
             #region ForLevel4
+
             FrameBytesObject.SeparatorByte1 = 0xE7; // Separator byte 1
             FrameBytesObject.SeparatorByte2 = 0x00; // Separator byte 2
 
@@ -739,23 +668,384 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             FrameBytesObject.TimeFieldIndexMSB1 = 0x00;
             FrameBytesObject.TimeFieldIndexLSB2 = 0xFD;
 
-            FrameBytesObject.ArrivalOrDeptureFieldIndexMSB1 = 0x01;
-            FrameBytesObject.ArrivalOrDeptureFieldIndexLSB2 = 0x2D;
+            FrameBytesObject.ArrivalOrDepartureFieldIndexMSB1 = 0x01;
+            FrameBytesObject.ArrivalOrDepartureFieldIndexLSB2 = 0x2D;
 
             FrameBytesObject.PlatformNumberFieldIndexMSB1 = 0x01;
             FrameBytesObject.PlatformNumberFieldIndexLSB2 = 0x3A;
 
             #endregion
 
+            //if (FrameBytesObject.DeviceType == DeviceType.MLDB)
+            //{
 
+            //}
 
         }
 
+        public byte[] CompileFrame(List<TrainToBeDisplayed> trainToBeDisplayedList, Device device)
+        {
+            Frame.Clear();
+            List<int> CharacterStringStartAddToBeAddedAtIndexes = new List<int>();
+            int Lines = (int)device.NumOfLines;
+
+            #region LEVEL1 CONSTRUCTION  
+            Frame.Add(FrameBytesObject.Start1);
+            Frame.Add(FrameBytesObject.Start2);
+            Frame.Add(FrameBytesObject.PacketIdentifier3);
+            Frame.Add(FrameBytesObject.PacketLengthMSB4);//NOT ADDED  
+            Frame.Add(FrameBytesObject.PacketLengthLSB5);//NOT ADDED  
+            Frame.Add(FrameBytesObject.DestinationAddressThird6);
+            Frame.Add(FrameBytesObject.DestinationAddressFourth7);
+            Frame.Add(FrameBytesObject.SourceAddressThird8);
+            Frame.Add(FrameBytesObject.SourceAddressFourth9);
+            Frame.Add(FrameBytesObject.SerialNumber10);//NOT ADDED  
+            Frame.Add(FrameBytesObject.PacketType11);
+            Frame.Add(FrameBytesObject.StartOfDataPacketIndicator12);
+
+
+            #region LEVEL2 CONSTRUCTION  
+            for (int i = 0; i < trainToBeDisplayedList.Count; i++)
+            {                              
+                Frame.Add(FrameBytesObject.WindowLeftColumn1);
+                Frame.Add(FrameBytesObject.WindowLeftColumn2);
+
+                Frame.Add(FrameBytesObject.WindowRightColumn3);
+                Frame.Add(FrameBytesObject.WindowRightColumn4);
+                
+                int topwindowindex = (16 * Lines) - (16 * i) + (i / Lines)*(16 * Lines);
+                FrameBytesObject.WindowTopRow5 = (byte)((topwindowindex & 0xFF00) >> 8); //MSB
+                FrameBytesObject.WindowTopRow6 = (byte)((topwindowindex & 0x00FF) ); //LSB
+                Frame.Add(FrameBytesObject.WindowTopRow5);
+                Frame.Add(FrameBytesObject.WindowTopRow6);
+
+                int bottomwindow = topwindowindex - 15;
+                FrameBytesObject.WindowBottomRow7 = (byte)((bottomwindow & 0xFF00) >> 8); //MSB
+                FrameBytesObject.WindowBottomRow8 = (byte)((bottomwindow & 0x00FF)); //LSB
+                Frame.Add(FrameBytesObject.WindowBottomRow7);
+                Frame.Add(FrameBytesObject.WindowBottomRow8);
+
+                Frame.Add(FrameBytesObject.Level2Byte9.ToByte());
+                Frame.Add(FrameBytesObject.Level2Byte10.ToByte());
+                Frame.Add(FrameBytesObject.Level2Byte11.ToByte());
+                Frame.Add(FrameBytesObject.TimeDelay12);
+
+                CharacterStringStartAddToBeAddedAtIndexes.Add((Frame.Count));
+                Frame.Add(FrameBytesObject.StartAddOfCharStringMSB13);//NOT ADDED
+                Frame.Add(FrameBytesObject.StartAddOfCharStringLSB14);//NOT ADDED
+
+
+                TrainToBeDisplayed train = trainToBeDisplayedList[i];
+                FrameBytesObject.StatusByte = train.StatusByte;
+                if ((FrameBytesObject.StatusByte == 0x08) ||
+                   (FrameBytesObject.StatusByte == 0x10) ||
+                   (FrameBytesObject.StatusByte == 0x13) ||
+                   (FrameBytesObject.StatusByte == 0x0F)
+               ){
+                    Frame.Add(FrameBytesObject.WindowLeftColumn1);
+                    Frame.Add(FrameBytesObject.WindowLeftColumn2);
+
+                    Frame.Add(FrameBytesObject.WindowRightColumn3);
+                    Frame.Add(FrameBytesObject.WindowRightColumn4);
+
+                     topwindowindex = (16 * Lines) - (16 * i) + (i / Lines) * (16 * Lines);
+                    FrameBytesObject.WindowTopRow5 = (byte)((topwindowindex & 0xFF00) >> 8); //MSB
+                    FrameBytesObject.WindowTopRow6 = (byte)((topwindowindex & 0x00FF)); //LSB
+                    Frame.Add(FrameBytesObject.WindowTopRow5);
+                    Frame.Add(FrameBytesObject.WindowTopRow6);
+
+                     bottomwindow = topwindowindex - 15;
+                    FrameBytesObject.WindowBottomRow7 = (byte)((bottomwindow & 0xFF00) >> 8); //MSB
+                    FrameBytesObject.WindowBottomRow8 = (byte)((bottomwindow & 0x00FF)); //LSB
+                    Frame.Add(FrameBytesObject.WindowBottomRow7);
+                    Frame.Add(FrameBytesObject.WindowBottomRow8);
+
+                    Frame.Add(FrameBytesObject.Level2Byte9.ToByte());
+                    Frame.Add(FrameBytesObject.Level2Byte10.ToByte());
+                    Frame.Add(FrameBytesObject.Level2Byte11.ToByte());
+                    Frame.Add(FrameBytesObject.TimeDelay12);
+
+                    CharacterStringStartAddToBeAddedAtIndexes.Add((Frame.Count));
+                    Frame.Add(FrameBytesObject.StartAddOfCharStringMSB13);//NOT ADDED
+                    Frame.Add(FrameBytesObject.StartAddOfCharStringLSB14);//NOT ADDED
+
+                }
+
+            }
+
+            Frame.Add(FrameBytesObject.TerminationByte1);
+            Frame.Add(FrameBytesObject.TerminationByte2);
 
 
 
+            #region LEVEL3&4 CONSTRUCTION  
+
+            int j = 0;
+
+            for (int i = 0; i < trainToBeDisplayedList.Count; i++)
+            {
+                int index_to_be_added = Frame.Count;
+                FrameBytesObject.StartAddOfCharStringMSB13 = (byte)((index_to_be_added & 0xFF00) >> 8); //MSB
+                FrameBytesObject.StartAddOfCharStringLSB14 = (byte)((index_to_be_added & 0x00FF)); //LSB
+                Frame[CharacterStringStartAddToBeAddedAtIndexes[j]] = FrameBytesObject.StartAddOfCharStringMSB13; // Update MSB
+                Frame[CharacterStringStartAddToBeAddedAtIndexes[j] + 1] = FrameBytesObject.StartAddOfCharStringLSB14; // Update LSB
 
 
+                TrainToBeDisplayed train = trainToBeDisplayedList[i];
+
+                FrameBytesObject.StatusByte = train.StatusByte;
+                Frame.Add(FrameBytesObject.StatusByte);
+
+                int topwindowindex = (16 * Lines) - (16 * i) + (i / Lines) * (16 * Lines);
+                FrameBytesObject.HorizontalOffsetMSB = (byte)((topwindowindex & 0xFF00) >> 8); //MSB
+                FrameBytesObject.HorizontalOffsetLSB = (byte)((topwindowindex & 0x00FF)); //LSB
+
+                Frame.Add(FrameBytesObject.HorizontalOffsetMSB);//ROW NO.
+                Frame.Add(FrameBytesObject.HorizontalOffsetLSB);
+
+                Frame.Add(FrameBytesObject.VerticalOffsetMSB);//COLUMN NO.
+                Frame.Add(FrameBytesObject.VerticalOffsetLSB);
+
+
+                FrameBytesObject.TrainNumberBytes = train.TrainNumberBytes;
+                Frame.AddRange(FrameBytesObject.TrainNumberBytes); // Use AddRange to add byte[]  
+                Frame.Add(FrameBytesObject.SeparatorByte1);
+                Frame.Add(FrameBytesObject.SeparatorByte2);
+
+
+                Frame.Add(FrameBytesObject.TrainNameFieldIndexMSB1);
+                Frame.Add(FrameBytesObject.TrainNameFieldIndexLSB2);
+                FrameBytesObject.TrainNameBytes = train.TrainNameEnglishBytes;
+                Frame.AddRange(FrameBytesObject.TrainNameBytes);
+                Frame.Add(FrameBytesObject.SeparatorByte1);
+                Frame.Add(FrameBytesObject.SeparatorByte2);
+
+
+                Frame.Add(FrameBytesObject.TimeFieldIndexMSB1);
+                Frame.Add(FrameBytesObject.TimeFieldIndexLSB2);
+
+
+                FrameBytesObject.Nplus5toKfIELD = train.Nplus5toKfIELD;
+                FrameBytesObject.TimeBytes = train.TimeBytes;
+                FrameBytesObject.ArrivalOrDepartureBytes = train.ArrivalOrDepartureBytes; 
+                FrameBytesObject.StationNameBytes = train.StationNameBytes;
+                FrameBytesObject.PlatformNumberBytes = train.PlatformNumberBytes;
+
+
+                //////////////////
+                //for double page
+                /////////////////
+                if ((FrameBytesObject.StatusByte == 0x08) ||
+                    (FrameBytesObject.StatusByte == 0x10) ||
+                    (FrameBytesObject.StatusByte == 0x13) ||
+                    (FrameBytesObject.StatusByte == 0x0F)
+                )
+                {
+
+                    Frame.AddRange(FrameBytesObject.Nplus5toKfIELD);
+
+                    //Actually part of level3 but added here since
+                    //we have more than 1 data page
+                    Frame.Add(FrameBytesObject.CharacterStringTerminationByte1);
+                    Frame.Add(FrameBytesObject.CharacterStringTerminationByte2);
+
+
+
+                    //SECOND DATA PAGE STARTS
+                    #region
+
+                     index_to_be_added = Frame.Count;
+                    FrameBytesObject.StartAddOfCharStringMSB13 = (byte)((index_to_be_added & 0xFF00) >> 8); //MSB
+                    FrameBytesObject.StartAddOfCharStringLSB14 = (byte)((index_to_be_added & 0x00FF)); //LSB
+                    j++;
+                    Frame[CharacterStringStartAddToBeAddedAtIndexes[j]] = FrameBytesObject.StartAddOfCharStringMSB13; // Update MSB
+                    Frame[CharacterStringStartAddToBeAddedAtIndexes[j] + 1] = FrameBytesObject.StartAddOfCharStringLSB14; // Update LSB
+                    j++;
+
+                    Frame.Add(FrameBytesObject.StatusByte);
+                    Frame.Add(FrameBytesObject.HorizontalOffsetMSB);
+                    Frame.Add(FrameBytesObject.HorizontalOffsetLSB);
+                    Frame.Add(FrameBytesObject.VerticalOffsetMSB);
+                    Frame.Add(FrameBytesObject.VerticalOffsetLSB);
+
+                    #region LEVEL4 CONSTRUCTION 
+
+
+                    if ((FrameBytesObject.StatusByte == 0x08) || //Terminated at
+                        (FrameBytesObject.StatusByte == 0x10) || //Diverted
+                        (FrameBytesObject.StatusByte == 0x13)    //Change of Source
+                        )
+                    {
+
+                        Frame.AddRange(FrameBytesObject.TrainNumberBytes); // Use AddRange to add byte[]  
+                        Frame.Add(FrameBytesObject.SeparatorByte1);
+                        Frame.Add(FrameBytesObject.SeparatorByte2);
+
+                        Frame.Add(FrameBytesObject.TrainNameFieldIndexMSB1);
+                        Frame.Add(FrameBytesObject.TrainNameFieldIndexLSB2);
+                        Frame.AddRange(FrameBytesObject.TrainNameBytes);
+                        Frame.Add(FrameBytesObject.SeparatorByte1);
+                        Frame.Add(FrameBytesObject.SeparatorByte2);
+
+                        Frame.Add(FrameBytesObject.TimeFieldIndexMSB1);
+                        Frame.Add(FrameBytesObject.TimeFieldIndexLSB2);
+
+                        Frame.AddRange(FrameBytesObject.StationNameBytes);
+
+                    }
+
+
+                    else if (FrameBytesObject.StatusByte == 0x0F) //Rescheduled
+                    {
+                        Frame.AddRange(FrameBytesObject.TrainNumberBytes); // Use AddRange to add byte[]  
+                        Frame.Add(FrameBytesObject.SeparatorByte1);
+                        Frame.Add(FrameBytesObject.SeparatorByte2);
+
+                        Frame.Add(FrameBytesObject.TrainNameFieldIndexMSB1);
+                        Frame.Add(FrameBytesObject.TrainNameFieldIndexLSB2);
+                        Frame.AddRange(FrameBytesObject.TrainNameBytes);
+                        Frame.Add(FrameBytesObject.SeparatorByte1);
+                        Frame.Add(FrameBytesObject.SeparatorByte2);
+
+                        Frame.Add(FrameBytesObject.TimeFieldIndexMSB1);
+                        Frame.Add(FrameBytesObject.TimeFieldIndexLSB2);
+                        Frame.AddRange(FrameBytesObject.TimeBytes);
+                        Frame.Add(FrameBytesObject.SeparatorByte1);
+                        Frame.Add(FrameBytesObject.SeparatorByte2);
+
+                        Frame.Add(FrameBytesObject.ArrivalOrDepartureFieldIndexMSB1);
+                        Frame.Add(FrameBytesObject.ArrivalOrDepartureFieldIndexLSB2);
+                        Frame.AddRange(FrameBytesObject.ArrivalOrDepartureBytes);
+                        Frame.Add(FrameBytesObject.SeparatorByte1);
+                        Frame.Add(FrameBytesObject.SeparatorByte2);
+
+                        Frame.Add(FrameBytesObject.PlatformNumberFieldIndexMSB1);
+                        Frame.Add(FrameBytesObject.PlatformNumberFieldIndexLSB2);
+                        Frame.AddRange(FrameBytesObject.PlatformNumberBytes);
+
+                    }
+
+
+                    #endregion
+
+                    //Actually part of level3 but added here since
+                    //we have more than 1 data page
+                    Frame.Add(FrameBytesObject.CharacterStringTerminationByte1);
+                    Frame.Add(FrameBytesObject.CharacterStringTerminationByte2);
+
+
+                    #endregion
+
+                }
+
+
+                //////////////////
+                //for single page
+                /////////////////
+                else
+                {
+                    if ((FrameBytesObject.StatusByte == 0x01) || //Running Right Time 
+                        (FrameBytesObject.StatusByte == 0x02) || //Will Arrive Shortly 
+                        (FrameBytesObject.StatusByte == 0x03) || //Is Arriving On
+                        (FrameBytesObject.StatusByte == 0x05) || //Running Late 
+                        (FrameBytesObject.StatusByte == 0x09) || //Platform Changed 
+                        (FrameBytesObject.StatusByte == 0x0A) || //Running Right Time 
+                        (FrameBytesObject.StatusByte == 0x0C) || //Is Ready to Leave 
+                        (FrameBytesObject.StatusByte == 0x0D) || //Is on Platform
+                        (FrameBytesObject.StatusByte == 0x0E) || //Departed
+                        (FrameBytesObject.StatusByte == 0x11) || // Delay Departure 
+                        (FrameBytesObject.StatusByte == 0x12)  //Departed
+                        )
+                    {
+                        //PERFORM VALIDATION FOR ALL FIELDS, V.IMP
+                        //if (FrameBytesObject.TrainNumberBytes != null)
+                        //{
+                        //    Frame.AddRange(FrameBytesObject.TrainNumberBytes);
+                        //}
+                        //else
+                        //{
+                        //    // Handle the null case appropriately  
+                        //    throw new InvalidOperationException("TrainNumberBytes is null.");
+                        //}
+                        Frame.AddRange(FrameBytesObject.TimeBytes);
+                        Frame.Add(FrameBytesObject.SeparatorByte1);
+                        Frame.Add(FrameBytesObject.SeparatorByte2);
+
+                        Frame.Add(FrameBytesObject.ArrivalOrDepartureFieldIndexMSB1);
+                        Frame.Add(FrameBytesObject.ArrivalOrDepartureFieldIndexLSB2);
+                        Frame.AddRange(FrameBytesObject.ArrivalOrDepartureBytes);
+                        Frame.Add(FrameBytesObject.SeparatorByte1);
+                        Frame.Add(FrameBytesObject.SeparatorByte2);
+
+                        Frame.Add(FrameBytesObject.PlatformNumberFieldIndexMSB1);
+                        Frame.Add(FrameBytesObject.PlatformNumberFieldIndexLSB2);
+                        Frame.AddRange(FrameBytesObject.PlatformNumberBytes);
+
+                    }
+
+                    else if ((FrameBytesObject.StatusByte == 0x07) || //Indefinite Late
+                        (FrameBytesObject.StatusByte == 0x06) ||//Cancelled 
+                        (FrameBytesObject.StatusByte == 0x0B)  //Cancelled 
+                    )
+                    {
+                        Frame.AddRange(FrameBytesObject.Nplus5toKfIELD);
+                    }
+
+
+                    else if ((FrameBytesObject.StatusByte == 0x04) //Arrived
+                   )
+                    {
+
+                        Frame.AddRange(FrameBytesObject.Nplus5toKfIELD);
+
+                        Frame.Add(FrameBytesObject.SeparatorByte1);
+                        Frame.Add(FrameBytesObject.SeparatorByte2);
+
+                        Frame.Add(FrameBytesObject.PlatformNumberFieldIndexMSB1);
+                        Frame.Add(FrameBytesObject.PlatformNumberFieldIndexLSB2);
+                        Frame.AddRange(FrameBytesObject.PlatformNumberBytes);
+
+                    }
+
+
+
+                    Frame.Add(FrameBytesObject.CharacterStringTerminationByte1);
+                    Frame.Add(FrameBytesObject.CharacterStringTerminationByte2);
+
+
+                }
+
+
+            }
+
+
+            //LEVEL3&4 CONSTRUCTION  
+            #endregion
+            //LEVEL2 CONSTRUCTION
+            #endregion
+
+            Frame.Add(FrameBytesObject.Level1EndOfDataPacket);
+            Frame.Add(FrameBytesObject.CRC_MSB);//NOT ADDED  
+            Frame.Add(FrameBytesObject.CRC_LSB);//NOT ADDED  
+            Frame.Add(FrameBytesObject.EOT);
+
+            //FrameBytesObject.PacketLengthMSB4
+            Frame[3] = (byte)(((Frame.Count - 6) >> 8) & 0xFF);// Most Significant Byte
+
+            //FrameBytesObject.PacketLengthLSB5
+            Frame[4] = (byte)((Frame.Count - 6) & 0xFF);// Least Significant Byte
+
+            //CRC Left
+
+
+            //LEVEL1 CONSTRUCTION
+            #endregion
+
+
+            byte[] frametosend = Frame.ToArray();
+
+            return frametosend;
+        }
 
         public static byte[] EncodeFixedUtf16BE(string input, int byteLength)
         {
@@ -781,6 +1071,79 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
         }
 
 
-
     }
 }
+
+//public List<ByteTrainToBeDisplayed> ReadAndAddDirectFields( Device device)
+//{
+//    // NOTE: ALL THE DIRECT READ FIELDS WILL NOT NECESSARILY BE  
+//    // READ FROM THE ACTIVETRAIN INSTANCE. MANY OF THEM WILL ALSO BE  
+//    // DEPENDENT ON OTHER SETTINGS WHICH IN TURN IS BEING SET FROM SOME UI  
+//    // ELEMENT AND HENCE IS BEING STORED IN ONE OF THE FIELDS  
+
+//    #region ForLevel1
+
+//    FrameBytesObject.SourceIPAddress = IPAddress.Parse("192.168.0.253");
+//    FrameBytesObject.DestinationIPAddress = IPAddress.Parse(device.IpAddress);
+
+//    #endregion
+
+//    #region ForLevel2  
+//    // FrameBytesObject.ReverseVideo = ;  
+//    // FrameBytesObject.Speed = ;  
+//    // FrameBytesObject.EffectCode = ;  
+//    // FrameBytesObject.LetterSize = ;  
+//    // FrameBytesObject.Gap = ;  
+//    // FrameBytesObject.TimeDelay = ;  
+//    #endregion
+
+//    #region ForLevel3  
+
+//    // FrameBytesObject.StatusMessage = train.Status;
+//    FrameBytesObject.StatusByte = train.StatusByte;
+//    FrameBytesObject.StatusMessage = train.SelectedStatusOption;
+
+//    #endregion
+
+//    #region ForLevel4  
+//    //if (int.TryParse(train.TrainNumber, out int parsedTrainNumber))
+//    //{
+//    //    FrameBytesObject.TrainNumber = parsedTrainNumber;
+//    //}
+//    //else
+//    //{
+//    //    throw new InvalidOperationException($"TrainNumber '{train.TrainNumber}' cannot be converted to an integer.");
+//    //}
+
+//    FrameBytesObject.TrainNumber = train.TrainNumber;
+//    FrameBytesObject.TrainName = train.TrainNameEnglish;
+//    FrameBytesObject.Time = train.STA?.ToString(@"hh\:mm") ?? string.Empty; // check this properly  
+
+//    // Convert string to char explicitly  
+//    FrameBytesObject.ArrivalOrDepture = !string.IsNullOrEmpty(train.SelectedADOption) && train.SelectedADOption.Length == 1
+//        ? train.SelectedADOption[0]
+//        : throw new InvalidOperationException($"SelectedADOption '{train.SelectedADOption}' is not a valid single character.");
+
+//    FrameBytesObject.PlatformNumber = train.PFNo;
+
+//    //For page 2 Diverted/Terminated at/Change of Source
+//    FrameBytesObject.StationName = train.SrcNameEnglish;
+//    #endregion
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//helper method which converts the string to the specified number of bytes
+//in UTF-16 Big Endian format encoding

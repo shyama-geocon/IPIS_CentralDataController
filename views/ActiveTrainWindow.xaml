@@ -39,6 +39,9 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
@@ -91,7 +94,7 @@
 
                 <!-- DestCode (Station DB Window) -->
                 <Label Grid.Row="9" Grid.Column="0" Content="Destination Code:" VerticalAlignment="Center"/>
-                
+
                 <DockPanel Grid.Row="9" Grid.Column="1" >
                     <Button Width="80" Content="Select..." VerticalAlignment="Center" Margin="2" Click="OpenDestCodeWindow" Height="30"/>
                     <TextBox VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="2" Text="{Binding ActiveTrain.DestCode }" Height="30"/>
@@ -139,7 +142,7 @@
                 <ComboBox Grid.Row="17" Grid.Column="1" VerticalAlignment="Center" Margin="2" 
                           ItemsSource="{Binding ActiveTrain.StatusOptions}" SelectedItem="{Binding ActiveTrain.SelectedStatusOption}" Height="30"/>
 
-                 <!-- Station Name for Special Status (Terminated At/Diverted/Change Of Source)-->
+                <!-- Station Name for Special Status (Terminated At/Diverted/Change Of Source)-->
                 <Label Grid.Row="18" Grid.Column="0" Content="{Binding ActiveTrain.FieldForSplStatusCode , UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center"/>
                 <TextBox VerticalContentAlignment="Center" Grid.Row="18" Grid.Column="1" VerticalAlignment="Center" Margin="2" 
                          Text="{Binding ActiveTrain.SplStationNameEnglish, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="30" IsEnabled="False"/>
@@ -174,8 +177,208 @@
                 <xctk:IntegerUpDown Grid.Row="22" Grid.Column="1" VerticalAlignment="Center" Margin="2" Value="{Binding ActiveTrain.PFNo}" Height="30"/>
 
                 <!-- CoachSequence -->
-                <Label Grid.Row="23" Grid.Column="0" Content="Coach Sequence:" VerticalAlignment="Center"/>
-                <TextBox VerticalContentAlignment="Center" Grid.Row="23" Grid.Column="1" VerticalAlignment="Center" Margin="2" Text="{Binding ActiveTrain.CoachSequence}" Height="30"/>
+                <Label Grid.Row="23" Grid.Column="0" Content="Coach Sequence (Eng):" VerticalAlignment="Center"/>
+                <!--<TextBox VerticalContentAlignment="Center" Grid.Row="23" Grid.Column="1" VerticalAlignment="Center" Margin="2" Text="{Binding ActiveTrain.CoachSequence}" Height="30"/>-->
+                <!--Grid.Row="24" Grid.Column="0" Grid.ColumnSpan="2"-->
+                <Border BorderBrush="LightGray"  BorderThickness="1" Margin="2" VerticalAlignment="Center" Grid.Row="23" Grid.Column="1" >
+                    <Grid  Margin="2" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- First Row: TextBlocks with Rotated Text -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2">
+                        UP
+                    </TextBlock>
+                        <TextBox Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[0] , Mode=TwoWay  }"/>
+                        <TextBox Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[1] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[2] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[3] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[4] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[5] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="7" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[6] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[7] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="9" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[8] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[9] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[10] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[11] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="13" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[12] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="14" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[13] , Mode=TwoWay}"/>
+
+                    <!-- Second Row: TextBlocks -->
+                    <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="1" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="2" />
+                    <TextBlock Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="3" />
+                    <TextBlock Grid.Row="1" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="4" />
+                    <TextBlock Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="5" />
+                    <TextBlock Grid.Row="1" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="6" />
+                    <TextBlock Grid.Row="1" Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="7" />
+                    <TextBlock Grid.Row="1" Grid.Column="8" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="8" />
+                    <TextBlock Grid.Row="1" Grid.Column="9" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="9" />
+                    <TextBlock Grid.Row="1" Grid.Column="10" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="10" />
+                    <TextBlock Grid.Row="1" Grid.Column="11" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="11" />
+                    <TextBlock Grid.Row="1" Grid.Column="12" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="12" />
+                    <TextBlock Grid.Row="1" Grid.Column="13" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="13" />
+                    <TextBlock Grid.Row="1" Grid.Column="14" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="14" />
+
+                    <!-- Third Row: TextBoxes -->
+                        <TextBox Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[14] }"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[15]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[16]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[17]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[18]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[19]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[20]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="7" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[21]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[22]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="9" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[23]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[24]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[25]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[26]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="13" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachListEnglish[27]}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="14" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="2">
+                         DN
+                    </TextBlock>
+
+                    <!-- Fourth Row: TextBlocks -->
+                    <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="15" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="16" />
+                    <TextBlock Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="17" />
+                    <TextBlock Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="18" />
+                    <TextBlock Grid.Row="3" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="19" />
+                    <TextBlock Grid.Row="3" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="20" />
+                    <TextBlock Grid.Row="3" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="21" />
+                    <TextBlock Grid.Row="3" Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="22" />
+                    <TextBlock Grid.Row="3" Grid.Column="8" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="23" />
+                    <TextBlock Grid.Row="3" Grid.Column="9" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="24" />
+                    <TextBlock Grid.Row="3" Grid.Column="10" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="25" />
+                    <TextBlock Grid.Row="3" Grid.Column="11" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="26" />
+                    <TextBlock Grid.Row="3" Grid.Column="12" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="27" />
+                    <TextBlock Grid.Row="3" Grid.Column="13" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="28" />
+                </Grid>
+                </Border>
+
+                
+                <Label Grid.Row="24" Grid.Column="0" Content="Coach Sequence (Hindi):" VerticalAlignment="Center"/>
+                <Border BorderBrush="LightGray"  BorderThickness="1" Margin="2" VerticalAlignment="Center" Grid.Row="24" Grid.Column="1" >
+                    <Grid  Margin="2" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- First Row: TextBlocks with Rotated Text -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2">
+UP
+                        </TextBlock>
+                        <TextBox Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[0] , Mode=TwoWay  }"/>
+                        <TextBox Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[1] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[2] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[3] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[4] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[5] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="7" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[6] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[7] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="9" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[8] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[9] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[10] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[11] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="13" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[12] , Mode=TwoWay}"/>
+                        <TextBox Grid.Row="0" Grid.Column="14" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[13] , Mode=TwoWay}"/>
+
+                        <!-- Second Row: TextBlocks -->
+                        <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="1" />
+                        <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="2" />
+                        <TextBlock Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="3" />
+                        <TextBlock Grid.Row="1" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="4" />
+                        <TextBlock Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="5" />
+                        <TextBlock Grid.Row="1" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="6" />
+                        <TextBlock Grid.Row="1" Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="7" />
+                        <TextBlock Grid.Row="1" Grid.Column="8" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="8" />
+                        <TextBlock Grid.Row="1" Grid.Column="9" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="9" />
+                        <TextBlock Grid.Row="1" Grid.Column="10" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="10" />
+                        <TextBlock Grid.Row="1" Grid.Column="11" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="11" />
+                        <TextBlock Grid.Row="1" Grid.Column="12" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="12" />
+                        <TextBlock Grid.Row="1" Grid.Column="13" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="13" />
+                        <TextBlock Grid.Row="1" Grid.Column="14" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="14" />
+
+                        <!-- Third Row: TextBoxes -->
+                        <TextBox Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[14] }"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[15]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[16]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[17]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[18]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[19]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[20]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="7" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[21]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[22]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="9" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[23]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[24]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[25]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[26]}"/>
+                        <TextBox Grid.Row="2" Grid.Column="13" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding ActiveTrain.CoachList[27]}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="14" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="2">
+                DN
+                        </TextBlock>
+
+                        <!-- Fourth Row: TextBlocks -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="15" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="16" />
+                        <TextBlock Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="17" />
+                        <TextBlock Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="18" />
+                        <TextBlock Grid.Row="3" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="19" />
+                        <TextBlock Grid.Row="3" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="20" />
+                        <TextBlock Grid.Row="3" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="21" />
+                        <TextBlock Grid.Row="3" Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="22" />
+                        <TextBlock Grid.Row="3" Grid.Column="8" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="23" />
+                        <TextBlock Grid.Row="3" Grid.Column="9" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="24" />
+                        <TextBlock Grid.Row="3" Grid.Column="10" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="25" />
+                        <TextBlock Grid.Row="3" Grid.Column="11" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="26" />
+                        <TextBlock Grid.Row="3" Grid.Column="12" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="27" />
+                        <TextBlock Grid.Row="3" Grid.Column="13" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="28" />
+                    </Grid>
+                </Border>
 
                 <!-- CoachList -->
                 <!--<Label Grid.Row="23" Grid.Column="0" Content="Coach List:" VerticalAlignment="Center"/>

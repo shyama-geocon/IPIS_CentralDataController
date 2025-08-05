@@ -13,6 +13,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -49,8 +50,19 @@
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Description:" VerticalAlignment="Center" Margin="2"/>
             <TextBox Grid.Row="3" Grid.Column="1" Height="24" Margin="2" x:Name="DescriptionTextBox"/>
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Enabled:" VerticalAlignment="Center" Margin="2"/>
-            <CheckBox Grid.Row="4" Grid.Column="1" Height="24" Margin="2" x:Name="EnabledCheckBox"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="No. of Lines:" VerticalAlignment="Center" Margin="2" IsEnabled="{Binding LineOptionsIsEnabled}"/>
+            <ComboBox Grid.Row="4" Grid.Column="1" Height="24" Margin="2"  IsEnabled="{Binding LineOptionsIsEnabled}"
+            ItemsSource="{Binding LineOptions }" 
+            SelectedValue="{Binding SelectedLineOption, Mode=TwoWay ,UpdateSourceTrigger=PropertyChanged}" >
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>  
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Enabled:" VerticalAlignment="Center" Margin="2"/>
+            <CheckBox Grid.Row="5" Grid.Column="1" Height="24" Margin="2" x:Name="EnabledCheckBox"/>
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="2">
             <Button Content="Save" Height="30" Width="100" Margin="2" Click="SaveButton_Click"/>

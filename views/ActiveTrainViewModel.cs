@@ -11,7 +11,18 @@ namespace IpisCentralDisplayController.views
 {
     public class ActiveTrainViewModel : INotifyPropertyChanged
     {
-        public ActiveTrain ActiveTrain { get; set; }
+        //  public ActiveTrain ActiveTrain { get; set; }
+
+        private ActiveTrain _activeTrain;
+        public ActiveTrain ActiveTrain
+        {
+            get { return _activeTrain; }
+            set { 
+                _activeTrain = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 

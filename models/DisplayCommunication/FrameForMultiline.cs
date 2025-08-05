@@ -79,9 +79,9 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
         public byte[] TimeBytes { get; set; } // length of array is fixed
 
 
-        public byte ArrivalOrDeptureFieldIndexMSB1 { get; set; }
-        public byte ArrivalOrDeptureFieldIndexLSB2 { get; set; }
-        public byte[] ArrivalOrDeptureBytes { get; set; } // length of array is fixed
+        public byte ArrivalOrDepartureFieldIndexMSB1 { get; set; }
+        public byte ArrivalOrDepartureFieldIndexLSB2 { get; set; }
+        public byte[] ArrivalOrDepartureBytes { get; set; } // length of array is fixed
 
 
 
@@ -153,11 +153,13 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
         public byte TimeDelay { get; set; }
         #endregion
 
-        //#region ForLevel3
+        #region ForLevel3
         //// public int StatusCode { get; set; }
         //public string StatusMessage { get; set; }
+        public int NumOfLines { get; set; }
+        public DeviceType DeviceType { get; set; }
 
-        //#endregion
+        #endregion
 
         //#region ForLevel4
         ////public int TrainNumber { get; set; }

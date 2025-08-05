@@ -1565,7 +1565,15 @@ namespace IpisCentralDisplayController
                     _mainViewModel.SelectedPlatform.PlatformType = dialog.PlatformType;
                     _mainViewModel.SelectedPlatform.Description = dialog.Description;
                     _mainViewModel.SelectedPlatform.Subnet = dialog.Subnet;
+
+                    //this is propbably not working                    
                     _platformDeviceManager.UpdatePlatform(_mainViewModel.SelectedPlatform);
+                    //so we are gonna do this instead:
+                    //MAKE SURE THIS OVERWRITES THE PREVIOUS PLATFORMS LIST
+                    _platformDeviceManager.SavePlatforms(_mainViewModel.Platforms.ToList());
+                    // LoadPlatforms();
+
+
                 }
             }
             else
@@ -1607,6 +1615,7 @@ namespace IpisCentralDisplayController
                         Description = dialog.Description,
                         Created = DateTime.Now,
                         Updated = DateTime.Now,
+                        NumOfLines = dialog.SelectedLineOption.Value,
                         //DIALOG
                         SpeedByte = 0x02, //medium
                         EffectByte = 0x01, //Curtain Left to Right
@@ -1623,6 +1632,8 @@ namespace IpisCentralDisplayController
                     if (_platformDeviceManager.AddDevice(_mainViewModel.SelectedPlatform.PlatformNumber, newDevice))
                     {
                         _mainViewModel.Devices.Add(newDevice);
+                        _mainViewModel.SelectedPlatform.Devices.Add(newDevice);
+
                     }
                 }
             }
@@ -1667,6 +1678,9 @@ namespace IpisCentralDisplayController
                 {
                     _platformDeviceManager.DeleteDevice(_mainViewModel.SelectedPlatform.PlatformNumber, _mainViewModel.SelectedDevice.Id);
                     _mainViewModel.Devices.Remove(_mainViewModel.SelectedDevice);
+
+                  //  _mainViewModel.SelectedPlatform.Devices = _mainViewModel.Devices;
+                    _mainViewModel.SelectedPlatform.Devices.Remove(_mainViewModel.SelectedDevice);
                 }
             }
             else

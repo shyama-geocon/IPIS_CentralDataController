@@ -45,7 +45,7 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
         public ByteBuilder Level2Byte9 { get; set; }
         public ByteBuilder Level2Byte10 { get; set; }
         public ByteBuilder Level2Byte11 { get; set; }
-        public ByteBuilder Level2Byte12 { get; set; }
+        public byte TimeDelay12 { get; set; }
 
         public byte StartAddOfCharStringMSB13 { get; set; }
         public byte StartAddOfCharStringLSB14 { get; set; }
@@ -166,7 +166,7 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
         public string TrainNumber { get; set; }
         public string TrainName { get; set; }
         public string Time { get; set; }
-        public char ArrivalOrDepture { get; set; }
+        public char ArrivalOrDeparture { get; set; }
         public int PlatformNumber { get; set; }
         public string StationName { get; set; } // FOR PAGE 2: Diverted/Terminated at/Change of Source
 

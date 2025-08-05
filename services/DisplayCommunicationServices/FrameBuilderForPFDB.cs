@@ -44,12 +44,12 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             #endregion
 
             #region ForLevel2  
-            // FrameBytesObject.ReverseVideo = ;  
-            // FrameBytesObject.Speed = ;  
-            // FrameBytesObject.EffectCode = ;  
-            // FrameBytesObject.LetterSize = ;  
-            // FrameBytesObject.Gap = ;  
-            // FrameBytesObject.TimeDelay = ;  
+            FrameBytesObject.ReverseVideo = device.IsReverseVideo;
+            FrameBytesObject.Speed = device.SpeedByte;
+            FrameBytesObject.EffectCode = device.EffectByte;
+            FrameBytesObject.LetterSize = device.LetterSizeByte;
+            FrameBytesObject.Gap = device.GapByte;
+            FrameBytesObject.TimeDelay = device.TimeDelayValueByte;
             #endregion
 
             #region ForLevel3  
@@ -72,17 +72,29 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
             FrameBytesObject.TrainNumber = train.TrainNumber;
             FrameBytesObject.TrainName = train.TrainNameEnglish;
-            FrameBytesObject.Time = train.STA?.ToString(@"hh\:mm") ?? string.Empty; // check this properly  
+          //  FrameBytesObject.Time = train.STA?.ToString(@"hh\:mm") ?? string.Empty; // check this properly  
+
 
             // Convert string to char explicitly  
-            FrameBytesObject.ArrivalOrDepture = !string.IsNullOrEmpty(train.SelectedADOption) && train.SelectedADOption.Length == 1
+            FrameBytesObject.ArrivalOrDeparture = !string.IsNullOrEmpty(train.SelectedADOption) && train.SelectedADOption.Length == 1
                 ? train.SelectedADOption[0]
                 : throw new InvalidOperationException($"SelectedADOption '{train.SelectedADOption}' is not a valid single character.");
 
+
+            if (FrameBytesObject.ArrivalOrDeparture == 'A')
+            {
+                FrameBytesObject.Time = new DateTime(train.ETA.Value.Ticks).ToString("HH:mm");
+            }
+            else if (FrameBytesObject.ArrivalOrDeparture == 'D')
+            {
+                FrameBytesObject.Time = new DateTime(train.ETD.Value.Ticks).ToString("HH:mm");
+            }
+            //For page 2 Diverted/Terminated at/Change of Source
+            FrameBytesObject.StationName = train.SplStationNameEnglish;
+
             FrameBytesObject.PlatformNumber = train.PFNo;
 
-            //For page 2 Diverted/Terminated at/Change of Source
-            FrameBytesObject.StationName = train.SrcNameEnglish;
+            
             #endregion
         }
 
@@ -112,11 +124,11 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             FrameBytesObject.TrainNameBytes = EncodeFixedUtf16BE(FrameBytesObject.TrainName, GetUtf16ByteSize(FrameBytesObject.TrainName));
             
                 //comeback Time
-                FrameBytesObject.Time = "00:00";
+               
             FrameBytesObject.TimeBytes = EncodeFixedUtf16BE(FrameBytesObject.Time, GetUtf16ByteSize(FrameBytesObject.Time));
             FrameBytesObject.ArrivalOrDeptureBytes = new byte[2] ;
             FrameBytesObject.ArrivalOrDeptureBytes[0] =0x00;
-            FrameBytesObject.ArrivalOrDeptureBytes[1] = (byte)FrameBytesObject.ArrivalOrDepture; // Convert char to byte
+            FrameBytesObject.ArrivalOrDeptureBytes[1] = (byte)FrameBytesObject.ArrivalOrDeparture; // Convert char to byte
 
             //byte[] platformNumberBytes = new byte[3];
             //platformNumberBytes[0] = (byte)(FrameBytesObject.PlatformNumber & 0x00FF0000);                            // MSB
@@ -143,167 +155,48 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
                 if (FrameBytesObject.StatusByte == 0x04)
                 {
-                    FrameBytesObject.StatusByte = 0x04;
                     FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Arrived", GetUtf16ByteSize("Arrived"));
-
                 }
                 else if (FrameBytesObject.StatusByte == 0x06)
                 {
-                    FrameBytesObject.StatusByte = 0x06;
                     FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Cancelled", GetUtf16ByteSize("Cancelled"));
                 }
                 else if (FrameBytesObject.StatusByte == 0x07)
                 {
-                    FrameBytesObject.StatusByte = 0x07;
                     FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Indefinite Late", GetUtf16ByteSize("Indefinite Late"));
                 }
                 else if (FrameBytesObject.StatusByte == 0x08)
                 {
-                    FrameBytesObject.StatusByte = 0x08;
                     FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Terminated At", GetUtf16ByteSize("Terminated At"));
                     FrameBytesObject.StationNameBytes = EncodeFixedUtf16BE(FrameBytesObject.StationName, GetUtf16ByteSize(FrameBytesObject.StationName));
                 }              
                 else if (FrameBytesObject.StatusByte == 0x0B )
                 {
-                    FrameBytesObject.StatusByte = 0x0B;
                     FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Cancelled", GetUtf16ByteSize("Cancelled"));
                 }             
                 else if (FrameBytesObject.StatusByte == 0x0F)
                 {
-                    FrameBytesObject.StatusByte = 0x0F;
                     FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Rescheduled", GetUtf16ByteSize("Rescheduled"));
 
                 }
                 else if (FrameBytesObject.StatusByte == 0x10)
                 {
-                    FrameBytesObject.StatusByte = 0x10;
                     FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Diverted", GetUtf16ByteSize("Diverted"));
                     FrameBytesObject.StationNameBytes = EncodeFixedUtf16BE(FrameBytesObject.StationName, GetUtf16ByteSize(FrameBytesObject.StationName));
 
                 }             
                 else if (FrameBytesObject.StatusByte == 0x13)
                 {
-                    FrameBytesObject.StatusByte = 0x13;
                     FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Start at", GetUtf16ByteSize("Start at"));
                     FrameBytesObject.StationNameBytes = EncodeFixedUtf16BE(FrameBytesObject.StationName, GetUtf16ByteSize(FrameBytesObject.StationName));
                 }
                 else
                 {
-                    throw new Exception(message: $"Unknown status message: {FrameBytesObject.StatusMessage}");
+                FrameBytesObject.Nplus5toKfIELD = null;
+                FrameBytesObject.StationNameBytes = null;
+
+                  //  throw new Exception(message: $"Unknown status message: {FrameBytesObject.StatusMessage}");
                 }
-
-            
-
-
-
-
-
-
-
-            //if (FrameBytesObject.ArrivalOrDepture== 'A') {
-            //    if (FrameBytesObject.StatusMessage == "Running Right Time")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x01;
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Will Arrive Shortly")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x02;
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Is Arriving On")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x03;
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Has Arrived On")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x04;
-            //        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Arrived", GetUtf16ByteSize("Arrived"));
-
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Running Late")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x05;
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Cancelled")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x06;
-            //        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Cancelled", GetUtf16ByteSize("Cancelled"));
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Indefinite Late")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x07;
-            //        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Indefinite Late", GetUtf16ByteSize("Indefinite Late"));
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Terminated At")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x08;
-            //        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Terminated At", GetUtf16ByteSize("Terminated At"));
-            //        FrameBytesObject.StationNameBytes = EncodeFixedUtf16BE(FrameBytesObject.StationName, GetUtf16ByteSize(FrameBytesObject.StationName));
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Platform Changed")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x09;
-            //    }
-            //    else 
-            //    {
-            //        throw new Exception(message: $"Unknown status message: {FrameBytesObject.StatusMessage}");
-            //    }
-            //}
-            //else if(FrameBytesObject.ArrivalOrDepture == 'D')
-            //{
-            //    if (FrameBytesObject.StatusMessage == "Running Right Time")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x0A;
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Cancelled")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x0B;
-            //        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Cancelled", GetUtf16ByteSize("Cancelled"));
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Is Ready To Leave")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x0C;
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Is On Platform")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x0D;
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Departed")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x0E;
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Rescheduled")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x0F;
-            //        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Rescheduled", GetUtf16ByteSize("Rescheduled"));
-
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Diverted")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x10;
-            //        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Diverted", GetUtf16ByteSize("Diverted"));
-            //        FrameBytesObject.StationNameBytes = EncodeFixedUtf16BE(FrameBytesObject.StationName, GetUtf16ByteSize(FrameBytesObject.StationName));
-
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Delayed")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x11;
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Platform Changed")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x12;
-            //    }
-            //    else if (FrameBytesObject.StatusMessage == "Change Of Source")
-            //    {
-            //        FrameBytesObject.StatusByte = 0x13;
-            //        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Start at", GetUtf16ByteSize("Start at"));
-            //        FrameBytesObject.StationNameBytes = EncodeFixedUtf16BE(FrameBytesObject.StationName, GetUtf16ByteSize(FrameBytesObject.StationName));
-            //    }
-            //    else
-            //    {
-            //        throw new Exception(message: $"Unknown status message: {FrameBytesObject.StatusMessage}");
-            //    }
-
-            //}
 
             byte[] octets = FrameBytesObject.DestinationIPAddress.GetAddressBytes();
             // Make sure it's an IPv4 address
@@ -322,6 +215,240 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
                 FrameBytesObject.SourceAddressFourth9 = octets[3];  // Index 3 = 4th octet
 
             }
+
+            #region Byte9
+
+            FrameBytesObject.Level2Byte9 = new ByteBuilder();
+
+            FrameBytesObject.Level2Byte9.SetBit(7, FrameBytesObject.ReverseVideo); // Reverse Video
+            FrameBytesObject.Level2Byte9.SetBit(6, false);
+            FrameBytesObject.Level2Byte9.SetBit(5, false);
+            FrameBytesObject.Level2Byte9.SetBit(4, false);
+            FrameBytesObject.Level2Byte9.SetBit(3, false);
+
+            if (FrameBytesObject.Speed == 0x00)
+            {
+                FrameBytesObject.Level2Byte9.SetBit(2, false);
+                FrameBytesObject.Level2Byte9.SetBit(1, false);
+                FrameBytesObject.Level2Byte9.SetBit(0, false);
+            }
+            else if (FrameBytesObject.Speed == 0x01)
+            {
+                FrameBytesObject.Level2Byte9.SetBit(2, false);
+                FrameBytesObject.Level2Byte9.SetBit(1, false);
+                FrameBytesObject.Level2Byte9.SetBit(0, true);
+            }
+            else if (FrameBytesObject.Speed == 0x02)
+            {
+                FrameBytesObject.Level2Byte9.SetBit(2, false);
+                FrameBytesObject.Level2Byte9.SetBit(1, true);
+                FrameBytesObject.Level2Byte9.SetBit(0, false);
+            }
+            else if (FrameBytesObject.Speed == 0x03)
+            {
+                FrameBytesObject.Level2Byte9.SetBit(2, false);
+                FrameBytesObject.Level2Byte9.SetBit(1, true);
+                FrameBytesObject.Level2Byte9.SetBit(0, true);
+            }
+            else if (FrameBytesObject.Speed == 0x04)
+            {
+                FrameBytesObject.Level2Byte9.SetBit(2, true);
+                FrameBytesObject.Level2Byte9.SetBit(1, false);
+                FrameBytesObject.Level2Byte9.SetBit(0, false);
+            }
+
+            #endregion
+
+            #region Byte10
+
+            FrameBytesObject.Level2Byte10 = new ByteBuilder();
+
+            FrameBytesObject.Level2Byte10.SetBit(7, false);
+            FrameBytesObject.Level2Byte10.SetBit(6, false);
+            FrameBytesObject.Level2Byte10.SetBit(5, false);
+            FrameBytesObject.Level2Byte10.SetBit(4, false);
+
+
+            if (FrameBytesObject.EffectCode == 0x00)
+            {
+                FrameBytesObject.Level2Byte10.SetBit(3, false);
+                FrameBytesObject.Level2Byte10.SetBit(2, false);
+                FrameBytesObject.Level2Byte10.SetBit(1, false);
+                FrameBytesObject.Level2Byte10.SetBit(0, false);
+            }
+            else if (FrameBytesObject.EffectCode == 0x01)
+            {
+                FrameBytesObject.Level2Byte10.SetBit(3, false);
+                FrameBytesObject.Level2Byte10.SetBit(2, false);
+                FrameBytesObject.Level2Byte10.SetBit(1, false);
+                FrameBytesObject.Level2Byte10.SetBit(0, true);
+            }
+            else if (FrameBytesObject.EffectCode == 0x02)
+            {
+                FrameBytesObject.Level2Byte10.SetBit(3, false);
+                FrameBytesObject.Level2Byte10.SetBit(2, false);
+                FrameBytesObject.Level2Byte10.SetBit(1, true);
+                FrameBytesObject.Level2Byte10.SetBit(0, false);
+            }
+            else if (FrameBytesObject.EffectCode == 0x03)
+            {
+                FrameBytesObject.Level2Byte10.SetBit(3, false);
+                FrameBytesObject.Level2Byte10.SetBit(2, false);
+                FrameBytesObject.Level2Byte10.SetBit(1, true);
+                FrameBytesObject.Level2Byte10.SetBit(0, true);
+            }
+            else if (FrameBytesObject.EffectCode == 0x04)
+            {
+                FrameBytesObject.Level2Byte10.SetBit(3, false);
+                FrameBytesObject.Level2Byte10.SetBit(2, true);
+                FrameBytesObject.Level2Byte10.SetBit(1, false);
+                FrameBytesObject.Level2Byte10.SetBit(0, false);
+            }
+            else if (FrameBytesObject.EffectCode == 0x05)
+            {
+                FrameBytesObject.Level2Byte10.SetBit(3, false);
+                FrameBytesObject.Level2Byte10.SetBit(2, true);
+                FrameBytesObject.Level2Byte10.SetBit(1, false);
+                FrameBytesObject.Level2Byte10.SetBit(0, true);
+            }
+            else if (FrameBytesObject.EffectCode == 0x06)
+            {
+                FrameBytesObject.Level2Byte10.SetBit(3, false);
+                FrameBytesObject.Level2Byte10.SetBit(2, true);
+                FrameBytesObject.Level2Byte10.SetBit(1, true);
+                FrameBytesObject.Level2Byte10.SetBit(0, false);
+            }
+            else if (FrameBytesObject.EffectCode == 0x07)
+            {
+                FrameBytesObject.Level2Byte10.SetBit(3, false);
+                FrameBytesObject.Level2Byte10.SetBit(2, true);
+                FrameBytesObject.Level2Byte10.SetBit(1, true);
+                FrameBytesObject.Level2Byte10.SetBit(0, true);
+            }
+            else if (FrameBytesObject.EffectCode == 0x08)
+            {
+                FrameBytesObject.Level2Byte10.SetBit(3, true);
+                FrameBytesObject.Level2Byte10.SetBit(2, false);
+                FrameBytesObject.Level2Byte10.SetBit(1, false);
+                FrameBytesObject.Level2Byte10.SetBit(0, false);
+            }
+            else if (FrameBytesObject.EffectCode == 0x09)
+            {
+                FrameBytesObject.Level2Byte10.SetBit(3, true);
+                FrameBytesObject.Level2Byte10.SetBit(2, false);
+                FrameBytesObject.Level2Byte10.SetBit(1, false);
+                FrameBytesObject.Level2Byte10.SetBit(0, true);
+            }
+
+            #endregion
+
+            #region Byte11
+            FrameBytesObject.Level2Byte11 = new ByteBuilder();
+
+
+            FrameBytesObject.Level2Byte11.SetBit(7, false);
+            FrameBytesObject.Level2Byte11.SetBit(6, false);
+
+            if (FrameBytesObject.EffectCode == 0x00)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(5, false);
+                FrameBytesObject.Level2Byte11.SetBit(4, false);
+                FrameBytesObject.Level2Byte11.SetBit(3, false);
+
+            }
+            else if (FrameBytesObject.EffectCode == 0x01)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(5, false);
+                FrameBytesObject.Level2Byte11.SetBit(4, false);
+                FrameBytesObject.Level2Byte11.SetBit(3, true);
+
+            }
+            else if (FrameBytesObject.EffectCode == 0x02)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(5, false);
+                FrameBytesObject.Level2Byte11.SetBit(4, true);
+                FrameBytesObject.Level2Byte11.SetBit(3, false);
+
+            }
+            else if (FrameBytesObject.EffectCode == 0x03)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(5, false);
+                FrameBytesObject.Level2Byte11.SetBit(4, true);
+                FrameBytesObject.Level2Byte11.SetBit(3, true);
+
+            }
+            else if (FrameBytesObject.EffectCode == 0x04)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(5, true);
+                FrameBytesObject.Level2Byte11.SetBit(4, false);
+                FrameBytesObject.Level2Byte11.SetBit(3, false);
+
+            }
+            else if (FrameBytesObject.EffectCode == 0x05)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(5, true);
+                FrameBytesObject.Level2Byte11.SetBit(4, false);
+                FrameBytesObject.Level2Byte11.SetBit(3, true);
+
+            }
+
+
+
+
+            if (FrameBytesObject.Gap == 0x00)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(2, false);
+                FrameBytesObject.Level2Byte11.SetBit(1, false);
+                FrameBytesObject.Level2Byte11.SetBit(0, false);
+            }
+            else if (FrameBytesObject.Gap == 0x01)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(2, false);
+                FrameBytesObject.Level2Byte11.SetBit(1, false);
+                FrameBytesObject.Level2Byte11.SetBit(0, true);
+            }
+            else if (FrameBytesObject.Gap == 0x02)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(2, false);
+                FrameBytesObject.Level2Byte11.SetBit(1, true);
+                FrameBytesObject.Level2Byte11.SetBit(0, false);
+            }
+            else if (FrameBytesObject.Gap == 0x03)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(2, false);
+                FrameBytesObject.Level2Byte11.SetBit(1, true);
+                FrameBytesObject.Level2Byte11.SetBit(0, true);
+            }
+            else if (FrameBytesObject.Gap == 0x04)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(2, true);
+                FrameBytesObject.Level2Byte11.SetBit(1, false);
+                FrameBytesObject.Level2Byte11.SetBit(0, false);
+            }
+            else if (FrameBytesObject.Gap == 0x05)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(2, true);
+                FrameBytesObject.Level2Byte11.SetBit(1, false);
+                FrameBytesObject.Level2Byte11.SetBit(0, true);
+            }
+            else if (FrameBytesObject.Gap == 0x06)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(2, true);
+                FrameBytesObject.Level2Byte11.SetBit(1, true);
+                FrameBytesObject.Level2Byte11.SetBit(0, false);
+            }
+            else if (FrameBytesObject.Gap == 0x07)
+            {
+                FrameBytesObject.Level2Byte11.SetBit(2, true);
+                FrameBytesObject.Level2Byte11.SetBit(1, true);
+                FrameBytesObject.Level2Byte11.SetBit(0, true);
+            }
+
+
+            #endregion
+
+            FrameBytesObject.TimeDelay12 = (byte)FrameBytesObject.TimeDelay;
+
 
             //// Add separator bytes
         }
@@ -386,17 +513,19 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
             #endregion
 
+
             #region ForLevel3
 
             FrameBytesObject.HorizontalOffsetMSB = 0X00;
-            FrameBytesObject.HorizontalOffsetLSB = 0X01;
+            FrameBytesObject.HorizontalOffsetLSB = 0X10;//ROW NO.: FROM 16TH ROW
 
-            //FrameBytesObject.VerticalOffsetMSB = 0X00;
-            //FrameBytesObject.VerticalOffsetLSB = 0X01;
-            FrameBytesObject.VerticalOffsetMSB = 0x01; //MSB
-            FrameBytesObject.VerticalOffsetLSB = 0x50; //LSB
+
+            FrameBytesObject.VerticalOffsetMSB = 0X00;
+            FrameBytesObject.VerticalOffsetLSB = 0X01;
+
 
             #endregion
+
 
             #region ForLevel4
             FrameBytesObject.SeparatorByte1 = 0xE7; // Separator byte 1
@@ -423,7 +552,7 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
         public byte[] CompileFrame()
         {
             Frame.Clear();
-                
+            List<int> CharacterStringStartAddToBeAddedAtIndexes = new List<int>();
 
             #region LEVEL1 CONSTRUCTION  
             Frame.Add(FrameBytesObject.Start1);
@@ -467,8 +596,11 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
                 Frame.Add(FrameBytesObject.Level2Byte9.ToByte());
                 Frame.Add(FrameBytesObject.Level2Byte10.ToByte());
                 Frame.Add(FrameBytesObject.Level2Byte11.ToByte());
-                Frame.Add(FrameBytesObject.Level2Byte12.ToByte());
+                //Frame.Add(FrameBytesObject.Level2Byte12.ToByte());
+                Frame.Add(FrameBytesObject.TimeDelay12);
 
+
+                CharacterStringStartAddToBeAddedAtIndexes.Add((Frame.Count));
                 Frame.Add(FrameBytesObject.StartAddOfCharStringMSB13);//NOT ADDED
                 Frame.Add(FrameBytesObject.StartAddOfCharStringLSB14);//NOT ADDED
 
@@ -492,8 +624,10 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
                 Frame.Add(FrameBytesObject.Level2Byte9.ToByte());
                 Frame.Add(FrameBytesObject.Level2Byte10.ToByte());
                 Frame.Add(FrameBytesObject.Level2Byte11.ToByte());
-                Frame.Add(FrameBytesObject.Level2Byte12.ToByte());
+                // Frame.Add(FrameBytesObject.Level2Byte12.ToByte());
+                Frame.Add(FrameBytesObject.TimeDelay12);
 
+                CharacterStringStartAddToBeAddedAtIndexes.Add((Frame.Count));
                 Frame.Add(FrameBytesObject.StartAddOfCharStringMSB13);//NOT ADDED
                 Frame.Add(FrameBytesObject.StartAddOfCharStringLSB14);//NOT ADDED
                 #endregion
@@ -506,6 +640,13 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
                 //FIRST DATA PAGE STARTS
                 #region
+                int index_to_be_added = Frame.Count;
+                FrameBytesObject.StartAddOfCharStringMSB13 = (byte)((index_to_be_added & 0xFF00) >> 8); //MSB
+                FrameBytesObject.StartAddOfCharStringLSB14 = (byte)((index_to_be_added & 0x00FF)); //LSB
+                Frame[ CharacterStringStartAddToBeAddedAtIndexes[0] ] = FrameBytesObject.StartAddOfCharStringMSB13; // Update MSB
+                Frame[CharacterStringStartAddToBeAddedAtIndexes[0] + 1] = FrameBytesObject.StartAddOfCharStringLSB14; // Update LSB
+
+
                 Frame.Add(FrameBytesObject.StatusByte);
                 Frame.Add(FrameBytesObject.HorizontalOffsetMSB);
                 Frame.Add(FrameBytesObject.HorizontalOffsetLSB);
@@ -572,6 +713,12 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
                 //SECOND DATA PAGE STARTS
                 #region
+                 index_to_be_added = Frame.Count;
+                FrameBytesObject.StartAddOfCharStringMSB13 = (byte)((index_to_be_added & 0xFF00) >> 8); //MSB
+                FrameBytesObject.StartAddOfCharStringLSB14 = (byte)((index_to_be_added & 0x00FF)); //LSB
+                Frame[CharacterStringStartAddToBeAddedAtIndexes[1]] = FrameBytesObject.StartAddOfCharStringMSB13; // Update MSB
+                Frame[CharacterStringStartAddToBeAddedAtIndexes[1] + 1] = FrameBytesObject.StartAddOfCharStringLSB14; // Update LSB
+
                 Frame.Add(FrameBytesObject.StatusByte);
                 Frame.Add(FrameBytesObject.HorizontalOffsetMSB);
                 Frame.Add(FrameBytesObject.HorizontalOffsetLSB);
@@ -656,10 +803,6 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
             }
 
-
-
-
-
             //////////////////
             //for single page
             /////////////////
@@ -676,17 +819,20 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
                 Frame.Add(FrameBytesObject.WindowBottomRow7);
                 Frame.Add(FrameBytesObject.WindowBottomRow8);
 
-                //V.IMP : REMOVE THIS LATER PLEASE
-                FrameBytesObject.Level2Byte9 = new ByteBuilder();
-                FrameBytesObject.Level2Byte10 = new ByteBuilder();
-                FrameBytesObject.Level2Byte11 = new ByteBuilder();
-                FrameBytesObject.Level2Byte12 = new ByteBuilder();
+                ////V.IMP : REMOVE THIS LATER PLEASE
+                //FrameBytesObject.Level2Byte9 = new ByteBuilder();
+                //FrameBytesObject.Level2Byte10 = new ByteBuilder();
+                //FrameBytesObject.Level2Byte11 = new ByteBuilder();
+                //FrameBytesObject.Level2Byte12 = new ByteBuilder();
 
 
                 Frame.Add(FrameBytesObject.Level2Byte9.ToByte());
                 Frame.Add(FrameBytesObject.Level2Byte10.ToByte());
                 Frame.Add(FrameBytesObject.Level2Byte11.ToByte());
-                Frame.Add(FrameBytesObject.Level2Byte12.ToByte());
+                Frame.Add(FrameBytesObject.TimeDelay12);
+                // Frame.Add(FrameBytesObject.Level2Byte12.ToByte());
+
+                CharacterStringStartAddToBeAddedAtIndexes.Add((Frame.Count));
                 Frame.Add(FrameBytesObject.StartAddOfCharStringMSB13);
                 Frame.Add(FrameBytesObject.StartAddOfCharStringLSB14);
                 //IF MORE THAN 1 DATA PAGE, THEN IT GOES HERE
@@ -695,6 +841,14 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
 
                 #region LEVEL3 CONSTRUCTION  
+
+                int index_to_be_added = Frame.Count;
+                FrameBytesObject.StartAddOfCharStringMSB13 = (byte)((index_to_be_added & 0xFF00) >> 8); //MSB
+                FrameBytesObject.StartAddOfCharStringLSB14 = (byte)((index_to_be_added & 0x00FF)); //LSB
+                Frame[CharacterStringStartAddToBeAddedAtIndexes[0]] = FrameBytesObject.StartAddOfCharStringMSB13; // Update MSB
+                Frame[CharacterStringStartAddToBeAddedAtIndexes[0] + 1] = FrameBytesObject.StartAddOfCharStringLSB14; // Update LSB
+
+
                 Frame.Add(FrameBytesObject.StatusByte);
                 Frame.Add(FrameBytesObject.HorizontalOffsetMSB);
                 Frame.Add(FrameBytesObject.HorizontalOffsetLSB);
@@ -822,11 +976,17 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             Frame.Add(FrameBytesObject.CRC_LSB);//NOT ADDED  
             Frame.Add(FrameBytesObject.EOT);
 
+            ////FrameBytesObject.PacketLengthMSB4
+            //Frame[3] = (byte)(((Frame.Count +1 ) >> 8) & 0xFF);// Most Significant Byte
+
+            ////FrameBytesObject.PacketLengthLSB5
+            //Frame[4] = (byte)((Frame.Count + 1) & 0xFF);// Least Significant Byte
+
             //FrameBytesObject.PacketLengthMSB4
-            Frame[3] = (byte)(((Frame.Count +1 ) >> 8) & 0xFF);// Most Significant Byte
+            Frame[3] = (byte)(((Frame.Count - 6) >> 8) & 0xFF);// Most Significant Byte
 
             //FrameBytesObject.PacketLengthLSB5
-            Frame[4] = (byte)((Frame.Count + 1) & 0xFF);// Least Significant Byte
+            Frame[4] = (byte)((Frame.Count - 6) & 0xFF);// Least Significant Byte
 
             //CRC Left
 
@@ -869,6 +1029,7 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
 
 
+#region StatusMsgTOStatusCode
 
 //public static byte[] ComputeCrc16CCITT(byte[] data)
 //{
@@ -906,10 +1067,118 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
 //This should be the function prototype: public static byte[] ComputeCrc16CCITT(byte[] data)
 
+#endregion
 
 
 
 
+
+#region StatusMsgTOStatusCode
+
+//if (FrameBytesObject.ArrivalOrDepture== 'A') {
+//    if (FrameBytesObject.StatusMessage == "Running Right Time")
+//    {
+//        FrameBytesObject.StatusByte = 0x01;
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Will Arrive Shortly")
+//    {
+//        FrameBytesObject.StatusByte = 0x02;
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Is Arriving On")
+//    {
+//        FrameBytesObject.StatusByte = 0x03;
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Has Arrived On")
+//    {
+//        FrameBytesObject.StatusByte = 0x04;
+//        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Arrived", GetUtf16ByteSize("Arrived"));
+
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Running Late")
+//    {
+//        FrameBytesObject.StatusByte = 0x05;
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Cancelled")
+//    {
+//        FrameBytesObject.StatusByte = 0x06;
+//        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Cancelled", GetUtf16ByteSize("Cancelled"));
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Indefinite Late")
+//    {
+//        FrameBytesObject.StatusByte = 0x07;
+//        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Indefinite Late", GetUtf16ByteSize("Indefinite Late"));
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Terminated At")
+//    {
+//        FrameBytesObject.StatusByte = 0x08;
+//        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Terminated At", GetUtf16ByteSize("Terminated At"));
+//        FrameBytesObject.StationNameBytes = EncodeFixedUtf16BE(FrameBytesObject.StationName, GetUtf16ByteSize(FrameBytesObject.StationName));
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Platform Changed")
+//    {
+//        FrameBytesObject.StatusByte = 0x09;
+//    }
+//    else 
+//    {
+//        throw new Exception(message: $"Unknown status message: {FrameBytesObject.StatusMessage}");
+//    }
+//}
+//else if(FrameBytesObject.ArrivalOrDepture == 'D')
+//{
+//    if (FrameBytesObject.StatusMessage == "Running Right Time")
+//    {
+//        FrameBytesObject.StatusByte = 0x0A;
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Cancelled")
+//    {
+//        FrameBytesObject.StatusByte = 0x0B;
+//        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Cancelled", GetUtf16ByteSize("Cancelled"));
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Is Ready To Leave")
+//    {
+//        FrameBytesObject.StatusByte = 0x0C;
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Is On Platform")
+//    {
+//        FrameBytesObject.StatusByte = 0x0D;
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Departed")
+//    {
+//        FrameBytesObject.StatusByte = 0x0E;
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Rescheduled")
+//    {
+//        FrameBytesObject.StatusByte = 0x0F;
+//        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Rescheduled", GetUtf16ByteSize("Rescheduled"));
+
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Diverted")
+//    {
+//        FrameBytesObject.StatusByte = 0x10;
+//        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Diverted", GetUtf16ByteSize("Diverted"));
+//        FrameBytesObject.StationNameBytes = EncodeFixedUtf16BE(FrameBytesObject.StationName, GetUtf16ByteSize(FrameBytesObject.StationName));
+
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Delayed")
+//    {
+//        FrameBytesObject.StatusByte = 0x11;
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Platform Changed")
+//    {
+//        FrameBytesObject.StatusByte = 0x12;
+//    }
+//    else if (FrameBytesObject.StatusMessage == "Change Of Source")
+//    {
+//        FrameBytesObject.StatusByte = 0x13;
+//        FrameBytesObject.Nplus5toKfIELD = EncodeFixedUtf16BE("Start at", GetUtf16ByteSize("Start at"));
+//        FrameBytesObject.StationNameBytes = EncodeFixedUtf16BE(FrameBytesObject.StationName, GetUtf16ByteSize(FrameBytesObject.StationName));
+//    }
+//    else
+//    {
+//        throw new Exception(message: $"Unknown status message: {FrameBytesObject.StatusMessage}");
+//    }
+
+//}
 
 
 
@@ -957,3 +1226,5 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
 
 //}
+
+#endregion

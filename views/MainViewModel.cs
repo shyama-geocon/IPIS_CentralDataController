@@ -803,9 +803,6 @@ namespace IpisCentralDisplayController.views
             #endregion
 
 
-
-
-
             try
             {
                 using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30))) // Timeout after 30 seconds
@@ -876,7 +873,6 @@ namespace IpisCentralDisplayController.views
             return serverConfig;
         }
 
-
         private bool CanExecuteTADDB_SET()
         {
             return !IsOperationInProgress;
@@ -884,7 +880,6 @@ namespace IpisCentralDisplayController.views
             //Need to add all possible validation mechanisms
             return true; // Placeholder, replace with actual condition
         }
-
         #endregion
 
         public bool IsOperationInProgress
@@ -904,20 +899,172 @@ namespace IpisCentralDisplayController.views
         }
 
 
-
-
-
-
         #region CGDB_Set
 
+        FrameBuilderForCGDB FrameBuilderForCGDBService;
+
         private readonly TcpClientService _tcpClientServiceCGDB;
-        private readonly List<ServerConfig> _serversCGDB;
+        private List<ServerConfig> _serversCGDB;
         private ObservableCollection<byte> _resultsCGDB;
         private bool _isOperationInProgressCGDB;
 
+        public ObservableCollection<byte> ResultsCGDB
+        {
+            get => _resultsCGDB;
+            set
+            {
+                _resultsCGDB = value;
+                OnPropertyChanged();
+            }
+        }
+        public bool IsOperationInProgressCGDB
+        {
+            get => _isOperationInProgressCGDB;
+            set
+            {
+                _isOperationInProgressCGDB = value;
+                OnPropertyChanged();
+                // TADDB_SET_Command.RaiseCanExecuteChanged(); // Notify command to re-evaluate CanExecute
+                // public IAsyncRelayCommand TADDB_SET_Command => new AsyncRelayCommand(TADDB_SET, CanExecuteTADDB_SET);
+
+                TADDB_SET_Command.NotifyCanExecuteChanged();
+                // I think this shourld do the job, not sure though
+                //Not even sure about why do we even need this here
+            }
+        }
+
+        public IAsyncRelayCommand CGDB_SET_Command => new AsyncRelayCommand(CGDB_SET, CanExecuteCGDB_SET);
+
+        private bool CanExecuteCGDB_SET()
+        {
+            return !IsOperationInProgressCGDB;
+
+            //Need to add all possible validation mechanisms
+            return true; // Placeholder, replace with actual condition
+        }
+
+        private async Task CGDB_SET()
+        {
+            IsOperationInProgress = true;
+            ResultsCGDB.Clear();
+            _serversCGDB.Clear();
+            //Makes all the frames for all the displays
+            //Adds Ip address, port number and frame to a new ServerConfig object
+            //Adds this serverConfig object to the _servers list
+
+            #region CGDB
+            foreach (ActiveTrain train in ActiveTrains)
+            {
+                if (train.CGDB_Update == true)
+                {
+
+                    foreach (Platform platform in Platforms)
+                    {
+                        // IMPORTANT NOTE: THIS IS ASSUMING PLATFORM NUMBERS ARE INT DATA TYPES ONLY
+                        // THIS WILL NOT WORK IF SPECIAL PF NUMBER ARE THERE SINCE THEY ARE ALPHANUMERIC
+                        if (int.TryParse(platform.PlatformNumber, out int platformNumber))
+                        {
+                            if (platformNumber == train.PFNo)
+                            {
+                                //foreach (Device device in platform.Devices)
+                                //{
+                                //    if (device.DeviceType == DeviceType.CGDB)
+                                //    {
+                                //        _serversCGDB.Add(FrameBuilderForCGDB(device, train));
+                                //    }
+                                //}
+
+                                //  _serversCGDB = FrameBuilderForCGDB(device, train));
+
+                                _serversCGDB = new List<ServerConfig>(FrameBuilderForCGDB(platform.Devices.ToList(), train));
+
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception($"Invalid platform number: {platform.PlatformNumber}");
+                        }
+                    }
+                }
+            }
+            #endregion
+
+
+
+            try
+            {
+                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30))) // Timeout after 30 seconds
+                {
+                    // Run TCP connections in parallel
+                    var tasks = _serversCGDB.Select(server => _tcpClientServiceCGDB.SendPacketAsync(server, cts.Token));
+                    var responses = await Task.WhenAll(tasks);
+
+                    // Process results
+                    foreach (var (success, response, errorMessage) in responses)
+                    {
+                        //if (success)
+                        //    Results.Add($"Success: Received {response}");
+
+                        //else
+                        //    Results.Add($"Error: {errorMessage}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Results.Add($"Operation failed: {ex.Message}");
+            }
+            finally
+            {
+                IsOperationInProgress = false;
+            }
+        }
+
+
+        private List<ServerConfig> FrameBuilderForCGDB(List<Device> deviceList, ActiveTrain train)
+        {
+            List<ServerConfig> CGDB_server_List = new List<ServerConfig>();
+
+            int COACHLIST_INDEX = 0;
+            foreach (Device device in deviceList)
+            {
+                if (device.DeviceType == DeviceType.CGDB)
+                {
+                    ServerConfig serverConfig = new ServerConfig
+                    {
+                        IpAddress = device.IpAddress,
+                        Port = 25000,//Port number fixed according to the document              
+                    };
+
+                    if (COACHLIST_INDEX < train.CoachListEnglish.Count && COACHLIST_INDEX < train.CoachListHindi.Count)
+                    {
+                        FrameBuilderForCGDBService.ReadAndAddDirectFields(train, device, COACHLIST_INDEX);
+                    }
+                    else
+                    {
+                       //Add some stuff, what ? I don't know yet
+                    }
+
+                    
+
+
+
+                    COACHLIST_INDEX++;
+                }
+            }
+
+            //  _serversCGDB = FrameBuilderForCGDB(device, train));
+
+
+            return CGDB_server_List;
+
+        }
+
+
+
+
 
         #endregion
-
 
 
 

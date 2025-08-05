@@ -1125,6 +1125,22 @@ namespace IpisCentralDisplayController.models
             }
         }
 
+
+        private ObservableCollection<string> _coachListHindi;
+        public ObservableCollection<string> CoachListHindi
+        {
+            get => _coachListHindi;
+            set
+            {
+                if (_coachListHindi != value)
+                {
+                    _coachListHindi = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
         private bool _taddbUpdate;
         public bool TADDB_Update
         {
@@ -1329,7 +1345,7 @@ namespace IpisCentralDisplayController.models
             ETD = train.STD;
 
             CoachSequence = train.CoachSequence;
-            CoachListEnglish = train.CoachListEnglish != null ? new ObservableCollection<string>(train.CoachListEnglish) : new ObservableCollection<string>();
+            CoachListEnglish = train.CoachList != null ? new ObservableCollection<string>(train.CoachList) : new ObservableCollection<string>();
 
             TADDB_Update = false;
             CGDB_Update = false;

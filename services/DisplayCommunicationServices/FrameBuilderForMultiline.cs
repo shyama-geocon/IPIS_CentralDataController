@@ -477,42 +477,42 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             FrameBytesObject.Level2Byte11.SetBit(7, false);
             FrameBytesObject.Level2Byte11.SetBit(6, false);
 
-            if (FrameBytesObject.EffectCode == 0x00)
+            if (FrameBytesObject.LetterSize == 0x00)
             {
                 FrameBytesObject.Level2Byte11.SetBit(5, false);
                 FrameBytesObject.Level2Byte11.SetBit(4, false);
                 FrameBytesObject.Level2Byte11.SetBit(3, false);
 
             }
-            else if (FrameBytesObject.EffectCode == 0x01)
+            else if (FrameBytesObject.LetterSize == 0x01)
             {
                 FrameBytesObject.Level2Byte11.SetBit(5, false);
                 FrameBytesObject.Level2Byte11.SetBit(4, false);
                 FrameBytesObject.Level2Byte11.SetBit(3, true);
 
             }
-            else if (FrameBytesObject.EffectCode == 0x02)
+            else if (FrameBytesObject.LetterSize == 0x02)
             {
                 FrameBytesObject.Level2Byte11.SetBit(5, false);
                 FrameBytesObject.Level2Byte11.SetBit(4, true);
                 FrameBytesObject.Level2Byte11.SetBit(3, false);
 
             }
-            else if (FrameBytesObject.EffectCode == 0x03)
+            else if (FrameBytesObject.LetterSize == 0x03)
             {
                 FrameBytesObject.Level2Byte11.SetBit(5, false);
                 FrameBytesObject.Level2Byte11.SetBit(4, true);
                 FrameBytesObject.Level2Byte11.SetBit(3, true);
 
             }
-            else if (FrameBytesObject.EffectCode == 0x04)
+            else if (FrameBytesObject.LetterSize == 0x04)
             {
                 FrameBytesObject.Level2Byte11.SetBit(5, true);
                 FrameBytesObject.Level2Byte11.SetBit(4, false);
                 FrameBytesObject.Level2Byte11.SetBit(3, false);
 
             }
-            else if (FrameBytesObject.EffectCode == 0x05)
+            else if (FrameBytesObject.LetterSize == 0x05)
             {
                 FrameBytesObject.Level2Byte11.SetBit(5, true);
                 FrameBytesObject.Level2Byte11.SetBit(4, false);

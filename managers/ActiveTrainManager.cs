@@ -67,7 +67,7 @@ namespace IpisCentralDisplayController.managers
             existingActiveTrain.ETD = activeTrain.ETD;
             existingActiveTrain.PFNo = activeTrain.PFNo;
             existingActiveTrain.CoachSequence = activeTrain.CoachSequence;
-            existingActiveTrain.CoachList = activeTrain.CoachList;
+            existingActiveTrain.CoachListEnglish = activeTrain.CoachListEnglish;
             existingActiveTrain.TADDB_Update = activeTrain.TADDB_Update;
             existingActiveTrain.CGDB_Update = activeTrain.CGDB_Update;
             existingActiveTrain.Announce_Update = activeTrain.Announce_Update;

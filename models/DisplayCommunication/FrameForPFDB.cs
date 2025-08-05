@@ -170,14 +170,9 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
         public int PlatformNumber { get; set; }
         public string StationName { get; set; } // FOR PAGE 2: Diverted/Terminated at/Change of Source
 
-
         #endregion
 
         #endregion
-
-
-       
-
 
         public FrameForPFDB()
         {

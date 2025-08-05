@@ -167,7 +167,7 @@ namespace IpisCentralDisplayController.models
             Platform = activeTrain.PFNo.ToString();
             CoachSequence = activeTrain.CoachSequence;
          //   CoachList = activeTrain.CoachList ?? new List<string>();
-            CoachList = activeTrain.CoachList != null ? new List<string>(activeTrain.CoachList) : new List<string>();
+            CoachList = activeTrain.CoachListEnglish != null ? new List<string>(activeTrain.CoachListEnglish) : new List<string>();
 
             TrainType = activeTrain.TrainType;
             IsFromNTES = activeTrain.Ref == TrainSource.USER;

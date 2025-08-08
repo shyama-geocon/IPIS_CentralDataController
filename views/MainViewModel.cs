@@ -29,6 +29,8 @@ using IpisCentralDisplayController.models.Announcement;
 using static System.Windows.Forms.Design.AxImporter;
 using IpisCentralDisplayController.Helpers;
 using IpisCentralDisplayController.services.DisplayConfigurationServices;
+using IpisCentralDisplayController.models.RMS_Post;
+using IpisCentralDisplayController.services.RMS;
 
 namespace IpisCentralDisplayController.views
 {
@@ -506,8 +508,36 @@ namespace IpisCentralDisplayController.views
             }
         }
 
+
+        #region RMS
+
+        private RmsServerSettings _rmsSettings;
+
+        public RmsServerSettings RmsSettings
+        {
+            get => _rmsSettings;
+            set
+            {
+                if (_rmsSettings != value)
+                {
+                    _rmsSettings = value;
+                    OnPropertyChanged(nameof(RmsSettings));
+                }
+            }
+        }
+
+        private RMSClient rMSClient;
+
+        private RMSClientService rMSClientService;
+
+        #endregion
+
+
         public MainViewModel()
         {
+            rMSClient = new RMSClient();
+            rMSClientService = new RMSClientService();
+
             #region DeviceCongigurationsOptions
 
             SpeedOptions = new ObservableCollection<ConfigOptionObject>
@@ -571,7 +601,6 @@ namespace IpisCentralDisplayController.views
             //SelectedIntensityOption = IntensityOptions.FirstOrDefault();
 
             #endregion
-
 
             var jsonHelperAdapter = new SettingsJsonHelperAdapter();
             var _stationManager = new StationManager(jsonHelperAdapter);
@@ -646,7 +675,6 @@ namespace IpisCentralDisplayController.views
             FrameBuilderForColourConfigService = new FrameBuilderForColourConfig();
 
         }
-
 
         #region DeviceCongigurationsOptions
         public ObservableCollection<ConfigOptionObject> SpeedOptions { get; set; }
@@ -1145,7 +1173,6 @@ namespace IpisCentralDisplayController.views
         #endregion
 
 
-
         #region ColourConfigSet
 
         FrameBuilderForColourConfig FrameBuilderForColourConfigService;
@@ -1244,6 +1271,226 @@ namespace IpisCentralDisplayController.views
         }
 
         private bool CanExecuteColourConfig_SET()
+        {
+            return !IsOperationInProgressColourConfig;
+
+            //Need to add all possible validation mechanisms
+            return true; // Placeholder, replace with actual condition
+        }
+
+        #endregion
+
+
+        #region MonoConfigSet
+
+        FrameBuilderForMonoConfig FrameBuilderForMonoConfigService;
+
+        private readonly TcpClientService _tcpClientServiceMonoConfig;
+        private List<ServerConfig> _serversMonoConfig;
+        private ObservableCollection<byte> _resultsMonoConfig;
+        private bool _isOperationInProgressMonoConfig;
+
+        public ObservableCollection<byte> ResultsMonoConfig
+        {
+            get => _resultsMonoConfig;
+            set
+            {
+                _resultsMonoConfig = value;
+                OnPropertyChanged();
+            }
+        }
+        public bool IsOperationInProgressMonoConfig
+        {
+            get => _isOperationInProgressMonoConfig;
+            set
+            {
+                _isOperationInProgressMonoConfig = value;
+                OnPropertyChanged();
+                // TADDB_SET_Command.RaiseCanExecuteChanged(); // Notify command to re-evaluate CanExecute
+                // public IAsyncRelayCommand TADDB_SET_Command => new AsyncRelayCommand(TADDB_SET, CanExecuteTADDB_SET);
+
+                MonoConfig_SET_Command.NotifyCanExecuteChanged();
+                // I think this shourld do the job, not sure though
+                //Not even sure about why do we even need this here
+            }
+        }
+
+        public IAsyncRelayCommand MonoConfig_SET_Command => new AsyncRelayCommand(MonoConfig_SET, CanExecuteMonoConfig_SET);
+
+        private async Task MonoConfig_SET()
+        {
+            IsOperationInProgressMonoConfig = true;
+            ResultsMonoConfig.Clear();
+            _serversMonoConfig.Clear();
+
+            #region PFDB AGDB CGDB MultilineMono
+
+            foreach (Platform platform in Platforms)
+            {
+                foreach (Device device in platform.Devices)
+                {
+
+                    if ((device.DeviceType == DeviceType.PFDB) ||
+                        (device.DeviceType == DeviceType.AGDB) ||
+                        (device.DeviceType == DeviceType.CGDB) || 
+                        (device.DeviceType == DeviceType.MLDB))
+                    {
+                        ServerConfig serverConfig = new ServerConfig
+                        {
+                            IpAddress = device.IpAddress,
+                            Port = 25000,//Port number fixed according to the document              
+                        };
+                       serverConfig.Packet = FrameBuilderForMonoConfigService.CompileFrame(device);
+
+                        _serversMonoConfig.Add(serverConfig);
+
+                    }
+                }
+
+            }
+
+            #endregion
+
+            try
+            {
+                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30))) // Timeout after 30 seconds
+                {
+                    // Run TCP connections in parallel
+                    var tasks = _serversMonoConfig.Select(server => _tcpClientServiceMonoConfig.SendPacketAsync(server, cts.Token));
+                    var responses = await Task.WhenAll(tasks);
+
+                    // Process results
+                    foreach (var (success, response, errorMessage) in responses)
+                    {
+                        //if (success)
+                        //    Results.Add($"Success: Received {response}");
+
+                        //else
+                        //    Results.Add($"Error: {errorMessage}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Results.Add($"Operation failed: {ex.Message}");
+            }
+            finally
+            {
+                IsOperationInProgressMonoConfig = false;
+            }
+        }
+
+        private bool CanExecuteMonoConfig_SET()
+        {
+            return !IsOperationInProgressColourConfig;
+
+            //Need to add all possible validation mechanisms
+            return true; // Placeholder, replace with actual condition
+        }
+
+        #endregion
+
+
+        #region PDC_Configuration
+
+        FrameBuilderForMonoConfig FrameBuilderForPDCService;
+
+        private readonly TcpClientService _tcpClientServicePDCConfig;
+        private List<ServerConfig> _serversPDCConfig;
+        private ObservableCollection<byte> _resultsPDCConfig;
+        private bool _isOperationInProgressPDCConfig;
+
+        public ObservableCollection<byte> ResultsPDCConfig
+        {
+            get => _resultsPDCConfig;
+            set
+            {
+                _resultsPDCConfig = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsOperationInProgressPDCConfig
+        {
+            get => _isOperationInProgressPDCConfig;
+            set
+            {
+                _isOperationInProgressPDCConfig = value;
+                OnPropertyChanged();
+                // TADDB_SET_Command.RaiseCanExecuteChanged(); // Notify command to re-evaluate CanExecute
+                // public IAsyncRelayCommand TADDB_SET_Command => new AsyncRelayCommand(TADDB_SET, CanExecuteTADDB_SET);
+
+                SetPDCConfig_Command.NotifyCanExecuteChanged();
+                // I think this shourld do the job, not sure though
+                //Not even sure about why do we even need this here
+            }
+        }
+
+        public IAsyncRelayCommand SetPDCConfig_Command => new AsyncRelayCommand(PDCConfig_SET, CanExecutePDCConfig_SET);
+
+        private async Task PDCConfig_SET()
+        {
+            IsOperationInProgressPDCConfig = true;
+            ResultsPDCConfig.Clear();
+            _serversPDCConfig.Clear();
+
+            #region PFDB AGDB CGDB MultilineMono
+
+            foreach (Platform platform in Platforms)
+            {
+                foreach (Device device in platform.Devices)
+                {
+
+                    if ((device.DeviceType == DeviceType.PFDB) ||
+                        (device.DeviceType == DeviceType.AGDB) ||
+                        (device.DeviceType == DeviceType.CGDB) ||
+                        (device.DeviceType == DeviceType.MLDB))
+                    {
+                        ServerConfig serverConfig = new ServerConfig
+                        {
+                            IpAddress = device.IpAddress,
+                            Port = 25000,//Port number fixed according to the document              
+                        };
+                        serverConfig.Packet = FrameBuilderForMonoConfigService.CompileFrame(device);
+
+                        _serversMonoConfig.Add(serverConfig);
+
+                    }
+                }
+            }
+
+            #endregion
+
+            try
+            {
+                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30))) // Timeout after 30 seconds
+                {
+                    // Run TCP connections in parallel
+                    var tasks = _serversMonoConfig.Select(server => _tcpClientServiceMonoConfig.SendPacketAsync(server, cts.Token));
+                    var responses = await Task.WhenAll(tasks);
+
+                    // Process results
+                    foreach (var (success, response, errorMessage) in responses)
+                    {
+                        //if (success)
+                        //    Results.Add($"Success: Received {response}");
+
+                        //else
+                        //    Results.Add($"Error: {errorMessage}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Results.Add($"Operation failed: {ex.Message}");
+            }
+            finally
+            {
+                IsOperationInProgressMonoConfig = false;
+            }
+        }
+
+        private bool CanExecutePDCConfig_SET()
         {
             return !IsOperationInProgressColourConfig;
 
@@ -1366,13 +1613,6 @@ namespace IpisCentralDisplayController.views
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-
-
-
-
-
-       
 
         public ColorViewModel ColorVM { get; set; }
 
@@ -1665,20 +1905,7 @@ namespace IpisCentralDisplayController.views
             }
         }
 
-        private RmsServerSettings _rmsSettings;
-
-        public RmsServerSettings RmsSettings
-        {
-            get => _rmsSettings;
-            set
-            {
-                if (_rmsSettings != value)
-                {
-                    _rmsSettings = value;
-                    OnPropertyChanged(nameof(RmsSettings));
-                }
-            }
-        }
+      
 
         private CAPServerSettings _capSettings;
         public CAPServerSettings CapSettings

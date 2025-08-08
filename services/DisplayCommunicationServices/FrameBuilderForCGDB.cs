@@ -435,9 +435,44 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
             #endregion
 
+            //Frame.Add(FrameBytesObject.Level1EndOfDataPacket);
+            //Frame.Add(FrameBytesObject.CRC_MSB);//NOT ADDED  
+            //Frame.Add(FrameBytesObject.CRC_LSB);//NOT ADDED  
+            //Frame.Add(FrameBytesObject.EOT);
+
+
             Frame.Add(FrameBytesObject.Level1EndOfDataPacket);
-            Frame.Add(FrameBytesObject.CRC_MSB);//NOT ADDED  
-            Frame.Add(FrameBytesObject.CRC_LSB);//NOT ADDED  
+
+
+            #region PacketLength
+
+            //FrameBytesObject.PacketLengthMSB4
+            Frame[3] = (byte)(((Frame.Count - 3) >> 8) & 0xFF);// Most Significant Byte
+
+            //FrameBytesObject.PacketLengthLSB5
+            Frame[4] = (byte)((Frame.Count - 3) & 0xFF);// Least Significant Byte
+
+            #endregion
+
+
+            #region CRC            
+
+            List<byte> newList = new List<byte>();
+
+            if (Frame.Count > 3)
+            {
+                newList = Frame
+                    .Skip(3)
+                    .Take(Frame.Count)
+                    .ToList();
+            }
+
+            (FrameBytesObject.CRC_MSB, FrameBytesObject.CRC_LSB) = ComputeCrc16CCITT(newList);
+
+            #endregion
+
+            Frame.Add(FrameBytesObject.CRC_MSB);
+            Frame.Add(FrameBytesObject.CRC_LSB);
             Frame.Add(FrameBytesObject.EOT);
 
 
@@ -448,15 +483,42 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             #endregion
 
 
-            //FrameBytesObject.PacketLengthMSB4
-            Frame[3] = (byte)(((Frame.Count - 6) >> 8) & 0xFF);// Most Significant Byte
+            ////FrameBytesObject.PacketLengthMSB4
+            //Frame[3] = (byte)(((Frame.Count - 6) >> 8) & 0xFF);// Most Significant Byte
 
-            //FrameBytesObject.PacketLengthLSB5
-            Frame[4] = (byte)((Frame.Count - 6) & 0xFF);// Least Significant Byte
+            ////FrameBytesObject.PacketLengthLSB5
+            //Frame[4] = (byte)((Frame.Count - 6) & 0xFF);// Least Significant Byte
 
             byte[] frametosend = Frame.ToArray();
 
             return frametosend;
+        }
+
+
+        public static (byte crcMsb, byte crcLsb) ComputeCrc16CCITT(List<byte> data)
+        {
+            ushort crc = 0xFFFF;
+            foreach (byte b in data)
+            {
+                crc ^= (ushort)(b << 8);
+                for (int i = 0; i < 8; i++)
+                {
+                    if ((crc & 0x8000) != 0)
+                        crc = (ushort)((crc << 1) ^ 0x1021);
+                    else
+                        crc <<= 1;
+                }
+            }
+            // Convert CRC to two bytes (big-endian: MSB first)
+            byte crcMsb = (byte)((crc >> 8) & 0xFF);
+            byte crcLsb = (byte)(crc & 0xFF);
+            // Create a new array with original data + 2 CRC bytes
+            //byte[] result = new byte[data.Length + 2];
+            //Buffer.BlockCopy(data, 0, result, 0, data.Length);
+            //result[data.Length] = crcMsb;
+            //result[data.Length + 1] = crcLsb;
+
+            return (crcMsb, crcLsb);
         }
 
 

@@ -1733,9 +1733,11 @@
                                                 <Button Name="DeleteDeviceButton" Content="Delete Device" Height="30" Width="100" Margin="2" Click="DeleteDeviceButton_Click"/>
                                             </StackPanel>
                                         </Grid>
-                                        <StackPanel Grid.Row="3" Margin="10, 2, 10, 2">
+                                        <StackPanel Grid.Row="3" Orientation="Horizontal"
+                                                    Margin="10, 2, 10, 2" HorizontalAlignment="Center">
                                             <Button Name="ImportButton" Content="Import Config" Height="30" Width="100" Margin="5" Click="ImportPlatformDevicesButton_Click"/>
                                             <Button Name="ExportButton" Content="Export Config" Height="30" Width="100" Margin="5" Click="ExportPlatformDevicesButton_Click"/>
+                                            <Button Content="Set PDC" Height="30" Width="100" Margin="5" Command="{Binding PDCConfig_SET_Command }"/>
                                         </StackPanel>
                                     </Grid>
                                 </TabItem>
@@ -2542,7 +2544,7 @@
                                                     </ComboBox>
 
                                                     <!--Time Delay -->
-                                                    <TextBlock Text="Time Delay (sec OR MINUTE CHECK ??)" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
+                                                    <TextBlock Text="Time Delay (sec)" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="2"/>
                                                     <xctk:IntegerUpDown Grid.Row="4" Grid.Column="1" Margin="2" Height="24"
                                                                         Maximum="255" Minimum="0"
                                                                         Value="{Binding TimeDelay, Mode=TwoWay}"/>
@@ -2583,12 +2585,22 @@
                                                         </ComboBox.ItemTemplate>
                                                     </ComboBox>
 
+                                                    <StackPanel Orientation="Horizontal" Margin="2" 
+                                                                Grid.Row="9" Grid.ColumnSpan="2"
+                                                                HorizontalAlignment="Center" >
                                                     
                                                     <!--Save Button--> 
-                                                    <Button Grid.Row="9" Grid.ColumnSpan="2"
-                                                        Content="Save" Margin="2" Height="30" Width="100"                                                            
+                                                    <Button Content="Save" Margin="2" Height="30" Width="100"                                                            
                                                         Click="ExportPlatformDevicesButton_Click" HorizontalAlignment="Center" 
                                                         VerticalAlignment="Center"/>
+
+                                                    <!--Set TADDB Button-->
+                                                        <Button Content="Set TADDB" Margin="2" Height="30" Width="100"                                                            
+                                                            Command="{Binding MonoConfig_SET_Command}" HorizontalAlignment="Center" 
+                                                            VerticalAlignment="Center"/>
+
+                                                    </StackPanel>
+
                                                 </Grid>
                                             </GroupBox>
 

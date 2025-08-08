@@ -1175,7 +1175,6 @@ namespace IpisCentralDisplayController
             }
         }
 
-
         private async Task<bool> PingHostAsync(string host)
         {
             using (var ping = new Ping())
@@ -1633,7 +1632,6 @@ namespace IpisCentralDisplayController
                     {
                         _mainViewModel.Devices.Add(newDevice);
                         _mainViewModel.SelectedPlatform.Devices.Add(newDevice);
-
                     }
                 }
             }

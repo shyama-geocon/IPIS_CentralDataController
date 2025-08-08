@@ -13,6 +13,9 @@ namespace IpisCentralDisplayController.models
         public bool IsCapSyncEnabled { get; set; }      // Enable CAP Sync
         public bool IsEventLogsEnabled { get; set; }    // Enable Event Logs
         public bool IsPlatformDevicesStatusEnabled { get; set; } // Enable Platforms-Devices Status
+                                                                 // This should also take care of sending any update platform/device info
+
         public bool IsStationInfoEnabled { get; set; }  // Enable Station Info
+        public bool IsActiveTrainsInfoEnabled { get; set; }  // Enable ActiveTrains Info
     }
 }

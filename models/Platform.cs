@@ -69,7 +69,10 @@ namespace IpisCentralDisplayController.models
             }
         }
 
-
+        public Platform()
+        {
+            Devices = new ObservableCollection<Device>();
+        }
 
 
         public event PropertyChangedEventHandler? PropertyChanged;

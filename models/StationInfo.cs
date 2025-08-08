@@ -3,8 +3,8 @@
     public class StationInfo
     {
         public string StationCode { get; set; }
-        public RegionalLanguage RegionalLanguage { get; set; }
         public string StationNameEnglish { get; set; }
+        public RegionalLanguage RegionalLanguage { get; set; }        
         public string StationNameHindi { get; set; }
         public string StationNameRegional { get; set; }
         public double Latitude { get; set; }

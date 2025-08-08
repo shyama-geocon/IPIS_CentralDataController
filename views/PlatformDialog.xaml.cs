@@ -78,15 +78,14 @@ namespace IpisCentralDisplayController.views
             Description = platform.Description;
             Subnet = platform.Subnet;
 
-
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            //PlatformNumber = PlatformNumberTextBox.Text;
-            //PlatformType = (PlatformType)PlatformTypeComboBox.SelectedItem;
-            //Description = DescriptionTextBox.Text;
-            //Subnet = SubnetTextBox.Text;
+            PlatformNumber = PlatformNumberTextBox.Text;
+            PlatformType = (PlatformType)PlatformTypeComboBox.SelectedItem;
+            Description = DescriptionTextBox.Text;
+            Subnet = SubnetTextBox.Text;
             DialogResult = true;
             Close();
         }

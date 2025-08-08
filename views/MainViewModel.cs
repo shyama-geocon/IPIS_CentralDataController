@@ -28,10 +28,10 @@ using IpisCentralDisplayController.managers;
 using IpisCentralDisplayController.models.Announcement;
 using static System.Windows.Forms.Design.AxImporter;
 using IpisCentralDisplayController.Helpers;
+using IpisCentralDisplayController.services.DisplayConfigurationServices;
 
 namespace IpisCentralDisplayController.views
 {
-
     #region SplStatus ComboBox Options
 
     public class SplStatusOptionItem 
@@ -41,24 +41,67 @@ namespace IpisCentralDisplayController.views
 
     }
 
-   #endregion
+    #endregion
+
+    public enum AudioState
+    {
+        Stopped,
+        Playing,
+        Paused
+    }
 
     public class MainViewModel : INotifyPropertyChanged
     {
 
-        #region AudioAnnouncements
 
-        private int _repeatAnnouncement;
+        #region Announcements
+
+
+        private string _playPauseToolTip = "Play";
+        public string PlayPauseToolTip
+        {
+            get { return _playPauseToolTip; }
+            set
+            {
+                _playPauseToolTip = value;
+                OnPropertyChanged(); // Notify property change for UI updates
+                //if (value == "Pause")
+                //{
+                //    Button1Icon = "&#xE769;"; // Pause icon
+                //}
+                //else if (value == "Play")
+                //{
+                //    Button1Icon = "&#xE768;";//Play
+                //}
+
+            }
+        }
+
+
+        private string _muteUnmuteToolTip = "Mute";
+        public string MuteUnmuteToolTip
+        {
+            get { return _muteUnmuteToolTip; }
+            set
+            {
+                _muteUnmuteToolTip = value;
+                OnPropertyChanged(); // Notify property change for UI updates
+            }
+        }
+
+        private int _repeatAnnouncement = 1;
         public int RepeatAnnouncement
         {
             get { return _repeatAnnouncement; }
-            set { _repeatAnnouncement = value;
+            set
+            {
+                _repeatAnnouncement = value;
                 OnPropertyChanged();
             }
         }
 
         AudioPlayerService audioPlayerService;
-        List<AudioElement> audioPacket = new List<AudioElement>();      
+        List<AudioElement> audioPacket = new List<AudioElement>();
 
         private AnnFormat _selectedFormat;
         public AnnFormat SelectedFormat
@@ -67,276 +110,307 @@ namespace IpisCentralDisplayController.views
             set { _selectedFormat = value; }
         }
 
-
-        public commands.RelayCommand PlayPauseAnnCommand { get; }
-        public commands.RelayCommand StopAnnCommand { get; }
-
-        //  public IAsyncRelayCommand PlayPauseAnnCommand => new AsyncRelayCommand(PlayPauseAnn);
-
-        //StopAnnCommand = new commands.RelayCommand(PlayPauseAnn, CanExecute_StopAnnouncement);
-
-        //private async Task PlayPauseAnn() //MAKE ASYNC JUST LIKE TADDB SET
-        private void  PlayPauseAnn(object parameter) //MAKE ASYNC JUST LIKE TADDB SET
+        private AudioState _audioState = AudioState.Stopped;
+        public AudioState AudioState
         {
-            if (PlayPauseToolTip == "Play")
+            get => _audioState;
+            set
             {
+                if (_audioState != value)
+                {
+                    _audioState = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsPlaying));
+                    OnPropertyChanged(nameof(ButtonIcon));
 
-                PlayAudio = true;
-               //  PauseAudio = false;
-                if(PauseAudio == true) {
 
-                    PauseAudio = false;
-                }
-                else if(PauseAudio == false) {
-                    for (int i = 0; i < RepeatAnnouncement; i++)
+                    if(value== AudioState.Stopped)
                     {
-                        foreach (ActiveTrain train in ActiveTrains)
-                        {
-                            if (train.Announce_Update == true)
-                            {
-                                audioPacket = audioPlayerService.AudioSequenceBuilder(train, WorkspaceManager.GetWorkspacePath());
-                                // await audioPlayerService.PlayAudioSequenceAsync(audioPacket, AnnInProgress);
-                                //await audioPlayerService.PlayAudioSequenceAsync(
-                                //                                                 audioPacket,
-                                //                                                 () => AnnInProgress,         // a method to get the current value
-                                //                                                 value => AnnInProgress = value, // a method to set the value
-                                //                                                 SelectedFormat,
-                                //                                                 () => PauseAudio,         // a method to get the current value
-                                //                                                 value => PauseAudio = value // a method to set the value
-
-                                //                                               );
-                                //https://chatgpt.com/c/68887230-f634-8013-84fa-376d32ba320c
-
-
-                                Task.Run(() =>
-                                audioPlayerService.PlayAudioSequenceAsync(
-                                    audioPacket,
-                                    SelectedFormat,
-
-                                    () => PlayAudio,
-                                    value => PlayAudio = value,
-
-                                    () => PauseAudio,
-                                    value => PauseAudio = value,
-
-                                    () => StopAudio,
-                                    value => StopAudio = value,
-
-                                    () => MuteAudio,
-                                    value => MuteAudio = value
-
-                                    //() => MuteAudio,
-                                    //value => PauseAudio = value
-
-                                )
-                            );
-
-
-                            }
-
-                            //AudioPlayerService.PlaySequenceAsync(AudioPlayerService.AudioSequenceBuilder(train, WorkspaceManager.GetWorkspacePath()));
-                            //await AudioPlayerService.PlayAudioSequenceAsync(AudioPlayerService.AudioSequenceBuilder(train, WorkspaceManager.GetWorkspacePath()));
-                            //await AudioPlayerService.PlayMp3Async("C:\\Users\\Public\\Music\\Sample Music\\Kalimba.mp3");
-                        }
-
+                        AudioStatus = "Audio Stopped";
+                        PlayPauseToolTip = "Play";
+                    }
+                    else if (value == AudioState.Playing)
+                    {
+                        AudioStatus = "Audio Playing";
+                        PlayPauseToolTip = "Pause";
+                    }
+                    else if (value == AudioState.Paused)
+                    {
+                        AudioStatus = "Audio Paused";
+                        PlayPauseToolTip = "Play";
                     }
 
+                        _toggleCommand?.RaiseCanExecuteChanged();
                 }
-
-
             }
+        }
 
-            else if (PlayPauseToolTip == "Pause")
+
+
+
+        private string _audioStatus = "Audio Not Playing";
+        public string AudioStatus
+        {
+            get { return _audioStatus; }
+            set {
+                _audioStatus = value;
+                OnPropertyChanged();
+                }
+        }
+
+
+        private string _muteStatus = "Unmuted";
+        public string MuteStatus
+        {
+            get { return _muteStatus; }
+            set
             {
-                //if(PlayAudio == )
-                PlayPauseToolTip = "Play";
-                PauseAudio= true;
-                PlayAudio = false;
-
-
-
+                _muteStatus = value;
+                OnPropertyChanged();
             }
-
-        } 
-
-        private void StopAnn(object parameter)
-        {
-            StopAudio = true;
-            PlayAudio = false;
-            PauseAudio = false;
-            MuteAudio = false;
         }
 
 
 
-        // When one action flag changes , be sure to change all the other action flags accordingly
-        #region ActionsFlags 
 
-        private bool _stopAudio=true;
-        public bool StopAudio
-        {
-            get { return _stopAudio; }
-            set { _stopAudio = value; }
-        }
 
-        private bool _playAudio =false;
+        public bool IsPlaying => AudioState == AudioState.Playing;
+
+        public string ButtonIcon => AudioState == AudioState.Playing ? "⏸️" : "▶️";
+
+        public string MuteButtonIcon => MuteAudio == false ? "🔇" : "🔊";
+
+
+
+
+        private commands.RelayCommand _toggleCommand;
+        public ICommand TogglePlayPauseCommand => _toggleCommand ??= new commands.RelayCommand(
+           parameter => ExecuteToggle(), // Wrap the method group in a lambda to match Action<object?>  
+            // _ => AudioState != AudioState.Stopped // Disable when Stopped  
+           _ => true
+        );
+
+        private bool _playAudio = false;
         public bool PlayAudio
         {
             get { return _playAudio; }
-            set {
+            set
+            {
                 _playAudio = value;
-                if (_playAudio)
-                {
-                    PlayPauseToolTip = "Pause";
-                    AnnInProgress = true;
-                }
-                //else
-                //{
-                //    PlayPauseToolTip = "Play";
-                //    AnnInProgress = false;
-                //}
             }
         }
-
 
         private bool _pauseAudio = false;
         public bool PauseAudio
         {
             get { return _pauseAudio; }
-            set {
+            set
+            {
                 _pauseAudio = value;
-                if(_pauseAudio)
-                {
-                    PlayPauseToolTip = "Play";
-                }
-                //else
-                //{
-                //    PlayPauseToolTip = "Pause";
-                //}
             }
         }
 
+        private bool _stopAudio = false;
+        public bool StopAudio
+        {
+            get { return _stopAudio; }
+            set
+            {
+                _stopAudio = value;
+            }
+        }
 
         private bool _muteAudio = false;
         public bool MuteAudio
         {
             get { return _muteAudio; }
-            set {
+            set
+            {
                 _muteAudio = value;
+                OnPropertyChanged(nameof(MuteButtonIcon));
+
                 if (_muteAudio)
                 {
+                    MuteStatus = "Muted";
                     MuteUnmuteToolTip = "Unmute";
-                    AnnIsMute = true;
                 }
                 else
                 {
+                    MuteStatus = "Unmuted";
                     MuteUnmuteToolTip = "Mute";
-                    AnnIsMute = false;
                 }
+
             }
         }
 
 
 
-        #endregion
 
+        //Initial state of audio is all false
 
-        #region State_NODIRECTSETTINGALWAYS SETFROMTHEACTION_FLAGS
+        public commands.RelayCommand StopAnnCommand { get; }
 
-        private bool _annInProgress = false;
-        public bool AnnInProgress
+        public commands.RelayCommand MuteUnmuteCommand { get; }
+
+        private void MuteUnmuteAnn(object parameter)
         {
-            get { return _annInProgress; }
-            set { _annInProgress = value; }
+            if (MuteAudio == false)
+            {
+                MuteAudio = true;
+                MuteUnmuteToolTip = "Unmute";
+
+            }
+            else if (MuteAudio == true)
+            {
+                MuteAudio = false;
+                MuteUnmuteToolTip = "Mute";
+
+            }
         }
 
-        private bool _annIsPaused = false;
-        public bool AnnIsPaused
+        private void StopAnn(object parameter)
         {
-            get { return _annIsPaused; }
-            set { _annIsPaused = value; }
+            if(PlayAudio == false && PauseAudio == false && AudioState == AudioState.Stopped && MuteAudio == false && MuteUnmuteToolTip == "Mute")
+            {
+
+                StopAudio = false;
+            }
+
+            else
+            {
+                StopAudio = true;
+            }
+
+
+            PlayAudio = false;
+            PauseAudio = false;
+            //MuteAudio = false;
+            AudioState = AudioState.Stopped;
+
+            MuteAudio = false;
+            MuteUnmuteToolTip= "Mute";
+
         }
 
-        private bool _annIsMute = false;
-        public bool AnnIsMute
+        private void FinishAnn()
         {
-            get { return _annIsMute; }
-            set { _annIsMute = value; }
+            StopAudio = false;
+            PlayAudio = false;
+            PauseAudio = false;
+            //MuteAudio = false;
+            AudioState = AudioState.Stopped;
+
+            MuteAudio = false;
+            MuteUnmuteToolTip = "Mute";
+
         }
 
-
-        #endregion
-
-
-        #region ToolTips_NODIRECTSETTINGALWAYS SETFROMTHEACTION_FLAGS
-
-        //  public string PlayPauseTooltip => IsPlaying ? "Pause" : "Play";
-
-        private string _playPauseToolTip = "Play";
-        public string PlayPauseToolTip
+        private void ExecuteToggle()
         {
-            get { return _playPauseToolTip; }
-            set { _playPauseToolTip = value;
-                OnPropertyChanged(); // Notify property change for UI updates
-                if (value == "Pause")
+
+                if (AudioState == AudioState.Paused)
                 {
-                    Button1Icon = "&#xE769;"; // Pause icon
+                    AudioState = AudioState.Playing;
+                    PlayAudio = true;
+                    PauseAudio = false;
+                    PlayPauseToolTip = "Pause";
                 }
-                else if (value == "Play")
+                else if (AudioState == AudioState.Playing)
                 {
-                    Button1Icon = "&#xE768;";//Play
+                    AudioState = AudioState.Paused;
+                    PlayAudio = false;
+                    PauseAudio = true;
+                    PlayPauseToolTip = "Play";
                 }
-
-            }
+                else if (AudioState == AudioState.Stopped)
+                {
+                    AudioState = AudioState.Playing;
+                    PlayAudio = true;
+                    PauseAudio = false;                    
+                    PlayPauseToolTip = "Pause";
+                    Audio();
+                 }
+          
         }
 
-
-        private string _muteUnmuteToolTip = "Mute" ;
-        public string MuteUnmuteToolTip
+       //private void PlayAudio()
+        private void Audio()
         {
-            get { return _muteUnmuteToolTip; }
-            set { _muteUnmuteToolTip = value;
-                OnPropertyChanged(); // Notify property change for UI updates
+            // Simulate audio starting
+
+            for (int i = 0; i < RepeatAnnouncement; i++)
+            {
+                foreach (ActiveTrain train in ActiveTrains)
+                {
+                    if (train.Announce_Update == true)
+                    {
+                        audioPacket = audioPlayerService.AudioSequenceBuilder(train, WorkspaceManager.GetWorkspacePath());
+                        // await audioPlayerService.PlayAudioSequenceAsync(audioPacket, AnnInProgress);
+                        //await audioPlayerService.PlayAudioSequenceAsync(
+                        //                                                 audioPacket,
+                        //                                                 () => AnnInProgress,         // a method to get the current value
+                        //                                                 value => AnnInProgress = value, // a method to set the value
+                        //                                                 SelectedFormat,
+                        //                                                 () => PauseAudio,         // a method to get the current value
+                        //                                                 value => PauseAudio = value // a method to set the value
+
+                        //                                               );
+                        //https://chatgpt.com/c/68887230-f634-8013-84fa-376d32ba320c
+
+
+                        Task.Run(() =>
+                        audioPlayerService.PlayAudioSequenceAsync(
+                            audioPacket,
+                            SelectedFormat,
+
+                            () => PlayAudio,
+                            value => PlayAudio = value,
+
+                            () => PauseAudio,
+                            value => PauseAudio = value,
+
+                            () => StopAudio,
+                            value => StopAudio = value,
+
+                            () => MuteAudio,
+                            value => MuteAudio = value,
+
+                            FinishAnn
+
+
+                        //() => MuteAudio,
+                        //value => PauseAudio = value
+
+                        )
+                    );
+
+
+                    }
+
+                    //AudioPlayerService.PlaySequenceAsync(AudioPlayerService.AudioSequenceBuilder(train, WorkspaceManager.GetWorkspacePath()));
+                    //await AudioPlayerService.PlayAudioSequenceAsync(AudioPlayerService.AudioSequenceBuilder(train, WorkspaceManager.GetWorkspacePath()));
+                    //await AudioPlayerService.PlayMp3Async("C:\\Users\\Public\\Music\\Sample Music\\Kalimba.mp3");
+                }
             }
         }
+
+        //private void PauseAudio()
+        //{
+        //    // Simulate pause
+        //}
+
+        //public void StopAudio()
+        //{
+        //    AudioState = AudioState.Stopped;
+        //}
+
+
+
 
 
         #endregion
 
 
-        #region Icon_NODIRECTSETTINGALWAYS SETFROMTHETOOLTIP
-
-        private string _button1Icon= "&#xE768;";//Play
-        public string Button1Icon
-        {
-            get { return _button1Icon; }
-            set { 
-                _button1Icon = value;
-                OnPropertyChanged(); // Notify property change for UI updates
-
-                
-               
-
-            }
-        }
-
-        //BUTOONS 2 IS STOP BUTTON WHICH ALWAYS HAS A FIXED ICON
-
-        private string _button3Icon;
-        public string Button3Icon
-        {
-            get { return _button3Icon; }
-            set {
-                _button3Icon = value; 
-            }
-        }
-
-
-        #endregion
-
-        //BUTTON LABELS ??? : USE SET ONLY PROPERTY
-
-        #endregion
 
         #region SplStatusPopUp
 
@@ -432,7 +506,6 @@ namespace IpisCentralDisplayController.views
             }
         }
 
-
         public MainViewModel()
         {
             #region DeviceCongigurationsOptions
@@ -515,7 +588,7 @@ namespace IpisCentralDisplayController.views
             }
 
 
-            //  PlayAnnCommand = new commands.RelayCommand(PlayAnnouncement, CanSaveConfiguration);
+            ////  PlayAnnCommand = new commands.RelayCommand(PlayAnnouncement, CanSaveConfiguration);
             audioPlayerService = new AudioPlayerService();
 
             SaveCommandTemp = new commands.RelayCommand(SaveConfiguration, CanSaveConfiguration);
@@ -524,9 +597,11 @@ namespace IpisCentralDisplayController.views
             //StopAnnCommand = new commands.RelayCommand(StopAnnouncement, CanExecute_StopAnnouncement);
             //PauseAnnCommand = new commands.RelayCommand(PauseAnnouncement, CanExecute_PauseAnnouncement);
 
-            PlayPauseAnnCommand = new commands.RelayCommand(PlayPauseAnn);
+            //PlayPauseAnnCommand = new commands.RelayCommand(PlayPauseAnn);
+            //StopAnnCommand = new commands.RelayCommand(StopAnn);
+
             StopAnnCommand = new commands.RelayCommand(StopAnn);
-           
+            MuteUnmuteCommand = new commands.RelayCommand(MuteUnmuteAnn);
 
             _tcpClientService = new TcpClientService();
             //Results = new ObservableCollection<string>();
@@ -566,9 +641,9 @@ namespace IpisCentralDisplayController.views
             _eventLogs = new ObservableCollection<EventLog>();
 
             FrameBuilderForPFDBService = new FrameBuilderForPFDB();
-            //FrameBuilderForAGDBService = new FrameBuilderForAGDB();
+            FrameBuilderForAGDBService = new FrameBuilderForAGDB();
             FrameBuilderForMultilineService = new FrameBuilderForMultiline();
-           
+            FrameBuilderForColourConfigService = new FrameBuilderForColourConfig();
 
         }
 
@@ -696,6 +771,7 @@ namespace IpisCentralDisplayController.views
         #endregion
 
         FrameBuilderForPFDB FrameBuilderForPFDBService;
+        FrameBuilderForAGDB FrameBuilderForAGDBService;
         FrameBuilderForMultiline FrameBuilderForMultilineService;
 
 
@@ -721,7 +797,7 @@ namespace IpisCentralDisplayController.views
             //Adds Ip address, port number and frame to a new ServerConfig object
             //Adds this serverConfig object to the _servers list
 
-            #region PFDB
+            #region PFDBandAGDB
             //PFDB    //Adds ServerConfig object FOR PFDB to _servers list       
             foreach (ActiveTrain train in ActiveTrains)
             {
@@ -738,7 +814,7 @@ namespace IpisCentralDisplayController.views
                         {
                             foreach(Device device in platform.Devices)
                             {
-                                if(device.DeviceType == DeviceType.PFDB) 
+                                if(device.DeviceType == DeviceType.PFDB || device.DeviceType == DeviceType.AGDB) 
                                 {
 
                                     //this method will be changed to a task eventually
@@ -860,11 +936,19 @@ namespace IpisCentralDisplayController.views
 
             }
 
-            else if (device.DeviceType == DeviceType.MLDB)
+            else if (device.DeviceType == DeviceType.AGDB)
+            {
+                FrameBuilderForAGDBService.ReadAndAddDirectFields(train, device);
+                FrameBuilderForAGDBService.ProcessDataFromReadFields();
+                FrameBuilderForAGDBService.AddFixedBytes();
+                serverConfig.Packet = FrameBuilderForAGDBService.CompileFrame();
+            }        
+
+            else if (device.DeviceType == DeviceType.MLDB && trainToBeDisplayedList != null)
             {
                 FrameBuilderForMultilineService.ReadProcessAddDeviceDetails( device);
                 FrameBuilderForMultilineService.AddFixedBytes();
-                FrameBuilderForMultilineService.CompileFrame(trainToBeDisplayedList, device);
+                serverConfig.Packet = FrameBuilderForMultilineService.CompileFrame(trainToBeDisplayedList, device);
 
             }
 
@@ -945,7 +1029,7 @@ namespace IpisCentralDisplayController.views
 
         private async Task CGDB_SET()
         {
-            IsOperationInProgress = true;
+            IsOperationInProgressCGDB = true;
             ResultsCGDB.Clear();
             _serversCGDB.Clear();
             //Makes all the frames for all the displays
@@ -957,7 +1041,6 @@ namespace IpisCentralDisplayController.views
             {
                 if (train.CGDB_Update == true)
                 {
-
                     foreach (Platform platform in Platforms)
                     {
                         // IMPORTANT NOTE: THIS IS ASSUMING PLATFORM NUMBERS ARE INT DATA TYPES ONLY
@@ -989,8 +1072,6 @@ namespace IpisCentralDisplayController.views
             }
             #endregion
 
-
-
             try
             {
                 using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30))) // Timeout after 30 seconds
@@ -1016,7 +1097,7 @@ namespace IpisCentralDisplayController.views
             }
             finally
             {
-                IsOperationInProgress = false;
+                IsOperationInProgressCGDB = false;
             }
         }
 
@@ -1039,47 +1120,138 @@ namespace IpisCentralDisplayController.views
                     if (COACHLIST_INDEX < train.CoachListEnglish.Count && COACHLIST_INDEX < train.CoachListHindi.Count)
                     {
                         FrameBuilderForCGDBService.ReadAndAddDirectFields(train, device, COACHLIST_INDEX);
+
+                        FrameBuilderForCGDBService.ProcessDataFromReadFields();
+
+                        FrameBuilderForCGDBService.AddFixedBytes();
+
+                        serverConfig.Packet = FrameBuilderForCGDBService.CompileFrame();
+
+                        CGDB_server_List.Add(serverConfig);
                     }
                     else
                     {
                        //Add some stuff, what ? I don't know yet
                     }
 
-                    
-
-
-
                     COACHLIST_INDEX++;
                 }
             }
-
-            //  _serversCGDB = FrameBuilderForCGDB(device, train));
-
 
             return CGDB_server_List;
 
         }
 
-
-
-
-
         #endregion
 
 
 
+        #region ColourConfigSet
+
+        FrameBuilderForColourConfig FrameBuilderForColourConfigService;
+
+        private readonly TcpClientService _tcpClientServiceColourConfig;
+        private List<ServerConfig> _serversColourConfig;
+        private ObservableCollection<byte> _resultsColourConfig;
+        private bool _isOperationInProgressColourConfig;
 
 
+        public ObservableCollection<byte> ResultsColourConfig
+        {
+            get => _resultsColourConfig;
+            set
+            {
+                _resultsColourConfig = value;
+                OnPropertyChanged();
+            }
+        }
+        public bool IsOperationInProgressColourConfig
+        {
+            get => _isOperationInProgressColourConfig;
+            set
+            {
+                _isOperationInProgressColourConfig = value;
+                OnPropertyChanged();
+                // TADDB_SET_Command.RaiseCanExecuteChanged(); // Notify command to re-evaluate CanExecute
+                // public IAsyncRelayCommand TADDB_SET_Command => new AsyncRelayCommand(TADDB_SET, CanExecuteTADDB_SET);
 
+                ColourConfig_SET_Command.NotifyCanExecuteChanged();
+                // I think this shourld do the job, not sure though
+                //Not even sure about why do we even need this here
+            }
+        }
 
+        public IAsyncRelayCommand ColourConfig_SET_Command => new AsyncRelayCommand(ColourConfig_SET, CanExecuteColourConfig_SET);
 
+        private async Task ColourConfig_SET()
+        {
+            IsOperationInProgressColourConfig = true;
+            ResultsColourConfig.Clear();
+            _serversColourConfig.Clear();
 
+            #region Multiline colour
 
+            foreach (Platform platform in Platforms)
+            {              
+                foreach (Device device  in platform.Devices)
+                {
+                    
+                    if ( (device.DeviceType == DeviceType.IVD) || (device.DeviceType == DeviceType.OVD) || (device.DeviceType == DeviceType.LED_TV))
+                    {
+                        ServerConfig serverConfig = new ServerConfig
+                        {
+                            IpAddress = device.IpAddress,
+                            Port = 25000,//Port number fixed according to the document              
+                        };
+                        serverConfig.Packet= FrameBuilderForColourConfigService.CompileFrame(device, TrainTemplates, Theme);
+                       
+                        _serversColourConfig.Add(serverConfig);
 
+                    }
+                }
 
+            }
 
+            #endregion
 
+            try
+            {
+                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30))) // Timeout after 30 seconds
+                {
+                    // Run TCP connections in parallel
+                    var tasks = _serversColourConfig.Select(server => _tcpClientServiceColourConfig.SendPacketAsync(server, cts.Token));
+                    var responses = await Task.WhenAll(tasks);
 
+                    // Process results
+                    foreach (var (success, response, errorMessage) in responses)
+                    {
+                        //if (success)
+                        //    Results.Add($"Success: Received {response}");
+
+                        //else
+                        //    Results.Add($"Error: {errorMessage}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Results.Add($"Operation failed: {ex.Message}");
+            }
+            finally
+            {
+                IsOperationInProgressColourConfig = false;
+            }
+        }
+
+        private bool CanExecuteColourConfig_SET()
+        {
+            return !IsOperationInProgressColourConfig;
+
+            //Need to add all possible validation mechanisms
+            return true; // Placeholder, replace with actual condition
+        }
+
+        #endregion
 
 
         private string _filePath;
@@ -2035,3 +2207,264 @@ namespace IpisCentralDisplayController.views
         }
     }
 }
+
+
+#region AudioAnnouncements
+
+//private int _repeatAnnouncement;
+//public int RepeatAnnouncement
+//{
+//    get { return _repeatAnnouncement; }
+//    set
+//    {
+//        _repeatAnnouncement = value;
+//        OnPropertyChanged();
+//    }
+//}
+
+//AudioPlayerService audioPlayerService;
+//List<AudioElement> audioPacket = new List<AudioElement>();
+
+//private AnnFormat _selectedFormat;
+//public AnnFormat SelectedFormat
+//{
+//    get { return _selectedFormat; }
+//    set { _selectedFormat = value; }
+//}
+
+
+//public commands.RelayCommand PlayPauseAnnCommand { get; }
+//public commands.RelayCommand StopAnnCommand { get; }
+
+////  public IAsyncRelayCommand PlayPauseAnnCommand => new AsyncRelayCommand(PlayPauseAnn);
+
+////StopAnnCommand = new commands.RelayCommand(PlayPauseAnn, CanExecute_StopAnnouncement);
+
+////private async Task PlayPauseAnn() //MAKE ASYNC JUST LIKE TADDB SET
+//private void PlayPauseAnn(object parameter) //MAKE ASYNC JUST LIKE TADDB SET
+//{
+//    if (PlayPauseToolTip == "Play")
+//    {
+
+//        PlayAudio = true;
+//        //  PauseAudio = false;
+//        if (PauseAudio == true)
+//        {
+
+//            PauseAudio = false;
+//        }
+//        else if (PauseAudio == false)
+//        {
+//            for (int i = 0; i < RepeatAnnouncement; i++)
+//            {
+//                foreach (ActiveTrain train in ActiveTrains)
+//                {
+//                    if (train.Announce_Update == true)
+//                    {
+//                        audioPacket = audioPlayerService.AudioSequenceBuilder(train, WorkspaceManager.GetWorkspacePath());
+//                        // await audioPlayerService.PlayAudioSequenceAsync(audioPacket, AnnInProgress);
+//                        //await audioPlayerService.PlayAudioSequenceAsync(
+//                        //                                                 audioPacket,
+//                        //                                                 () => AnnInProgress,         // a method to get the current value
+//                        //                                                 value => AnnInProgress = value, // a method to set the value
+//                        //                                                 SelectedFormat,
+//                        //                                                 () => PauseAudio,         // a method to get the current value
+//                        //                                                 value => PauseAudio = value // a method to set the value
+//                        //                                               );
+//                        //https://chatgpt.com/c/68887230-f634-8013-84fa-376d32ba320c
+
+
+//                        Task.Run(() =>
+//                        audioPlayerService.PlayAudioSequenceAsync(
+//                            audioPacket,
+//                            SelectedFormat,
+
+//                            () => PlayAudio,
+//                            value => PlayAudio = value,
+
+//                            () => PauseAudio,
+//                            value => PauseAudio = value,
+
+//                            () => StopAudio,
+//                            value => StopAudio = value,
+
+//                            () => MuteAudio,
+//                            value => MuteAudio = value
+
+//                            //() => MuteAudio,
+//                            //value => PauseAudio = value
+
+//                        )
+//                    );
+
+
+//                    }
+
+//                    //AudioPlayerService.PlaySequenceAsync(AudioPlayerService.AudioSequenceBuilder(train, WorkspaceManager.GetWorkspacePath()));
+//                    //await AudioPlayerService.PlayAudioSequenceAsync(AudioPlayerService.AudioSequenceBuilder(train, WorkspaceManager.GetWorkspacePath()));
+//                    //await AudioPlayerService.PlayMp3Async("C:\\Users\\Public\\Music\\Sample Music\\Kalimba.mp3");
+//                }
+
+//            }
+
+//        }
+
+
+//    }
+
+//    else if (PlayPauseToolTip == "Pause")
+//    {
+//        //if(PlayAudio == )
+//        PlayPauseToolTip = "Play";
+//        PauseAudio = true;
+//        PlayAudio = false;
+
+
+
+//    }
+
+//}
+
+//private void StopAnn(object parameter)
+//{
+//    StopAudio = true;
+//    PlayAudio = false;
+//    PauseAudio = false;
+//    MuteAudio = false;
+//}
+
+
+
+//// When one action flag changes , be sure to change all the other action flags accordingly
+//#region ActionsFlags 
+
+//private bool _stopAudio = true;
+//public bool StopAudio
+//{
+//    get { return _stopAudio; }
+//    set { _stopAudio = value; }
+//}
+
+//private bool _playAudio = false;
+//public bool PlayAudio
+//{
+//    get { return _playAudio; }
+//    set
+//    {
+//        _playAudio = value;
+//        if (_playAudio)
+//        {
+//            PlayPauseToolTip = "Pause";
+//            AnnInProgress = true;
+//        }
+//        //else
+//        //{
+//        //    PlayPauseToolTip = "Play";
+//        //    AnnInProgress = false;
+//        //}
+//    }
+//}
+
+
+//private bool _pauseAudio = false;
+//public bool PauseAudio
+//{
+//    get { return _pauseAudio; }
+//    set
+//    {
+//        _pauseAudio = value;
+//        if (_pauseAudio)
+//        {
+//            PlayPauseToolTip = "Play";
+//        }
+//        //else
+//        //{
+//        //    PlayPauseToolTip = "Pause";
+//        //}
+//    }
+//}
+
+
+//private bool _muteAudio = false;
+//public bool MuteAudio
+//{
+//    get { return _muteAudio; }
+//    set
+//    {
+//        _muteAudio = value;
+//        if (_muteAudio)
+//        {
+//            MuteUnmuteToolTip = "Unmute";
+//            AnnIsMute = true;
+//        }
+//        else
+//        {
+//            MuteUnmuteToolTip = "Mute";
+//            AnnIsMute = false;
+//        }
+//    }
+//}
+
+#endregion
+
+#region State_NODIRECTSETTINGALWAYS SETFROMTHEACTION_FLAGS
+
+//private bool _annInProgress = false;
+//public bool AnnInProgress
+//{
+//    get { return _annInProgress; }
+//    set { _annInProgress = value; }
+//}
+
+//private bool _annIsPaused = false;
+//public bool AnnIsPaused
+//{
+//    get { return _annIsPaused; }
+//    set { _annIsPaused = value; }
+//}
+
+//private bool _annIsMute = false;
+//public bool AnnIsMute
+//{
+//    get { return _annIsMute; }
+//    set { _annIsMute = value; }
+//}
+
+
+#endregion
+
+#region Icon_NODIRECTSETTINGALWAYS SETFROMTHETOOLTIP
+
+//private string _button1Icon = "&#xE768;";//Play
+//public string Button1Icon
+//{
+//    get { return _button1Icon; }
+//    set
+//    {
+//        _button1Icon = value;
+//        OnPropertyChanged(); // Notify property change for UI updates
+
+
+
+
+//    }
+//}
+
+////BUTOONS 2 IS STOP BUTTON WHICH ALWAYS HAS A FIXED ICON
+
+//private string _button3Icon;
+//public string Button3Icon
+//{
+//    get { return _button3Icon; }
+//    set
+//    {
+//        _button3Icon = value;
+//    }
+//}
+
+
+//#endregion
+
+////BUTTON LABELS ??? : USE SET ONLY PROPERTY
+
+#endregion

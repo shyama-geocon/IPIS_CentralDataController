@@ -45,30 +45,57 @@ namespace IpisCentralDisplayController.models
             var defaultTrainTemplates = new List<TrainDisplayTemplate>();
 
             // Define a list of status strings for arrival and departure
-            var statusList = new List<string>
+            //var statusList = new List<string>
+            //{
+            //    // Arrival statuses
+            //    "Running Right Time",
+            //    "Will Arrive Shortly",
+            //    "Is Arriving On",
+            //    "Has Arrived On",
+            //    "Running Late",
+            //    "Cancelled",
+            //    "Indefinite Late",
+            //    "Terminated At",
+            //    "Platform Changed",
+
+            //    // Departure statuses
+            //    "Running Right Time  ",
+            //    "Cancelled  ",
+            //    "Is Ready to Leave",
+            //    "Is on Platform",
+            //    "Departed",
+            //    "Rescheduled",
+            //    "Diverted",
+            //    "Delay Departure",
+            //    "Platform Change",
+            //    "Change of Source"
+            //};
+
+            var statusList = new List<byte>
             {
                 // Arrival statuses
-                "Running Right Time",
-                "Will Arrive Shortly",
-                "Is Arriving On",
-                "Has Arrived On",
-                "Running Late",
-                "Cancelled",
-                "Indefinite Late",
-                "Terminated At",
-                "Platform Changed",
+               0x01,
+                0x02,
+                0x03,
+                0x04,
+                0x05,
+                0x06,
+                0x07,
+                0x08,
+                0x09,
 
                 // Departure statuses
-                "Running Right Time",
-                "Cancelled",
-                "Is Ready to Leave",
-                "Is on Platform",
-                "Departed",
-                "Rescheduled",
-                "Diverted",
-                "Delay Departure",
-                "Platform Change",
-                "Change of Source"
+                0x0A,
+                0x0B,
+                0x0C,
+                0x0D,
+                0x0E,
+                0x0F,
+                0x10,
+                0x11,
+                0x12,
+                0x13
+
             };
 
             foreach (var status in statusList)
@@ -91,7 +118,7 @@ namespace IpisCentralDisplayController.models
         }
 
 
-        private (string StatusType, string StatusDescription) GetStatusTypeAndDescription(string status)
+        private (string StatusType, string StatusDescription) GetStatusTypeAndDescription(byte status)
         {
             string statusType;
             string statusDescription;
@@ -99,77 +126,81 @@ namespace IpisCentralDisplayController.models
             switch (status)
             {
                 // Arrival statuses
-                case "Running Right Time":
+                case 0x01:
                     statusType = "Arrival";
                     statusDescription = "Running Right Time";
                     break;
-                case "Will Arrive Shortly":
+                case 0x02:
                     statusType = "Arrival";
                     statusDescription = "Will Arrive Shortly";
                     break;
-                case "Is Arriving On":
+                case 0x03:
                     statusType = "Arrival";
                     statusDescription = "Is Arriving On";
                     break;
-                case "Has Arrived On":
+                case 0x04:
                     statusType = "Arrival";
                     statusDescription = "Has Arrived On";
                     break;
-                case "Running Late":
+                case 0x05:
                     statusType = "Arrival";
                     statusDescription = "Running Late";
                     break;
-                case "Cancelled":
+                case 0x06:
                     statusType = "Arrival";
                     statusDescription = "Cancelled";
                     break;
-                case "Indefinite Late":
+                case 0x07:
                     statusType = "Arrival";
                     statusDescription = "Indefinitely Late";
                     break;
-                case "Terminated At":
+                case 0x08:
                     statusType = "Arrival";
                     statusDescription = "Terminated At";
                     break;
-                case "Platform Changed":
+                case 0x09:
                     statusType = "Arrival";
                     statusDescription = "Platform Changed";
                     break;
 
                 // Departure statuses
-                //case "Cancelled":
-                //    statusType = "Departure";
-                //    statusDescription = "Cancelled";
-                //    break;
-                case "Is Ready to Leave":
+                case 0x0A:
+                    statusType = "Departure";
+                    statusDescription = "Running Right Time";
+                    break;
+                case 0x0B:
+                    statusType = "Departure";
+                    statusDescription = "Cancelled";
+                    break;
+                case 0x0C:
                     statusType = "Departure";
                     statusDescription = "Is Ready to Leave";
                     break;
-                case "Is on Platform":
+                case 0x0D:
                     statusType = "Departure";
                     statusDescription = "Is on Platform";
                     break;
-                case "Departed":
+                case 0x0E:
                     statusType = "Departure";
                     statusDescription = "Departed";
                     break;
-                case "Rescheduled":
+                case 0x0F:
                     statusType = "Departure";
                     statusDescription = "Rescheduled";
                     break;
-                case "Diverted":
+                case 0x10:
                     statusType = "Departure";
                     statusDescription = "Diverted";
                     break;
-                case "Delay Departure":
+                case 0x11:
                     statusType = "Departure";
                     statusDescription = "Delay Departure";
                     break;
-                case "Platform Change":
+                case 0x12:
                     statusType = "Departure";
                     statusDescription = "Platform Change";
                     break;
-                case "Change of Source":
+                case 0x13:
                     statusType = "Departure";
                     statusDescription = "Change of Source";
                     break;

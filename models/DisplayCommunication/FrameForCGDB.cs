@@ -35,7 +35,6 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
         public byte WindowTopRow3 { get; set; } 
         public byte WindowBottomRow4 { get; set; }
 
-
         public ByteBuilder Level2Byte5 { get; set; }
         public ByteBuilder Level2Byte6 { get; set; }
         public ByteBuilder Level2Byte7 { get; set; }

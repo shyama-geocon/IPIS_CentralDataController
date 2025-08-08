@@ -546,6 +546,7 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             #endregion
         }
 
+
         public byte[] CompileFrame()
         {
             Frame.Clear();
@@ -1026,7 +1027,7 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
 
 
-#region StatusMsgTOStatusCode
+#region CRC calculation
 
 //public static byte[] ComputeCrc16CCITT(byte[] data)
 //{
@@ -1042,20 +1043,16 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 //                crc <<= 1;
 //        }
 //    }
-
 //    // Convert CRC to two bytes (big-endian: MSB first)
 //    byte crcMsb = (byte)((crc >> 8) & 0xFF);
 //    byte crcLsb = (byte)(crc & 0xFF);
-
 //    // Create a new array with original data + 2 CRC bytes
 //    byte[] result = new byte[data.Length + 2];
 //    Buffer.BlockCopy(data, 0, result, 0, data.Length);
 //    result[data.Length] = crcMsb;
 //    result[data.Length + 1] = crcLsb;
-
 //    return result;
 //}
-
 
 //I've the data in the form of a byte array. I want to append 2 bytes of CRC. CRC-16-CCITT (also known as CRC-CCITT) 
 //is used for data integrity. The polynomial of 

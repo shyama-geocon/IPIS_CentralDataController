@@ -324,15 +324,15 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
 
             #endregion
 
-            FrameBytesObject.TimeDelay12 = (byte)FrameBytesObject.TimeDelay;
+            FrameBytesObject.TimeDelay8 = (byte)FrameBytesObject.TimeDelay;
 
 
-            //// Add separator bytes
+           
         }
-
 
         public void AddFixedBytes()
         {
+
             #region ForLevel1
 
             FrameBytesObject.Start1 = 0xAA;
@@ -371,11 +371,7 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
             FrameBytesObject.WindowBottomRow4 = 0x01;
 
 
-            //public ByteBuilder Level2Byte9 { get; set; }
-            //public ByteBuilder Level2Byte10 { get; set; }
-            //public ByteBuilder Level2Byte11 { get; set; }
-            //public ByteBuilder Level2Byte12 { get; set; }
-            
+           
                 
 
             FrameBytesObject.SeparatorByte1 = 0xE7;
@@ -391,14 +387,77 @@ namespace IpisCentralDisplayController.services.DisplayCommunicationServices
           
         }
 
+        public byte[] CompileFrame()
+        {
+            Frame.Clear();
+            List<int> CharacterStringStartAddToBeAddedAtIndexes = new List<int>();
+
+            #region LEVEL1 CONSTRUCTION  
+            Frame.Add(FrameBytesObject.Start1);
+            Frame.Add(FrameBytesObject.Start2);
+            Frame.Add(FrameBytesObject.PacketIdentifier3);
+            Frame.Add(FrameBytesObject.PacketLengthMSB4);//NOT ADDED  
+            Frame.Add(FrameBytesObject.PacketLengthLSB5);//NOT ADDED  
+            Frame.Add(FrameBytesObject.DestinationAddressThird6);
+            Frame.Add(FrameBytesObject.DestinationAddressFourth7);
+            Frame.Add(FrameBytesObject.SourceAddressThird8);
+            Frame.Add(FrameBytesObject.SourceAddressFourth9);
+            Frame.Add(FrameBytesObject.SerialNumber10);//NOT ADDED  
+            Frame.Add(FrameBytesObject.PacketType11);
+            Frame.Add(FrameBytesObject.StartOfDataPacketIndicator12);
+
+            #region LEVEL2
+
+            Frame.Add(FrameBytesObject.WindowLeftColumn1);
+
+            Frame.Add(FrameBytesObject.WindowRightColumn2);
+
+            Frame.Add(FrameBytesObject.WindowTopRow3);
+
+            Frame.Add(FrameBytesObject.WindowBottomRow4);
+
+            Frame.Add(FrameBytesObject.Level2Byte5.ToByte());
+            Frame.Add(FrameBytesObject.Level2Byte6.ToByte());
+            Frame.Add(FrameBytesObject.Level2Byte7.ToByte());
+
+            Frame.Add(FrameBytesObject.TimeDelay8);
+
+            Frame.AddRange(FrameBytesObject.TrainNumberBytes);
+
+            Frame.AddRange(FrameBytesObject.EnglishCoachBytes);
+
+            Frame.Add(FrameBytesObject.SeparatorByte1);
+            Frame.Add(FrameBytesObject.SeparatorByte2);
+
+            Frame.AddRange(FrameBytesObject.HindiCoachBytes);
+
+            Frame.Add(FrameBytesObject.EndOfCoachData);
+
+            #endregion
+
+            Frame.Add(FrameBytesObject.Level1EndOfDataPacket);
+            Frame.Add(FrameBytesObject.CRC_MSB);//NOT ADDED  
+            Frame.Add(FrameBytesObject.CRC_LSB);//NOT ADDED  
+            Frame.Add(FrameBytesObject.EOT);
 
 
 
 
+            //CRC Left
+
+            #endregion
 
 
+            //FrameBytesObject.PacketLengthMSB4
+            Frame[3] = (byte)(((Frame.Count - 6) >> 8) & 0xFF);// Most Significant Byte
 
+            //FrameBytesObject.PacketLengthLSB5
+            Frame[4] = (byte)((Frame.Count - 6) & 0xFF);// Least Significant Byte
 
+            byte[] frametosend = Frame.ToArray();
+
+            return frametosend;
+        }
 
 
         //helper method which converts the string to the specified number of bytes

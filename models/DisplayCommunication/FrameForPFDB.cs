@@ -174,6 +174,8 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
 
         #endregion
 
+
+
         public FrameForPFDB()
         {
 
@@ -222,7 +224,6 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
 
 
         }
-
 
 
      }

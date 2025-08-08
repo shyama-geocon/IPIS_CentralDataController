@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,12 +9,13 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
 {
     public class FrameForAGDB
     {
+
         #region ACTUAL FRAME BYTES
         //Note: Contains nested level regions to reflect the actual 
         //frame structure
 
         #region Level1
-        public byte Start1 { get; set; } 
+        public byte Start1 { get; set; }
         public byte Start2 { get; set; }
         public byte PacketIdentifier3 { get; set; }
         public byte PacketLengthMSB4 { get; set; }
@@ -43,7 +45,7 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
         public ByteBuilder Level2Byte9 { get; set; }
         public ByteBuilder Level2Byte10 { get; set; }
         public ByteBuilder Level2Byte11 { get; set; }
-        public ByteBuilder Level2Byte12 { get; set; }
+        public byte TimeDelay12 { get; set; }
 
         public byte StartAddOfCharStringMSB13 { get; set; }
         public byte StartAddOfCharStringLSB14 { get; set; }
@@ -61,33 +63,35 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
         public byte VerticalOffsetMSB { get; set; }
         public byte VerticalOffsetLSB { get; set; }
 
+        public byte _1_FieldIndexMSB1 { get; set; }
+        public byte _1_FieldIndexLSB2 { get; set; }
+
         #region Level4
 
         public byte[] TrainNumberBytes { get; set; } // length of array is fixed
-
-
-        public byte TrainNameFieldIndexMSB1 { get; set; }
-        public byte TrainNameFieldIndexLSB2 { get; set; }
-        public byte[] TrainNameBytes { get; set; }// length of array is NOT fixed
-                                                  // will need to find it out dynamically 
-
-        public byte TimeFieldIndexMSB1 { get; set; }//For another status this will automatically become the field index for the next field, whatever it is
-        public byte TimeFieldIndexLSB2 { get; set; }//For another status this will automatically become the field index for the next field, whatever it is
-
-        #region DEFAULT
+    
+        
+        public byte _2_FieldIndexMSB1 { get; set; }//For another status this will automatically become the field index for the next field, whatever it is
+        public byte _2_FieldIndexLSB2 { get; set; }//For another status this will automatically become the field index for the next field, whatever it is
         public byte[] TimeBytes { get; set; } // length of array is fixed
 
 
-        public byte ArrivalOrDeptureFieldIndexMSB1 { get; set; }
-        public byte ArrivalOrDeptureFieldIndexLSB2 { get; set; }
+
+        #region DEFAULT
+
+        public byte _3_FieldIndexMSB1 { get; set; }
+        public byte _3_FieldIndexLSB2 { get; set; }              
         public byte[] ArrivalOrDeptureBytes { get; set; } // length of array is fixed
 
 
 
-        public byte PlatformNumberFieldIndexMSB1 { get; set; }
-        public byte PlatformNumberFieldIndexLSB2 { get; set; }
+        public byte _4_FieldIndexMSB1 { get; set; }
+        public byte _4_FieldIndexLSB2 { get; set; }
         public byte[] PlatformNumberBytes { get; set; } // length of array is fixed
 
+        //line 2
+        public byte[] TrainNameBytes { get; set; }// length of array is NOT fixed
+                                                  // will need to find it out dynamically 
 
         #endregion
 
@@ -97,8 +101,6 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
         public byte[] Nplus5toKfIELD { get; set; }
         public byte[] StationNameBytes { get; set; } // FOR PAGE 2: Diverted/Terminated at/Change of Source
         #endregion
-
-
 
 
         public byte SeparatorByte1 { get; set; } // Separator byte : always 0xE7
@@ -129,6 +131,49 @@ namespace IpisCentralDisplayController.models.DisplayCommunication
 
 
         #endregion
+
+        //These are fields which are read from hthe ActiveTrains List
+        //or from the UI directly, and are not part of the frame structure
+        //in itself
+        #region DIRECT READ FIELDS FROM UI OR ACTIVETRAIN INSTANCE OR FROM A DEVICE INSTANCE
+
+        #region ForLevel1
+        public IPAddress DestinationIPAddress { get; set; }
+        public IPAddress SourceIPAddress { get; set; }
+
+        #endregion
+
+        #region ForLevel2
+        //These fields are used to set the bit values in the
+        //Level2Byte9, Level2Byte10, Level2Byte11, and Level2Byte12,
+        public bool ReverseVideo { get; set; }
+        public int Speed { get; set; }
+        public int EffectCode { get; set; }
+        public int LetterSize { get; set; }
+        public int Gap { get; set; }
+        public int TimeDelay { get; set; }
+        #endregion
+
+        #region ForLevel3      
+        //only StatusByte which is already  a part of the actual frame bytes
+        #endregion
+
+        #region ForLevel4
+        //public int TrainNumber { get; set; }
+        public string TrainNumber { get; set; }
+        public string TrainName { get; set; }
+        public string Time { get; set; }
+        public char ArrivalOrDeparture { get; set; }
+        public int PlatformNumber { get; set; }
+        public string StationName { get; set; } // FOR PAGE 2: Diverted/Terminated at/Change of Source
+
+        #endregion
+
+        #endregion
+
+
+
+
 
 
 

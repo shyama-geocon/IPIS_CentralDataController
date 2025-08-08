@@ -2959,7 +2959,9 @@ namespace IpisCentralDisplayController.services.Announcement
                                                   Action<bool> setStopAudio,
 
                                                   Func<bool> getMuteAudio,
-                                                  Action<bool> setMuteAudio
+                                                  Action<bool> setMuteAudio,
+
+                                                  Action finishAnn
             )
         { 
        
@@ -2975,30 +2977,37 @@ namespace IpisCentralDisplayController.services.Announcement
                 }
                 else if (!string.IsNullOrEmpty(element.FilePath))
                 {
-                    await PlayMp3Async(element.FilePath);
+                    await PlayMp3Async(element.FilePath, getMuteAudio);
                 }
 
                // for stop
                 if (getStopAudio() == true)
-                    {
-                        break;
-                    }
+                {
+                   setStopAudio(false); // Reset to initial state
+                   return;                    
+                }
 
                 while (getPauseAudio())
                 {
                     await Task.Delay(100); // async-friendly delay
+                    if (getPlayAudio() == true)
+                    {
+                        break;
+                       // return;
+                    }
                     if (getStopAudio() == true)
                     {
-                        //break;
+                        setStopAudio(false); // Reset to initial state
                         return;
                     }
                 }
+
             }
 
-            setStopAudio(true) ;
+            finishAnn.Invoke();
         }
 
-        private Task PlayMp3Async(string filePath)
+        private Task PlayMp3Async(string filePath, Func<bool> getMuteAudio)
         {
             var tcs = new TaskCompletionSource<bool>();
 
@@ -3008,6 +3017,10 @@ namespace IpisCentralDisplayController.services.Announcement
                 using var outputDevice = new WaveOutEvent();
 
                 outputDevice.Init(audioFile);
+
+                outputDevice.Volume = getMuteAudio() ? 0.0f : 1.0f;
+
+
                 outputDevice.Play();
 
                 outputDevice.PlaybackStopped += (s, e) =>

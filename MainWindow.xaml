@@ -485,109 +485,6 @@
                                 <!--<GroupBox Grid.Column="1" Header="CGDB Sequence" Margin="2" Background="AliceBlue">
                                 </GroupBox>-->
 
-                                
-                                <!--<GroupBox Grid.Column="1" Header="CGDB Sequence" Margin="2" Background="AliceBlue">
-                                    <ScrollViewer VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto">
-                                        <Grid Margin="2" VerticalAlignment="Center">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-
-                                            --><!-- First Row: TextBlocks with Rotated Text --><!--
-                                            <TextBlock Text="UP" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
-                                            <TextBox Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[0], Mode=TwoWay}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[1]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[2]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[3]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[4]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[5]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="7" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[6]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[7]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="9" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[8]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[9]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[10]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[11]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="13" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[12]}"/>
-                                            <TextBox Grid.Row="0" Grid.Column="14" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[13]}"/>
-
-
-                                            --><!-- Second Row: TextBlocks --><!--
-                                            <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="1" />
-                                            <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="2" />
-                                            <TextBlock Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="3" />
-                                            <TextBlock Grid.Row="1" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="4" />
-                                            <TextBlock Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="5" />
-                                            <TextBlock Grid.Row="1" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="6" />
-                                            <TextBlock Grid.Row="1" Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="7" />
-                                            <TextBlock Grid.Row="1" Grid.Column="8" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="8" />
-                                            <TextBlock Grid.Row="1" Grid.Column="9" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="9" />
-                                            <TextBlock Grid.Row="1" Grid.Column="10" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="10" />
-                                            <TextBlock Grid.Row="1" Grid.Column="11" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="11" />
-                                            <TextBlock Grid.Row="1" Grid.Column="12" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="12" />
-                                            <TextBlock Grid.Row="1" Grid.Column="13" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="13" />
-                                            <TextBlock Grid.Row="1" Grid.Column="14" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="14" />
-
-                                            --><!-- Third Row: TextBoxes --><!--
-                                            <TextBox Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[14]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[15]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[16]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[17]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[18]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[19]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[20]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="7" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[21]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[22]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="9" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[23]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[24]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[25]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[26]}"/>
-                                            <TextBox Grid.Row="2" Grid.Column="13" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="2" Width="40" Height="30" Text="{Binding SelectedTrain.CoachList[27]}"/>
-                                            <TextBlock Text="DN" Grid.Row="2" Grid.Column="14" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
-
-
-
-                                            --><!-- Fourth Row: TextBlocks --><!--
-                                            <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="15" />
-                                            <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="16" />
-                                            <TextBlock Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="17" />
-                                            <TextBlock Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="18" />
-                                            <TextBlock Grid.Row="3" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="19" />
-                                            <TextBlock Grid.Row="3" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="20" />
-                                            <TextBlock Grid.Row="3" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="21" />
-                                            <TextBlock Grid.Row="3" Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="22" />
-                                            <TextBlock Grid.Row="3" Grid.Column="8" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="23" />
-                                            <TextBlock Grid.Row="3" Grid.Column="9" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="24" />
-                                            <TextBlock Grid.Row="3" Grid.Column="10" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="25" />
-                                            <TextBlock Grid.Row="3" Grid.Column="11" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="26" />
-                                            <TextBlock Grid.Row="3" Grid.Column="12" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="27" />
-                                            <TextBlock Grid.Row="3" Grid.Column="13" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Text="28" />
-                                        </Grid>
-                                    </ScrollViewer>
-                                </GroupBox>-->
-                               
-
-
 
                                 <GroupBox Header="CGDB Options" Grid.Column="1" Margin="2" Background="AliceBlue">
                                     <Grid Margin="5" HorizontalAlignment="Center">
@@ -637,6 +534,7 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="*"/>
                                             <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
                                         
                                         <Grid Grid.Row="0">
@@ -655,7 +553,8 @@
                                             <CheckBox Content="Monitor" Grid.Row="0" Grid.Column="1" Height="30" Margin="2" VerticalContentAlignment="Center"/>
                                             <TextBlock VerticalAlignment="Center" TextAlignment="Center" Grid.Row="1" Grid.Column="0" Margin="2" Text="REPEAT"/>
                                             <!--<xctk:IntegerUpDown Height="30" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="2" Value="1" Minimum="1" Maximum="10"/>-->
-                                            <xctk:IntegerUpDown Height="30" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="2" Value="{Binding RepeatAnnouncement, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Minimum="1" Maximum="100"/>
+                                            <xctk:IntegerUpDown Height="30" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="2" 
+                                                                Value="{Binding RepeatAnnouncement, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Minimum="1" Maximum="100"/>
 
                                             <!--<CheckBox Content="12 hr" IsChecked="True" Grid.Row="2" Grid.Column="0" Height="30" Margin="2" VerticalContentAlignment="Center"/>
                                             <CheckBox Content="24 hr" Grid.Row="2" Grid.Column="1" Height="30" Margin="2" VerticalContentAlignment="Center"/>-->
@@ -667,57 +566,57 @@
 
                                         </Grid>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Margin="2">
-                                            
-                                            
-                                            <!--<Button Width="40" Height="40" Margin="2" ToolTip="Play" Click="PlayButton_Click">--><!--
-                                            <Button Width="40" Height="40" Margin="2" ToolTip="Play" Command="{Binding PlayAnnCommand}">
+
+                                            <!--<Button Width="40" Height="40" Margin="2" ToolTip="Play" Click="PlayButton_Click">
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE768;" VerticalAlignment="Center" FontSize="16"/>
                                                     --><!-- Play Icon --><!--
                                                 </StackPanel>
-                                            </Button>-->
-
-                                            <!--<Button Width="40" Height="40" Margin="2" ToolTip="Play" Click="PlayButton_Click">-->
-                                            <Button Width="40" Height="40" Margin="2"  ToolTip="{Binding PlayPauseToolTip , Mode=TwoWay}" Command="{Binding PlayPauseAnnCommand}">
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="{Binding Button1Icon, Mode=TwoWay}" VerticalAlignment="Center" FontSize="16"/>
-                                                    <!-- Play Icon -->
-                                                </StackPanel>
                                             </Button>
 
-                                            <!--<Button Width="40" Height="40" Margin="2" ToolTip="Stop" Click="StopButton_Click">-->
-                                            <Button Width="40" Height="40" Margin="2" ToolTip="Stop" Command="{Binding StopAnnCommand}">
+                                            <Button Width="40" Height="40" Margin="2" ToolTip="Pause" Click="PauseButton_Click">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE769;" VerticalAlignment="Center" FontSize="16"/>
+                                                    --><!-- Pause Icon --><!--
+                                                </StackPanel>
+                                            </Button>-->
+
+                                            <!--ToolTip="Mute"-->
+
+                                            <ToggleButton Width="40" Height="40" Margin="2" Command="{Binding TogglePlayPauseCommand}"
+                                                          Content="{Binding ButtonIcon}"  IsChecked="{Binding IsPlaying, Mode=OneWay}"
+                                                          ToolTip="{Binding PlayPauseToolTip}"
+                                                          >
+                                            </ToggleButton>
+
+
+                                            <Button Width="40" Height="40" Margin="2" ToolTip="Stop" Command="{Binding StopAnnCommand}" >
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE15B;" VerticalAlignment="Center" FontSize="16"/>
                                                     <!-- Stop Icon -->
                                                 </StackPanel>
                                             </Button>
 
-                                            <!--<Button Width="40" Height="40" Margin="2" ToolTip="Pause" Click="PauseButton_Click">--><!--
-                                            <Button Width="40" Height="40" Margin="2" ToolTip="Pause" Command="{Binding PauseAnnCommand}">                                                
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE769;" VerticalAlignment="Center" FontSize="16"/>
-                                                    --><!-- Pause Icon --><!--
-                                                </StackPanel>
-                                            </Button>
 
-                                            --><!--<Button Width="40" Height="40" Margin="2" ToolTip="Stop" Click="StopButton_Click">--><!--
-                                            <Button Width="40" Height="40" Margin="2" ToolTip="Stop" Command="{Binding StopAnnCommand}">                                                
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE15B;" VerticalAlignment="Center" FontSize="16"/>
-                                                    --><!-- Stop Icon --><!--
-                                                </StackPanel>
-                                            </Button>
-
-                                            <ToggleButton Width="40" Height="40" Margin="2" ToolTip="Mute" Checked="MuteButton_Checked" Unchecked="MuteButton_Unchecked">
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <ToggleButton Width="40" Height="40" Margin="2" Command="{Binding MuteUnmuteCommand}"
+                                                          Content="{Binding MuteButtonIcon}" ToolTip="{Binding MuteUnmuteToolTip}"
+                                                          >
+                                                <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE198;" VerticalAlignment="Center" FontSize="16"/>
                                                     --><!-- Mute Icon --><!--
-                                                </StackPanel>
-                                            </ToggleButton>-->
+                                                </StackPanel>-->
+                                            </ToggleButton>
 
-                                            
+
                                         </StackPanel>
+
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Margin="2">
+                                            <TextBlock Width="Auto" Text="Audio Status:"/>
+                                            <TextBlock Width="Auto" Text="{Binding AudioStatus}"/>
+                                            <TextBlock Width="Auto" Text="{Binding MuteStatus}"/>
+                                        </StackPanel>
+
+
                                     </Grid>
                                 </GroupBox>
                                 
@@ -2022,17 +1921,20 @@
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="*"/>
+                                            <!--<RowDefinition Height="*"/>-->
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="Display Styles for Color Display" FontWeight="Bold" FontSize="18" Margin="2" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"/>
-                                        <Grid Grid.Row="1">
-                                            <Grid.ColumnDefinitions>
+                                        <!--<Grid Grid.Row="1">-->
+                                            <!--<Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <GroupBox Header="Background Theme" Grid.Column="0" Margin="2">
+                                                --><!--<ColumnDefinition Width="*"/>--><!--
+                                            </Grid.ColumnDefinitions>-->
+
+                                            <GroupBox Header="Background Theme" Grid.Row="1" Margin="2">
                                                 <Grid Margin="2">
                                                     <!-- Column Definitions -->
                                                     <Grid.ColumnDefinitions>
@@ -2069,7 +1971,9 @@
                                                     <TextBlock Text="{Binding Theme.MessageLineColor, Converter={StaticResource ColorToHexConverter}}" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="2" />
                                                 </Grid>
                                             </GroupBox>
-                                            <GroupBox Header="Train Status List" Grid.Column="1" Margin="2">
+
+                                        <ScrollViewer Grid.Row="2" Margin="10">
+                                            <GroupBox Header="Train Status List"  Margin="2">
                                                 <DataGrid Name="TrainTemplatesDataGrid" ItemsSource="{Binding TrainTemplates}" AutoGenerateColumns="False" CanUserAddRows="False">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Status Type" Binding="{Binding StatusType}" IsReadOnly="True" Width="*"/>
@@ -2109,16 +2013,21 @@
                                                                 </DataTemplate>
                                                             </DataGridTemplateColumn.CellTemplate>
                                                         </DataGridTemplateColumn>
-                                                        <DataGridCheckBoxColumn Header="Is Blinking" Binding="{Binding IsBlinking, Mode=TwoWay}" Width="Auto"/>
+                                                        
+                                                        <!--<DataGridCheckBoxColumn Header="Is Blinking" Binding="{Binding IsBlinking, Mode=TwoWay}" Width="Auto"/>-->
+                                                        
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </GroupBox>
-                                            <!--<GroupBox Header="Preview" Grid.Column="2" Margin="2">
+                                        </ScrollViewer>
+
+                                        <!--<GroupBox Header="Preview" Grid.Column="2" Margin="2">
                                         
                                     </GroupBox>-->
-                                        </Grid>
-                                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="2" HorizontalAlignment="Left">
-                                            <Button Height="30" Width="100" Content="Save" Click="SaveDisplaySettings_Click"/>
+                                        <!--</Grid>-->
+                                        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="2" HorizontalAlignment="Left">
+                                            <Button Height="30" Width="100" Content="Save" Click="SaveDisplaySettings_Click"  Margin="2"/>
+                                            <Button Height="30" Width="100" Content="Set TADDB"  Margin="2" Command="{Binding ColourConfig_SET_Command}"/>
                                         </StackPanel>
                                     </Grid>
                                 </TabItem>
@@ -2677,9 +2586,9 @@
                                                     
                                                     <!--Save Button--> 
                                                     <Button Grid.Row="9" Grid.ColumnSpan="2"
-                                                            Content="Save" Margin="2" Height="30" Width="100"                                                            
+                                                        Content="Save" Margin="2" Height="30" Width="100"                                                            
                                                         Click="ExportPlatformDevicesButton_Click" HorizontalAlignment="Center" 
-                                                            VerticalAlignment="Center"     />
+                                                        VerticalAlignment="Center"/>
                                                 </Grid>
                                             </GroupBox>
 

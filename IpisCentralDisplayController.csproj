@@ -71,4 +71,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="models\RMS Post\" />
+  </ItemGroup>
+
 </Project>
